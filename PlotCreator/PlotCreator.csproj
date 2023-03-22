@@ -14,4 +14,10 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\PlotCreator.DAL\PlotCreator.DAL.csproj" />
+	  <ProjectReference Include="..\PlotCreator.Domain\PlotCreator.Domain.csproj" />
+	  <ProjectReference Include="..\PlotCreator.Service\PlotCreator.Service.csproj" />
+	</ItemGroup>
 </Project>
