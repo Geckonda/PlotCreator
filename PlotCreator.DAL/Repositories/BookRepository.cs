@@ -15,18 +15,16 @@ namespace PlotCreator.DAL.Repositories
         {
             _db = db;
         }
-        public async Task<bool> Add(Book entity)
+        public async Task Add(Book entity)
         {
             await _db.AddAsync(entity);
             await _db.SaveChangesAsync();
-            return true;
         }
 
-        public async Task<bool> Delete(Book entity)
+        public async Task Delete(Book entity)
         {
             _db.Books.Remove(entity);
             await _db.SaveChangesAsync();
-            return true;
         }
 
         public IQueryable<Book> GetAll()
