@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Folder Include="Interfaces\" />
-    <Folder Include="Implementations\" />
   </ItemGroup>
 
 	<ItemGroup>
@@ -21,6 +20,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\PlotCreator.DAL\PlotCreator.DAL.csproj" />
 	  <ProjectReference Include="..\PlotCreator.Domain\PlotCreator.Domain.csproj" />
 	</ItemGroup>
 	

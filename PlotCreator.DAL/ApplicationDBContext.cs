@@ -31,17 +31,17 @@ namespace PlotCreator.DAL
         public DbSet<Group_Character> Groups_Characters => Set<Group_Character>();
         public DbSet<Group_Event> Groups_Events => Set<Group_Event>();
 
-        public ApplicationDBContext()
+        public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options) : base(options)
         {
+            Database.EnsureCreated();
+        }
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=MigrationsTest;Trusted_Connection=True;");
+        //}
+        //protected override void OnModelCreating(ModelBuilder modelBuilder)
+        //{
 
-        }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=MigrationsTest;Trusted_Connection=True;");
-        }
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-
-        }
+        //}
     }
 }

@@ -13,12 +13,12 @@
                     <div class="card-header">Регистрация</div>
 
                     <div class="card-body">
-                            <form asp-controller="" asp-action="">
-
+                        <form method="post" asp-controller="Account" asp-action="Register">
                             <div class="row mb-3">
                                 <label for="Nickname" class="col-md-4 col-form-label text-md-end">Никнейм</label>
                                 <div class="col-md-6">
                                     <input asp-for="Nickname" type="text" class="form-control" name="Nickname" required autocomplete="Nickname" autofocus>
+                                    <span asp-validation-for="Nickname" class="text-danger"></span>
                                 </div>
                             </div>
 
@@ -26,6 +26,7 @@
                                 <label for="Login" class="col-md-4 col-form-label text-md-end">Логин</label>
                                 <div class="col-md-6">
                                     <input asp-for="Login" type="text" class="form-control" name="Login" required autocomplete="Login" autofocus>
+                                    <span asp-validation-for="Login" class="text-danger"></span>
                                 </div>
                             </div>
 
@@ -33,6 +34,7 @@
                                 <label for="Email" class="col-md-4 col-form-label text-md-end">Электронная почта</label>
                                 <div class="col-md-6">
                                     <input asp-for="Email" type="email" class="form-control" name="Email" required autocomplete="Email" autofocus>
+                                    <span asp-validation-for="Email" class="text-danger"></span>
                                 </div>
                             </div>
 
@@ -40,13 +42,15 @@
                                 <label for="Password" class="col-md-4 col-form-label text-md-end">Пароль</label>
                                 <div class="col-md-6">
                                     <input asp-for="Password" type="password" class="form-control" name="Password" required autocomplete="Password" autofocus>
+                                    <span asp-validation-for="Password" class="text-danger"></span>
                                 </div>
                             </div>
 
                             <div class="row mb-3">
-                                <label for="Password" class="col-md-4 col-form-label text-md-end">Подтвердите пароль</label>
+                                <label for="PasswordConfirm" class="col-md-4 col-form-label text-md-end">Подтвердите пароль</label>
                                 <div class="col-md-6">
-                                    <input autocomplete="new-password" asp-for="PasswordConfirm"  class="form-control type="password">
+                                    <input asp-for="PasswordConfirm" type="password" name="PasswordConfirm" class="form-control">
+                                    <span asp-validation-for="PasswordConfirm" class="text-danger"></span>
                                 </div>
                             </div>
 
