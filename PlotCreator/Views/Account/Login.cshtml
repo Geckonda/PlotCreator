@@ -1,0 +1,43 @@
+﻿@model PlotCreator.Domain.ViewModels.Account.LoginViewModel
+
+@{
+	ViewData["title"] = "Авторизация";
+}
+<div class="centralWrapper">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">Авторизация</div>
+
+                    <div class="card-body">
+                        <form asp-controller="" asp-action="">
+
+                            <div class="row mb-3">
+                                <label for="Login" class="col-md-4 col-form-label text-md-end">Логин</label>
+                                <div class="col-md-6">
+                                    <input asp-for="Login" type="text" class="form-control" name="Login" required autocomplete="Login" autofocus>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label for="Password" class="col-md-4 col-form-label text-md-end">Пароль</label>
+                                <div class="col-md-6">
+                                    <input asp-for="Password" type="password" class="form-control" name="Password" required autocomplete="Password" autofocus>
+                                </div>
+                            </div>
+
+                            <div class="row mb-0">
+                                <div class="col-md-6 offset-md-4">
+                                    <button type="submit" class="btn btn-dark">
+                                        Войти
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

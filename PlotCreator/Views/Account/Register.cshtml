@@ -1,0 +1,80 @@
+﻿@model PlotCreator.Domain.ViewModels.Account.RegisterViewModel
+
+@{
+	ViewData["title"] = "Регистрация";
+}
+
+
+<div class="centralWrapper">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">Регистрация</div>
+
+                    <div class="card-body">
+                            <form asp-controller="" asp-action="">
+
+                            <div class="row mb-3">
+                                <label for="Nickname" class="col-md-4 col-form-label text-md-end">Никнейм</label>
+                                <div class="col-md-6">
+                                    <input asp-for="Nickname" type="text" class="form-control" name="Nickname" required autocomplete="Nickname" autofocus>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label for="Login" class="col-md-4 col-form-label text-md-end">Логин</label>
+                                <div class="col-md-6">
+                                    <input asp-for="Login" type="text" class="form-control" name="Login" required autocomplete="Login" autofocus>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label for="Email" class="col-md-4 col-form-label text-md-end">Электронная почта</label>
+                                <div class="col-md-6">
+                                    <input asp-for="Email" type="email" class="form-control" name="Email" required autocomplete="Email" autofocus>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label for="Password" class="col-md-4 col-form-label text-md-end">Пароль</label>
+                                <div class="col-md-6">
+                                    <input asp-for="Password" type="password" class="form-control" name="Password" required autocomplete="Password" autofocus>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label for="Password" class="col-md-4 col-form-label text-md-end">Подтвердите пароль</label>
+                                <div class="col-md-6">
+                                    <input autocomplete="new-password" asp-for="PasswordConfirm"  class="form-control type="password">
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6 offset-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="agreement" id="agreement">
+                                        <label class="form-check-label" for="agreement">
+                                            Согласеие с правилами регистрации
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-0">
+                                <div class="col-md-6 offset-md-4">
+                                    <button type="submit" class="btn btn-dark" id="registerBTN" disabled>
+                                        Зарегистрироваться
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script src="~/js/Account/register.js"></script>
+}
