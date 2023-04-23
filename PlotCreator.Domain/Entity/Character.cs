@@ -23,19 +23,19 @@ namespace PlotCreator.Domain.Entity
         public int Height { get; set; }
         public int Weight { get; set; }
 
-        [Column(TypeName = "Text")]
+        [Column(TypeName = "Ntext")]
         public string? Personality { get; set; }
 
-        [Column(TypeName = "Text")]
+        [Column(TypeName = "Ntext")]
         public string? Appearance { get; set; }
 
-        [Column(TypeName = "Text")]
+        [Column(TypeName = "Ntext")]
         public string? goals { get; set; }
 
-        [Column(TypeName = "Text")]
+        [Column(TypeName = "Ntext")]
         public string? motivation { get; set; }
 
-        [Column(TypeName = "Text")]
+        [Column(TypeName = "Ntext")]
         public string? History { get; set; }
 
 

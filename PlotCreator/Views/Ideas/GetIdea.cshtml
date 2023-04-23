@@ -1,0 +1,27 @@
+﻿@model PlotCreator.Domain.ViewModels.IdeaViewModel
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+<style>
+    .cont-cont{
+        padding: 5px 10px;
+        width: auto;
+        background-color: white;
+    }
+    p{
+        margin-right: 3px;
+        color: #3a4675d4;
+    }
+
+</style>
+
+<div style="padding: 10px;"></div>
+    <div class="cont-cont">
+        <div class=" right" style="text-align: right; margin-bottom:10px;">
+        <a asp-controller="Ideas" asp-action="Save" asp-route-id="@Model.Id" asp-route-userId="@Model.UserId" style="color:#3a4675d4;">Изменить</a>
+        <a asp-controller="Ideas" asp-action="Delete" asp-route-id="@Model.Id" style="color:red; margin-left:10px;">Удалить</a>
+        </div>
+        <p>@Model.Content</p>
+    </div>

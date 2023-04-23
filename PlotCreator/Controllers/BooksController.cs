@@ -1,12 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace PlotCreator.Controllers
 {
+	
 	public class BooksController : Controller
 	{
-		public IActionResult MyBooks()
+        [HttpGet]
+        public IActionResult MyBooks()
 		{
-			return View();
+			return View("MyBooks");
 		}
 	}
 }

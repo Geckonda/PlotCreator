@@ -35,7 +35,7 @@ namespace PlotCreator.Domain.Entity
 
 
 
-        [Column(TypeName = "Text")]
+        [Column(TypeName = "Ntext")]
         public string? Description { get; set; }
 
         public string? Book_cover { get; set; }

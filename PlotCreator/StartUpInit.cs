@@ -11,11 +11,13 @@ namespace PlotCreator
         public static void InitialiseRepositories(this IServiceCollection services)
         {
             services.AddScoped<IBaseRepository<User>, UserRepository>();
+            services.AddScoped<IBaseRepository<Idea>, IdeaRepository>();
         }
 
         public static void InitialiseServices(this IServiceCollection services)
         {
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IIdeaService, IdeaService>();
         }
     }
 }

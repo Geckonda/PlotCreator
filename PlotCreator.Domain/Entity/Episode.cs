@@ -19,7 +19,7 @@ namespace PlotCreator.Domain.Entity
 
         public string? Heading { get; set; }
 
-        [Column(TypeName = "Text")]
+        [Column(TypeName = "Ntext")]
         public string? Content { get; set; }
 
         //Навигационные свойства для зависимых таблиц 

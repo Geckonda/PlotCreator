@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/PlotCreator.styles.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/stylce.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
     @RenderSection("Styles", false)
 </head>
 <body>
@@ -25,7 +25,8 @@
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" asp-controller="Ideas" asp-action="MyIdeas">Мои идеи</a>
+                                <a class="nav-link active" aria-current="page" asp-controller="Ideas" asp-action="MyIdeas"
+                                   asp-route-id="@User.Claims.Where(c => c.Type == "userId").Select(c => c.Value).SingleOrDefault()">Мои идеи</a>
                             </li>
                             <li class="nav-item">
                                  <a class="nav-link active" aria-current="page" asp-controller="Books" asp-action="MyBooks">Мои книги</a>

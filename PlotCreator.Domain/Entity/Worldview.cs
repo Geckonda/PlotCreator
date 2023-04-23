@@ -13,7 +13,7 @@ namespace PlotCreator.Domain.Entity
         public int Id { get; set; }
         public string? Name { get; set; }
 
-        [Column(TypeName = "Text")]
+        [Column(TypeName = "Ntext")]
         public string? Description { get; set; }
 
         //Навигационные свойства для зависимых таблиц 

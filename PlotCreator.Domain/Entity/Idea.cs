@@ -24,7 +24,7 @@ namespace PlotCreator.Domain.Entity
         [Required]
         public DateTime Data_Creation { get; set; }
 
-        [Column(TypeName = "Text")]
+        [Column(TypeName = "Ntext")]
         public string? Content { get; set; }
 
         //Навигационные свойства для зависимых таблиц 
