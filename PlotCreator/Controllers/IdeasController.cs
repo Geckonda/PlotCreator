@@ -1,26 +1,50 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PlotCreator.Domain.Entity;
+using PlotCreator.Domain.Helpers.Interfaces;
 using PlotCreator.Domain.ViewModels;
 using PlotCreator.Service.Implementations;
 using PlotCreator.Service.Interfaces;
 
 namespace PlotCreator.Controllers
 {
-    
-    public class IdeasController : Controller
+
+    [Authorize]
+    public class IdeasController : Controller, IInspector<bool>
     {
         private readonly IIdeaService _ideaService;
+
 
         public IdeasController(IIdeaService ideaService)
         {
             _ideaService = ideaService;
         }
 
+        public async Task<bool> CheckByContentId(int contentId)
+        {
+            var userContentIdOwner = await _ideaService.GetUserId(contentId);
+            var userIdRequestOwner = Convert.ToInt32(User.FindFirst("userId")!.Value);
+            if (userContentIdOwner == userIdRequestOwner)
+                return true;
+            return false;
+        }
+
+        public bool CheckByUserId(int userId)
+        {
+            var userIdRequestOwner = Convert.ToInt32(User.FindFirst("userId")!.Value); 
+            if (userId == userIdRequestOwner)
+                return true;
+            return false;
+        }
+
         [HttpGet]
         [ActionName("MyIdeas")]
         public async Task <IActionResult> GetIdeas(int id)
         {
-           var response = await _ideaService.GetIdeas(id);
+            if (!CheckByUserId(id))
+                return View("404");
+
+            var response = await _ideaService.GetIdeas(id);
             if(response.StatusCode == Domain.Enum.StatusCode.Ok)
                 return View("GetIdeas", response.Data.ToList());
             if(response.StatusCode == Domain.Enum.StatusCode.NotFound)
@@ -32,6 +56,9 @@ namespace PlotCreator.Controllers
         [ActionName("MyIdea")]
         public async Task<IActionResult> GetIdea(int id)
         {
+            if(!CheckByContentId(id).Result)
+                return View("404");
+
             var response = await _ideaService.GetIdea(id);
             if (response.StatusCode == Domain.Enum.StatusCode.Ok)
                 return View("GetIdea", response.Data);
@@ -41,7 +68,10 @@ namespace PlotCreator.Controllers
         [HttpGet]
         public async Task<IActionResult> Save(int id, int userId)
         {
-            if(id == 0)
+            if (!CheckByUserId(userId))
+                return View("404");
+
+            if (id == 0)
             {
                 var newIdea = new IdeaViewModel()
                 {
@@ -59,7 +89,10 @@ namespace PlotCreator.Controllers
         [HttpPost]
         public async Task<IActionResult> Save(IdeaViewModel model)
         {
-            if(ModelState.IsValid)
+            if (!CheckByUserId(model.UserId))
+                return View("404");
+
+            if (ModelState.IsValid)
             {
                 if(model.Id == 0)
                 {

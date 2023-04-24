@@ -120,6 +120,7 @@ namespace PlotCreator.Service.Implementations
                 new Claim(ClaimsIdentity.DefaultNameClaimType, user.Login),
                 new Claim(ClaimsIdentity.DefaultRoleClaimType, role),
                 new Claim("userId", user.Id.ToString() ),
+                new Claim("login", user.Login.ToString() ),
             };
             return new ClaimsIdentity(claims, "ApplicationCookie",
                 ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);

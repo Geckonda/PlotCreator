@@ -171,9 +171,16 @@ namespace PlotCreator.Service.Implementations
 
         public async Task<int> GetUserId(int ideaId)
         {
-            var idea = await _ideaRepository.GetAll()
-                    .FirstOrDefaultAsync(x => x.Id == ideaId);
-            return idea.UserId;
+            try
+            {
+                var idea = await _ideaRepository.GetAll()
+                        .FirstOrDefaultAsync(x => x.Id == ideaId);
+                return idea.UserId;
+            }
+            catch (Exception)
+            {
+                return 0;
+            }
         }
     }
 }
