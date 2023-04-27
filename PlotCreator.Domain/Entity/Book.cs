@@ -21,17 +21,29 @@ namespace PlotCreator.Domain.Entity
         public int Access_ModificatorId { get; set; } // Вторичный ключ
         public Access_Modificator? Access_Modificator { get; set; } // Навигационное свойство
 
+        [NotMapped] 
+        public string? Modificator { get; set; }//Поле для записи
+
         [Required]
         public string? Title { get; set; }
 
         public int RatingId { get; set; } // Вторичный ключ
         public Rating? Rating { get; set; } // Навигационное свойство
 
+        [NotMapped]
+        public string? Rate { get; set; }//Поле для записи
+
         public int GenreId { get; set; } // Вторичный ключ
         public Genre? Genre { get; set; } // Навигационное свойство
 
+        [NotMapped]
+        public string? GenreString { get; set; }//Поле для записи
+
         public int Book_StatusId { get; set; } // Вторичный ключ
         public Book_Status? Book_Status { get; set; } // Навигационное свойство
+
+        [NotMapped]
+        public string? Status { get; set; }//Поле для записи
 
 
 

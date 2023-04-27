@@ -29,7 +29,30 @@ namespace PlotCreator.DAL.Repositories
 
         public IQueryable<Book> GetAll()
         {
-            return _db.Books;
+            var Books = from book in _db.Books
+                        join genre in _db.Genres on book.GenreId equals genre.Id
+                        join status in _db.Statuses on book.Book_StatusId equals status.Id
+                        join modificator in _db.Modificators on book.Access_ModificatorId equals modificator.Id
+                        join rating in _db.Ratings on book.RatingId equals rating.Id
+                        select new Book
+                        {
+                            Id = book.Id,
+                            UserId= book.UserId,
+                            Title= book.Title,
+                            Access_ModificatorId = modificator.Id,
+                            
+                            Modificator = modificator.Modificator,
+                            RatingId = rating.Id,
+                            Rate = rating.Rate,
+                            GenreId = genre.Id,
+                            GenreString = genre.Name,
+                            Book_StatusId = status.Id,
+                            Status = status.Status,
+                            Description = book.Description,
+                            Book_cover = book.Book_cover
+                        };
+            return (IQueryable<Book>)Books;
+
         }
 
         public async Task<Book> Update(Book entity)
