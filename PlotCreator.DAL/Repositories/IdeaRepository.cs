@@ -35,6 +35,11 @@ namespace PlotCreator.DAL.Repositories
             return _db.Ideas;
         }
 
+        public IQueryable<Idea> GetAll(int parentId)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<Idea> Update(Idea entity)
         {
             _db.Update(entity);
