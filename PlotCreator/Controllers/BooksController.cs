@@ -107,8 +107,9 @@ namespace PlotCreator.Controllers
                     await _bookService.CreateBook(model);
                 else
                     await _bookService.EditBook(model.Id, model);
+                return RedirectToRoute(new { controller = "Books", action = "MyBooks", userId = model.UserId });
             }
-            return RedirectToRoute(new { controller = "Books", action = "MyBooks", userId = model.UserId });
+            return RedirectToAction("Save", new { id = model.Id, userId = model.UserId});
         }
         /// <summary>
         /// 
