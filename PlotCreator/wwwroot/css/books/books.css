@@ -1,0 +1,29 @@
+﻿:root {
+}
+
+.book-container {
+    display: grid;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 30px;
+    background-color: white;
+}
+
+.info-block {
+    width: 100%;
+    height: auto;
+}
+
+.img-book-cover {
+    width: 100%;
+    height: auto;
+}
+
+.img-book-cover {
+}
+
+.content-block {
+    padding: 10px;
+}

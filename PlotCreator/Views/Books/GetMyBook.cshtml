@@ -1,0 +1,66 @@
+﻿@model PlotCreator.Domain.ViewModels.BookViewModel
+
+@{
+	ViewData["title"] = Model.Title;
+}
+@section Styles{
+    <link rel="stylesheet" href="~/css/books/books.css" asp-append-version="true" />
+}
+
+<div class="container container-color" >
+        <div class="container w-100 d-flex justify-content-between pb-1">
+            <h2>@Model.Title</h2>
+            <div class="w-auto d-flex align-items-center " >
+               @* @auth()
+                    @if(auth()->user()->isBookOwner($book->id_book))*@
+
+            <a class="btn btn-own" asp-controller="Books" asp-action="Save" asp-route-id="@Model.Id" asp-route-userId=@Model.UserId>Редактировать</a>
+            <a class="btn btn-danger" asp-controller="Books" asp-action="Delete" asp-route-id="@Model.Id">Удалить</a>
+                @*    @endif
+                @endauth*@
+            </div>
+        </div>
+        <div class="line-divider "></div>
+       @* @if( session('msg') !== null )
+            <div class="mt-2">
+                <div class="alert alert-success" role="alert">
+                    {{ session('msg') }}
+                </div>
+            </div>
+        @endif *@
+        <div class="book-container">
+            <div class="content-block">
+                <div class="book-info">
+                    <h1 class="text-center">@Model.Title</h1>
+                    <div class="line-divider"></div>
+                    <h3>Рейтинг: @Model.Rating</h3>
+                    <h3>Жанр: @Model.Genre</h3>
+                    <h3 class="mb-4">Статус: @Model.Book_Status</h3>
+                    <div class="line-divider"></div>
+                    <p><strong>Описание:</strong>@Model.Description</p>
+                </div>
+
+                <div class="line-divider"></div>
+            <div class="info-block">
+                <div class="img-book-cover-block">
+                    <img src="@Model.Book_cover" alt="" class="img-book-cover">
+                </div>
+                <div class="nav-block">
+                    <nav class="navbar navbar-expand-lg navbar-light  d-flex justify-content-around">
+                       @* @auth()
+                            @if(auth()->user()->isBookOwner($book->id_book))*@
+                                 <a class="btn btn-own mb-2" href="#">Идеи книги</a>
+                       @*     @endif
+                        @endauth*@
+                        <a class="btn btn-own mb-2" href="#">Персонажи</a>
+                        <a class="btn btn-own mb-2" href="#">Эпизоды</a>
+
+                    </nav>
+                </div>
+            </div>
+
+
+
+            </div>
+
+        </div>

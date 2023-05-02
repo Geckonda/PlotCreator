@@ -1,6 +1,32 @@
-﻿@{
+﻿@model List<PlotCreator.Domain.Entity.Book>
+
+@{
 	ViewData["title"] = "Мои книги";
 }
 
 
 <h1>Мои книги</h1>
+<div style="padding: 10px;"></div>
+<div style="width: max-content;padding:2px 4px;  background-color:forestgreen; border-radius: 4px;">
+	<a style="text-decoration:none;color:white;" asp-area="" asp-action="Save" asp-route-id="0" asp-route-userId="@User.FindFirst("userId").Value">Добавить книгу</a>
+</div>
+<div class="container d-flex justify-content-around flex-wrap">
+	@if (!Model.Any())
+	{
+		<h2 class="text-info">Книг не найдено!</h2>
+	}
+	@foreach (var book in Model)
+	{
+		<div class="card" style="width: 18rem;">
+			<img src="@book.Book_cover" class="card-img-top" alt="...">
+			<div class="card-body">
+				<h5 class="card-title">@book.Title</h5>
+				<p class="card-text">@book.Description</p>
+				<p class="card-text">Рейтинг: @book.Rate</p>
+				<p class="card-text">Статус: @book.Status</p>
+				<p class="card-text">Жанр: @book.GenreString</p>
+				<a class="btn btn-dark" asp-controller="Books" asp-action="MyBook" asp-route-id="@book.Id">Подробнее</a>
+			</div>
+		</div>
+	}
+</div>

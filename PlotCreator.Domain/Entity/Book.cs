@@ -52,6 +52,13 @@ namespace PlotCreator.Domain.Entity
 
         public string? Book_cover { get; set; }
 
+        [NotMapped]
+        public List<Idea>? Ideas { get; set; }
+        [NotMapped]
+        public List<Character>? Characters { get; set; }
+        [NotMapped]
+        public List<Episode>? Episodes { get; set; }
+
         //Навигационные свойства для зависимых таблиц 
         //  |  |  |  |  |
         //  v  v  v  v  v
