@@ -30,6 +30,7 @@ namespace PlotCreator.DAL
         public DbSet<Event_Character> Events_Characters => Set<Event_Character>();
         public DbSet<Group_Character> Groups_Characters => Set<Group_Character>();
         public DbSet<Group_Event> Groups_Events => Set<Group_Event>();
+        public DbSet<Worldview> Worldview => Set<Worldview>();
 
         public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options) : base(options)
         {
