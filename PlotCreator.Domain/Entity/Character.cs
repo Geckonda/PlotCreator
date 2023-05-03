@@ -18,7 +18,9 @@ namespace PlotCreator.Domain.Entity
         public User? User { get; set; } // Навигационное свойство
 
         public string? Name { get; set; }
-        public DateTime? Birthday { get; set; }
+
+        [Column(TypeName = "Date")]
+        public DateTime Birthday { get; set; }
         public string? Gender { get; set; }
         public int Height { get; set; }
         public int Weight { get; set; }
@@ -30,10 +32,10 @@ namespace PlotCreator.Domain.Entity
         public string? Appearance { get; set; }
 
         [Column(TypeName = "Ntext")]
-        public string? goals { get; set; }
+        public string? Goals { get; set; }
 
         [Column(TypeName = "Ntext")]
-        public string? motivation { get; set; }
+        public string? Motivation { get; set; }
 
         [Column(TypeName = "Ntext")]
         public string? History { get; set; }
@@ -41,12 +43,16 @@ namespace PlotCreator.Domain.Entity
 
         public int WorldviewId { get; set; } // Вторичный ключ
         public Worldview? Worldview { get; set; } // Навигационное свойство
+        [NotMapped]
+        public List<Worldview>? Worldviews { get; set; }
 
         ////Файловая шняга
         //[NotMapped]
         //public File? Picture { get; set; } 
         public string? Picture { get; set; }
-        public DateTime? Deathday { get; set; }
+
+        [Column(TypeName = "Date")]
+        public DateTime Deathday { get; set; }
 
         //Навигационные свойства для зависимых таблиц 
         //  |  |  |  |  |

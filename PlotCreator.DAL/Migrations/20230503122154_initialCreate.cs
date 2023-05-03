@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PlotCreator.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class initialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -172,18 +172,18 @@ namespace PlotCreator.DAL.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Birthday = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Birthday = table.Column<DateTime>(type: "Date", nullable: false),
                     Gender = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Height = table.Column<int>(type: "int", nullable: false),
                     Weight = table.Column<int>(type: "int", nullable: false),
                     Personality = table.Column<string>(type: "Ntext", nullable: true),
                     Appearance = table.Column<string>(type: "Ntext", nullable: true),
-                    goals = table.Column<string>(type: "Ntext", nullable: true),
-                    motivation = table.Column<string>(type: "Ntext", nullable: true),
+                    Goals = table.Column<string>(type: "Ntext", nullable: true),
+                    Motivation = table.Column<string>(type: "Ntext", nullable: true),
                     History = table.Column<string>(type: "Ntext", nullable: true),
                     WorldviewId = table.Column<int>(type: "int", nullable: false),
                     Picture = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Deathday = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    Deathday = table.Column<DateTime>(type: "Date", nullable: false)
                 },
                 constraints: table =>
                 {

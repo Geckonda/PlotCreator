@@ -113,19 +113,25 @@ namespace PlotCreator.DAL.Migrations
                     b.Property<string>("Appearance")
                         .HasColumnType("Ntext");
 
-                    b.Property<DateTime?>("Birthday")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("Birthday")
+                        .HasColumnType("Date");
 
-                    b.Property<DateTime?>("Deathday")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("Deathday")
+                        .HasColumnType("Date");
 
                     b.Property<string>("Gender")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Goals")
+                        .HasColumnType("Ntext");
 
                     b.Property<int>("Height")
                         .HasColumnType("int");
 
                     b.Property<string>("History")
+                        .HasColumnType("Ntext");
+
+                    b.Property<string>("Motivation")
                         .HasColumnType("Ntext");
 
                     b.Property<string>("Name")
@@ -145,12 +151,6 @@ namespace PlotCreator.DAL.Migrations
 
                     b.Property<int>("WorldviewId")
                         .HasColumnType("int");
-
-                    b.Property<string>("goals")
-                        .HasColumnType("Ntext");
-
-                    b.Property<string>("motivation")
-                        .HasColumnType("Ntext");
 
                     b.HasKey("Id");
 

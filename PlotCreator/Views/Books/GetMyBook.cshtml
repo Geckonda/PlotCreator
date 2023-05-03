@@ -52,7 +52,7 @@
                                  <a class="btn btn-own mb-2" href="#">Идеи книги</a>
                        @*     @endif
                         @endauth*@
-                        <a class="btn btn-own mb-2" href="#">Персонажи</a>
+                        <a class="btn btn-own" asp-controller="Characters" asp-action="GetBookCharacters" asp-route-bookId=@Model.Id>Персонажи</a>
                         <a class="btn btn-own mb-2" href="#">Эпизоды</a>
 
                     </nav>
