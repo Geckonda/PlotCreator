@@ -35,7 +35,7 @@ namespace PlotCreator.DAL.Repositories
             return _db.Ideas;
         }
 
-        public IQueryable<Idea> GetAll(int parentId)
+        public IQueryable<Idea> GetAllByUserId(int parentId)
         {
             throw new NotImplementedException();
         }

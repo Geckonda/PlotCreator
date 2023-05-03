@@ -33,12 +33,6 @@ namespace PlotCreator.DAL.Repositories
         {
             return _db.Users;
         }
-
-        public IQueryable<User> GetAll(int parentId)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<User> Update(User entity)
         {
             _db.Users.Update(entity);

@@ -1,4 +1,5 @@
-﻿using PlotCreator.DAL.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using PlotCreator.DAL.Interfaces;
 using PlotCreator.Domain.Entity;
 using PlotCreator.Domain.ViewModels;
 using System;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PlotCreator.DAL.Repositories
 {
-    public class BookRepository : IBookRepository<Book>
+    public class BookRepository : IPlotterRepository<Book>
     {
         private readonly ApplicationDBContext _db;
         public BookRepository(ApplicationDBContext db)
@@ -28,244 +29,64 @@ namespace PlotCreator.DAL.Repositories
             _db.Books.Remove(entity);
             await _db.SaveChangesAsync();
         }
-
-        public IQueryable<Book> GetAll(int parentId)
-        {
-
-            var Books = (from book in _db.Books
-                        join genre in _db.Genres on book.GenreId equals genre.Id
-                        join status in _db.Statuses on book.Book_StatusId equals status.Id
-                        join modificator in _db.Modificators on book.Access_ModificatorId equals modificator.Id
-                        join rating in _db.Ratings on book.RatingId equals rating.Id
-                        where book.UserId == parentId
-                        select new Book 
-                        {
-                            Id = book.Id,
-                            UserId= book.UserId,
-                            Title= book.Title,
-                            Access_ModificatorId = modificator.Id,
-                            Modificator = modificator.Modificator,
-                            RatingId = rating.Id,
-                            Rate = rating.Rate,
-                            GenreId = genre.Id,
-                            GenreString = genre.Name,
-                            Book_StatusId = status.Id,
-                            Status = status.Status,
-                            Description = book.Description,
-                            Book_cover = book.Book_cover,
-                            Ideas = (from b in _db.Books
-                                     join b_i in _db.Books_Ideas on b.Id equals b_i.BookId
-                                     join i in _db.Ideas on b_i.IdeaId equals i.Id
-                                     where i.UserId == book.UserId && b.Id == book.Id
-                                     select new Idea
-                                     {
-                                         Id = i.Id,
-                                         UserId = i.UserId,
-                                         Topic = i.Topic,
-                                         Data_Creation = i.Data_Creation,
-                                         Content = i.Content,
-                                     }).ToList(),
-                            Episodes = (from b in _db.Books
-                                        join e in _db.Episodes on b.Id equals e.BookId
-                                        where b.Id == book.Id
-                                        select new Episode
-                                        {
-                                            Id = e.Id,
-                                            BookId = e.BookId,
-                                            Heading = e.Heading,
-                                            Content = e.Content,
-
-                                        }).ToList(),
-                        });
-            return Books;
-        }
+		public async Task<Book> Update(Book entity)
+		{
+			_db.Books.Update(entity);
+			await _db.SaveChangesAsync();
+			return entity;
+		}
 
         public IQueryable<Book> GetAll()
         {
-			var Books = (from book in _db.Books
-						 join genre in _db.Genres on book.GenreId equals genre.Id
-						 join status in _db.Statuses on book.Book_StatusId equals status.Id
-						 join modificator in _db.Modificators on book.Access_ModificatorId equals modificator.Id
-						 join rating in _db.Ratings on book.RatingId equals rating.Id
-						 select new Book
-						 {
-							 Id = book.Id,
-							 UserId = book.UserId,
-							 Title = book.Title,
-							 Access_ModificatorId = modificator.Id,
-							 Modificator = modificator.Modificator,
-							 RatingId = rating.Id,
-							 Rate = rating.Rate,
-							 GenreId = genre.Id,
-							 GenreString = genre.Name,
-							 Book_StatusId = status.Id,
-							 Status = status.Status,
-							 Description = book.Description,
-							 Book_cover = book.Book_cover,
-							 Ideas = (from b in _db.Books
-									  join b_i in _db.Books_Ideas on b.Id equals b_i.BookId
-									  join i in _db.Ideas on b_i.IdeaId equals i.Id
-									  where i.UserId == book.UserId && b.Id == book.Id
-									  select new Idea
-									  {
-										  Id = i.Id,
-										  UserId = i.UserId,
-										  Topic = i.Topic,
-										  Data_Creation = i.Data_Creation,
-										  Content = i.Content,
-									  }).ToList(),
-							 Episodes = (from b in _db.Books
-										 join e in _db.Episodes on b.Id equals e.BookId
-										 where b.Id == book.Id
-										 select new Episode
-										 {
-											 Id = e.Id,
-											 BookId = e.BookId,
-											 Heading = e.Heading,
-											 Content = e.Content,
-
-										 }).ToList(),
-						 });
-			return Books;
+			var books = _db.Books
+			   .Include(x => x.Access_Modificator)
+			   .Include(x => x.Rating)
+			   .Include(x => x.Genre)
+			   .Include(x => x.Book_Status);
+            //Ideas & Episodes
+			return books;
 		}
 
-        public async Task<Book> Update(Book entity)
-        {
-            _db.Books.Update(entity);
-            await _db.SaveChangesAsync();
-            return entity;
-        }
-        private List<Idea> GetIdeasForBook(int bookId)
-        {
-            return (from book in _db.Books
-                    join b_i in _db.Books_Ideas on book.Id equals b_i.BookId
-                    join idea in _db.Ideas on b_i.IdeaId equals idea.Id
-                    where book.Id == bookId
-                    select new Idea
-                    {
-                        Id = idea.Id,
-                        UserId = idea.UserId,
-                        Topic = idea.Topic,
-                        Data_Creation = idea.Data_Creation,
-                        Content = idea.Content,
-                    }).ToList();
-        }
-        private List<Episode> GetEpisodesForBook(int bookId)
-        {
-            return (from b in _db.Books
-                    join e in _db.Episodes on b.Id equals e.BookId
-                    where b.Id == bookId
-                    select new Episode
-                    {
-                        Id = e.Id,
-                        BookId = e.BookId,
-                        Heading = e.Heading,
-                        Content = e.Content,
 
-                    }).ToList();
-        }
-
-        public async Task<BookViewModel> GetBookViewModel(int id)
-        {
-            return (from book in _db.Books
-                    join genre in _db.Genres on book.GenreId equals genre.Id
-                    join status in _db.Statuses on book.Book_StatusId equals status.Id
-                    join modificator in _db.Modificators on book.Access_ModificatorId equals modificator.Id
-                    join rating in _db.Ratings on book.RatingId equals rating.Id
-                    where book.Id == id
-                    select new BookViewModel
-                    {
-                        Id = book.Id,
-                        UserId = book.UserId,
-                        Title = book.Title,
-                        Access_ModificatorId = modificator.Id,
-                        Access_Modificator = modificator.Modificator,
-                        Access_Modificators = (from m in _db.Modificators
-                                               select new Access_Modificator { 
-                                                    Id= m.Id,
-                                                    Modificator = m.Modificator,
-                                               }).ToList(),
-                        RatingId = rating.Id,
-                        Rating = rating.Rate,
-                        Ratings = (from r in _db.Ratings
-                                   select new Rating
-                                   {
-                                       Id = r.Id,
-                                       Rate = r.Rate,
-                                   }).ToList(),
-                        GenreId = genre.Id,
-                        Genre = genre.Name,
-                        Genres = (from g in _db.Genres
-                                  select new Genre
-                                  {
-                                      Id = g.Id,
-                                      Name = g.Name,
-                                  }).ToList(),
-                        Book_StatusId = status.Id,
-                        Book_Status = status.Status,
-                        Book_Statuses = (from s in _db.Statuses
-                                         select new Book_Status
-                                         {
-                                             Id = s.Id,
-                                             Status = s.Status,
-                                         }).ToList(),
-                        Description = book.Description,
-                        Book_cover = book.Book_cover,
-                        Ideas = (from b in _db.Books
-                                 join b_i in _db.Books_Ideas on b.Id equals b_i.BookId
-                                 join i in _db.Ideas on b_i.IdeaId equals i.Id
-                                 where i.UserId == book.UserId && b.Id == book.Id
-                                 select new Idea
-                                 {
-                                     Id = i.Id,
-                                     UserId = i.UserId,
-                                     Topic = i.Topic,
-                                     Data_Creation = i.Data_Creation,
-                                     Content = i.Content,
-                                 }).ToList(),
-                        Episodes = (from b in _db.Books
-                                    join e in _db.Episodes on b.Id equals e.BookId
-                                    where b.Id == book.Id
-                                    select new Episode
-                                    {
-                                        Id = e.Id,
-                                        BookId = e.BookId,
-                                        Heading = e.Heading,
-                                        Content = e.Content,
-
-                                    }).ToList(),
-                    }).First();
-        }
-
-		public async Task<BookViewModel> GetEmptyBookViewModel()
+		public async Task<Book> GetOne(int id)
 		{
-			return ( new BookViewModel
-					{
-						Access_Modificators = (from m in _db.Modificators
-											   select new Access_Modificator
-											   {
-												   Id = m.Id,
-												   Modificator = m.Modificator,
-											   }).ToList(),
-						Ratings = (from r in _db.Ratings
-								   select new Rating
-								   {
-									   Id = r.Id,
-									   Rate = r.Rate,
-								   }).ToList(),
-						Genres = (from g in _db.Genres
-								  select new Genre
-								  {
-									  Id = g.Id,
-									  Name = g.Name,
-								  }).ToList(),
-						Book_Statuses = (from s in _db.Statuses
-										 select new Book_Status
-										 {
-											 Id = s.Id,
-											 Status = s.Status,
-										 }).ToList(),
-					});
+            var book =  _db.Books.Where(x => x.Id == id)
+                .Include(x => x.Access_Modificator)
+                .Include(x => x.Rating)
+                .Include(x => x.Genre)
+                .Include(x => x.Book_Status)
+                .FirstOrDefault();
+            book.Access_Modificators = _db.Modificators.ToList();
+            book.Ratings = _db.Ratings.ToList();
+            book.Genres = _db.Genres.ToList();
+            book.Book_Statuses = _db.Statuses.ToList();
+            return book;
+		}
+
+		public async Task<Book> GetEmptyViewModel()
+		{
+            return new Book()
+            {
+                Access_Modificators = _db.Modificators.ToList(),
+                Ratings = _db.Ratings.ToList(),
+                Genres = _db.Genres.ToList(),
+                Book_Statuses = _db.Statuses.ToList(),
+            };
+		}
+
+		public async Task<IQueryable<Book>> GetAllByUserId(int userId)
+		{
+            var books = _db.Books.Where(x => x.UserId == userId)
+                .Include(x => x.Access_Modificator)
+                .Include(x => x.Rating)
+                .Include(x => x.Genre)
+                .Include(x => x.Book_Status);
+			return books;
+		}
+
+		public Task<IQueryable<Book>> GetAllByAnotherEntityId(int entityId)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

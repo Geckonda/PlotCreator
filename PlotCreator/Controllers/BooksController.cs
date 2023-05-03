@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Razor.TagHelpers;
+using PlotCreator.Domain.Helpers;
 using PlotCreator.Domain.Helpers.Interfaces;
 using PlotCreator.Domain.Response.Interfaces;
 using PlotCreator.Domain.ViewModels;
@@ -63,10 +65,12 @@ namespace PlotCreator.Controllers
 		}
         public async Task<IActionResult> Delete(int id)
         {
-            var userId = await _bookService.GetUserId(id);
+            ImageHelper imageHelper = new(_webHostEnvironment.WebRootPath, "BookCovers");
+            var book = await _bookService.GetBook(id);
             var response = await _bookService.DeleteBook(id);
+            await imageHelper.DeletePreviousImage(book.Data.Book_cover);
             if (response.StatusCode == Domain.Enum.StatusCode.Ok)
-                return RedirectToAction($"MyBooks", new { userId = userId });
+                return RedirectToAction($"MyBooks", new { userId = book.Data.UserId });
             return RedirectToAction("Error");
         }
 		[HttpGet]
@@ -93,60 +97,25 @@ namespace PlotCreator.Controllers
         {
             if (!CheckByUserId(model.UserId))
                 return View("404");
+            ImageHelper imageHelper = new(_webHostEnvironment.WebRootPath, "BookCovers");
             if (ModelState.IsValid)
             {
                 if (model.Book_coverImage != null)
                 {
                     if(model.Book_cover != null)
                     {
-                        await DeletePreviousImage(model.Book_cover);
+                        await imageHelper.DeletePreviousImage(model.Book_cover);
                     }
-                    model.Book_cover = await SaveImage(model.Book_coverImage);
+                    model.Book_cover = await imageHelper.SaveImage(model.Book_coverImage);
                 }
                 if (model.Id == 0)
                     await _bookService.CreateBook(model);
                 else
-                    await _bookService.EditBook(model.Id, model);
+                    await _bookService.EditBook(model);
                 return RedirectToRoute(new { controller = "Books", action = "MyBooks", userId = model.UserId });
             }
             return RedirectToAction("Save", new { id = model.Id, userId = model.UserId});
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="image"></param>
-        /// <returns>Полноценный путь до картинки</returns>
-        private async Task<string> SaveImage(IFormFile image)
-        {
-            string wwwRootPath = _webHostEnvironment.WebRootPath;
-
-            DirectoryInfo di = new DirectoryInfo(wwwRootPath + "/images" + "/BookCovers");
-            if (!di.Exists)
-                di.Create();
-
-            string fileName = Path.GetRandomFileName();
-            string extension = Path.GetExtension(image.FileName);
-
-            fileName = fileName + extension;
-            string path = Path.Combine(wwwRootPath + "/images" + "/BookCovers/" + fileName);
-
-            using(var fs = new FileStream(path, FileMode.Create))
-            {
-                await image.CopyToAsync(fs);
-            }
-            return "/images" + "/BookCovers/" + fileName;
-        }
-        private async Task<bool> DeletePreviousImage(string path)
-        {
-            string wwwRootPath = _webHostEnvironment.WebRootPath;
-            FileInfo fi = new FileInfo(wwwRootPath + '/' + path);
-            if (fi.Exists)
-            {
-                fi.Delete();
-                return true;
-            }
-            return false;
-
-        }
+        
     }
 }

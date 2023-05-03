@@ -27,58 +27,87 @@
                     </div>
                     <div class="form-group mb-3">
                         <label>Модификатор доступа:</label>
-                        <select class="form-select" name="Access_ModificatorId">
+                        <select class="form-select" asp-for="Access_Modificator!.Id">
                             @if(Model!.Id != 0)
                             {
-                                <option value="@Model.Access_ModificatorId">@Model.Access_Modificator</option>
+                                <option value="@Model.Access_Modificator!.Id">@Model.Access_Modificator!.Modificator</option>
+                                @foreach (var modificator in Model!.Access_Modificators!
+                                   .Where(x => x.Id != Model.Access_Modificator!.Id))
+                                   {
+                                        <option value="@modificator.Id">@modificator.Modificator</option>
+                                   }
                             }
-                            @foreach (var modificator in Model!.Access_Modificators!
-                            .Where(x => x.Id != Model.Access_ModificatorId))
+                            else
                             {
-                                <option value="@modificator.Id">@modificator.Modificator</option>
+                                @foreach (var modificator in Model!.Access_Modificators!)
+                                {
+                                    <option value="@modificator.Id">@modificator.Modificator</option>
+                                }
                             }
                         </select>
                     </div>
                      <div class="form-group mb-3">
                         <label>Жанр:</label>
-                        <select class="form-select" name="GenreId">
+                        <select class="form-select" asp-for="Genre!.Id">
                             @if (Model!.Id != 0)
                             {
-                                    <option value="@Model.GenreId">@Model.Genre</option>
+                                <option value="@Model.Genre!.Id">@Model.Genre!.Name</option>
+                                @foreach (var genre in Model!.Genres!
+                                    .Where(x => x.Id != Model.Genre!.Id))
+                                    {
+                                            <option value="@genre.Id">@genre.Name</option>
+                                    }
                             }
-                            @foreach (var genre in Model!.Genres!
-                            .Where(x => x.Id != Model.GenreId))
+                            else
                             {
-                                    <option value="@genre.Id">@genre.Name</option>
+                                @foreach (var genre in Model!.Genres!)
+                                {
+                                        <option value="@genre.Id">@genre.Name</option>
+                                }
                             }
                         </select>
                     </div>
                     <div class="form-group mb-3">
                         <label>Возрастной рейтинг:</label>
-                        <select class="form-select" name="RatingId">
+                        <select class="form-select" asp-for="Rating!.Id">
                             @if (Model!.Id != 0)
                             {
-                                <option value="@Model.RatingId">@Model.Rating</option>
+                                <option value="@Model.Rating!.Id">@Model.Rating!.Rate</option>
+                                 @foreach (var rating in Model!.Ratings!
+                                    .Where(x => x.Id != Model.Rating!.Id))
+                                    {
+                                        <option value="@rating.Id">@rating.Rate</option>
+                                    }
                             }
-                            @foreach (var rating in Model!.Ratings!
-                            .Where(x => x.Id != Model.RatingId))
+                            else
                             {
-                                <option value="@rating.Id">@rating.Rate</option>
+                                @foreach (var rating in Model!.Ratings!)
+                                {
+                                    <option value="@rating.Id">@rating.Rate</option>
+                                }
                             }
                         </select>
                     </div>
                     <div class="form-group mb-3">
                         <label>Статус произведения:</label>
-                        <select class="form-select" name="Book_StatusId">
+                        <select class="form-select" asp-for="Book_Status!.Id">
                             @if (Model!.Id != 0)
                             {
-                                <option value="@Model.Book_StatusId">@Model.Book_Status</option>
+                                <option value="@Model.Book_Status!.Id">@Model.Book_Status!.Status</option>
+                                @foreach (var status in Model!.Book_Statuses!
+                                    .Where(x => x.Id != Model.Book_Status!.Id))
+                                    {
+                                        <option value="@status.Id">@status.Status</option>
+                                }
                             }
-                            @foreach (var status in Model!.Book_Statuses!
-                            .Where(x => x.Id != Model.Book_StatusId))
+                            else
                             {
-                                <option value="@status.Id">@status.Status</option>
+                                @foreach (var status in Model!.Book_Statuses!)
+                                {
+                                    <option value="@status.Id">@status.Status</option>
+                                }
                             }
+                            
                         </select>
                     </div>
                     <div class="form-group mb-3">
