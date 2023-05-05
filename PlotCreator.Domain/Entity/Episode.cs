@@ -18,6 +18,7 @@ namespace PlotCreator.Domain.Entity
         public Book? Book { get; set; } // Навигационное свойство
 
         public string? Heading { get; set; }
+        public int Position { get; set; }
 
         [Column(TypeName = "Ntext")]
         public string? Content { get; set; }

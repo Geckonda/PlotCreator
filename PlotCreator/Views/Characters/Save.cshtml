@@ -107,13 +107,21 @@
                         <select class="form-select" asp-for="WorldviewId">
                             @if (Model!.Id != 0)
                             {
-                                <option value="@Model.WorldviewId">@Model.Worldview.Name</option>
+                                <option value="@Model.Worldview.Id">@Model.Worldview!.Name</option>
+                                @foreach (var worldview in Model!.Worldviews!
+                                   .Where(x => x.Id != Model.Worldview.Id))
+                                   {
+                                        <option value="@worldview.Id">@worldview.Name</option>
+                                   }
                             }
-                            @foreach (var worldview in Model!.Worldviews!
-                            .Where(x => x.Id != Model.WorldviewId))
+                            else
                             {
-                                <option value="@worldview.Id">@worldview.Name</option>
+                                @foreach (var worldview in Model!.Worldviews!)
+                                {
+                                    <option value="@worldview.Id">@worldview.Name</option>
+                                }
                             }
+                           
                         </select>
                     </div>
                     

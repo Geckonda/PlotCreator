@@ -1,5 +1,7 @@
-﻿using PlotCreator.DAL.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using PlotCreator.DAL.Interfaces;
 using PlotCreator.Domain.Entity;
+using PlotCreator.Domain.Entity.Multiple_Tables;
 using PlotCreator.Domain.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -38,7 +40,15 @@ namespace PlotCreator.DAL.Repositories
 
         public async Task<Character> GetOne(int id)
         {
-            return (from ch in _db.Characters
+			var character = _db.Characters
+				.Where(x => x.Id == id)
+				.Include(x => x.Worldview)
+				.First();
+			character.Worldviews = _db.Worldview.ToList();
+
+            return character;
+
+           /* return (from ch in _db.Characters
                     where ch.Id == id
                     select new Character
                     {
@@ -59,7 +69,7 @@ namespace PlotCreator.DAL.Repositories
                         Worldviews = _db.Worldview.ToList(),
                         Picture = ch.Picture,
                         Deathday = ch.Deathday,
-                    }).First();
+                    }).First();*/
         }
 
 		public async Task<Character> GetEmptyViewModel()
@@ -72,7 +82,13 @@ namespace PlotCreator.DAL.Repositories
 
 		public async Task<IQueryable<Character>> GetAllByUserId(int userId)
 		{
-			return (from ch in _db.Characters
+			var characters = _db.Characters
+				.Where(x => x.UserId == userId)
+				.Include(x => x.Worldview);
+
+            return characters;
+
+            /*return (from ch in _db.Characters
 					where ch.UserId == userId
 					select new Character
 					{
@@ -93,7 +109,7 @@ namespace PlotCreator.DAL.Repositories
 						Worldviews = _db.Worldview.ToList(),
 						Picture = ch.Picture,
 						Deathday = ch.Deathday,
-					});
+					});*/
 		}
 
 		public async Task<IQueryable<Character>> GetAllByAnotherEntityId(int entityId)

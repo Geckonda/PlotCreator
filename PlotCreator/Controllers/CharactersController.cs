@@ -52,7 +52,7 @@ namespace PlotCreator.Controllers
 		[HttpGet]
 		public async Task<IActionResult> GetBookCharacters(int bookId)
         {
-			//if (!CheckByUserId(authorizedUser))//Invalid
+			//if (!CheckByContentId(bookId).Result)//Invalid?
 			//	return View("404");
 
 			var response = await _characterService.GetBookCharacters(bookId);
