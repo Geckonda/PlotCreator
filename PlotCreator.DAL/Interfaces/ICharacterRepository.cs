@@ -1,4 +1,5 @@
-﻿using PlotCreator.Domain.ViewModels;
+﻿using PlotCreator.Domain.Entity;
+using PlotCreator.Domain.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,11 +8,9 @@ using System.Threading.Tasks;
 
 namespace PlotCreator.DAL.Interfaces
 {
-    public interface ICharacterRepository<Character> : IBaseRepository<Character>
+    public interface ICharacterRepository : IPlotterRepository<Character>
     {
-        Task<Character> GetOne(int id);
-        Task<CharacterViewModel> GetEmptyViewModel();
-        Task<IQueryable<Character>> GetAllCharacters(int userId);
-        Task<IQueryable<Character>> GetBookCharacters(int bookId);
+        Task<IQueryable<Character>> GetAllByAnotherEntityId(int entityId);
+        Task<Character> GetEmptyViewModel();
     }
 }

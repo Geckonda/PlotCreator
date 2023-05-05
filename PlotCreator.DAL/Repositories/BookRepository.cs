@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PlotCreator.DAL.Repositories
 {
-    public class BookRepository : IPlotterRepository<Book>
+    public class BookRepository : IBookRepository
     {
         private readonly ApplicationDBContext _db;
         public BookRepository(ApplicationDBContext db)

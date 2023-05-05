@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace PlotCreator.DAL.Interfaces
 {
-    public interface IBookRepository<Book> : IBaseRepository<Book>
+    public interface IBookRepository : IPlotterRepository<Book>
     {
-        Task<BookViewModel> GetBookViewModel(int id);
-        Task<BookViewModel> GetEmptyBookViewModel();
+        Task<IQueryable<Book>> GetAllByAnotherEntityId(int entityId);
+        Task<Book> GetEmptyViewModel();
     }
 }

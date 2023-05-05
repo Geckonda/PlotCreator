@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace PlotCreator.DAL.Repositories
 {
-    public class CharacterRepository : IPlotterRepository<Character>
+    public class CharacterRepository : ICharacterRepository
     {
         private readonly ApplicationDBContext _db;
         public CharacterRepository(ApplicationDBContext db)

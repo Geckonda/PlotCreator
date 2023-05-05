@@ -18,8 +18,8 @@ namespace PlotCreator.Service.Implementations
 {
     public class BookService : IBookService
     {
-        private readonly IPlotterRepository<Book> _bookRepository;
-        public BookService(IPlotterRepository<Book> bookRepository)
+        private readonly IBookRepository _bookRepository;
+        public BookService(IBookRepository bookRepository)
         {
             _bookRepository = bookRepository;
         }

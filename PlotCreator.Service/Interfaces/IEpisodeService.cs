@@ -5,6 +5,7 @@ using PlotCreator.Domain.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,5 +19,6 @@ namespace PlotCreator.Service.Interfaces
         Task<IBaseResponse<IEnumerable<EpisodeViewModel>>> GetAllEpisodes(int userId);
         Task<IBaseResponse<IEnumerable<EpisodeViewModel>>> GetBookEpisodes(int bookId);
         Task<IBaseResponse<EpisodeViewModel>> GetEpisode(int episodeId);
+        Task<IBaseResponse<EpisodeViewModel>> GetEmptyViewModel(int bookId);
     }
 }
