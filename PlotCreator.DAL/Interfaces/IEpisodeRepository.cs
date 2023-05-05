@@ -10,6 +10,6 @@ namespace PlotCreator.DAL.Interfaces
     public interface IEpisodeRepository : IPlotterRepository<Episode>
     {
         Task<IQueryable<Episode>> GetAllByAnotherEntityId(int entityId);
-        Task<Episode> GetEmptyViewModel();
+        Task<Book> GetEpisodeBook(int bookId);
     }
 }

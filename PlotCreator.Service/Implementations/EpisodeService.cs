@@ -1,4 +1,5 @@
 ﻿using PlotCreator.DAL.Interfaces;
+using PlotCreator.DAL.Repositories;
 using PlotCreator.Domain.Entity;
 using PlotCreator.Domain.Enum;
 using PlotCreator.Domain.Response.Implementations;
@@ -34,6 +35,7 @@ namespace PlotCreator.Service.Implementations
                     Content = model.Content,
                 };
                 await _episodeRepository.Add(episode);
+                baseResponse.Data = model;
                 baseResponse.StatusCode = StatusCode.Ok;
                 return baseResponse;
             }
@@ -89,6 +91,9 @@ namespace PlotCreator.Service.Implementations
                 episode.Position = model.Position;
                 episode.Content = model.Content;
                 await _episodeRepository.Update(episode);
+                model.Book!.User = episode.Book!.User;
+                model.Book = episode.Book;
+                baseResponse.Data = model;
                 baseResponse.StatusCode = StatusCode.Ok;
                 return baseResponse;
             }
@@ -168,6 +173,30 @@ namespace PlotCreator.Service.Implementations
             }
         }
 
+        public async Task<IBaseResponse<EpisodeViewModel>> GetEmptyViewModel(int bookId)
+        {
+            var baseResponse = new BaseResponse<EpisodeViewModel>();
+            try
+            {
+                var book = await _episodeRepository.GetEpisodeBook(bookId);
+                var emptyModel = new EpisodeViewModel()
+                {
+                    Book = book,
+                };
+                baseResponse.Data = emptyModel;
+                baseResponse.StatusCode = StatusCode.Ok;
+                return baseResponse;
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse<EpisodeViewModel>()
+                {
+                    Description = $"[EpisodeService | GetEmptyViewModel]: {ex.Message}",
+                    StatusCode = StatusCode.InternalServerError,
+                };
+            }
+        }
+
         public async Task<IBaseResponse<EpisodeViewModel>> GetEpisode(int episodeId)
         {
             var baseResponse = new BaseResponse<EpisodeViewModel>();
@@ -202,9 +231,10 @@ namespace PlotCreator.Service.Implementations
             }
         }
 
-        public Task<int> GetUserId(int contentId)
+        public async Task<int> GetUserId(int contentId)
         {
-            throw new NotImplementedException();
+            var episode = await _episodeRepository.GetOne(contentId);
+            return episode.Book!.User!.Id;
         }
     }
 }
