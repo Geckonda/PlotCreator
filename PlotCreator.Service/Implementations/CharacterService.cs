@@ -138,7 +138,7 @@ namespace PlotCreator.Service.Implementations
                      baseResponse.Description = "Не найдено ни одного персонажа";
                      baseResponse.StatusCode = StatusCode.NotFound;
                  }*/
-                List<CharacterViewModel> charactersModel = new List<CharacterViewModel>();
+                List<CharacterViewModel> characterModels = new List<CharacterViewModel>();
                 foreach (var character in characters)
                 {
                     var model = new CharacterViewModel()
@@ -161,9 +161,9 @@ namespace PlotCreator.Service.Implementations
                         Picture = character.Picture,
                         Deathday = character.Deathday,
                     };
-                    charactersModel.Add(model);
+                    characterModels.Add(model);
                 }
-                baseResponse.Data = charactersModel;
+                baseResponse.Data = characterModels;
                 baseResponse.StatusCode = StatusCode.Ok;
                 return baseResponse;
             }
@@ -188,7 +188,7 @@ namespace PlotCreator.Service.Implementations
                     baseResponse.Description = "Не найдено ни одного персонажа";
                     baseResponse.StatusCode = StatusCode.NotFound;
                 }*/
-                List<CharacterViewModel> charactersModel = new List<CharacterViewModel>();
+                List<CharacterViewModel> characterModels = new List<CharacterViewModel>();
                 foreach (var character in characters)
                 {
                     var model = new CharacterViewModel()
@@ -211,9 +211,9 @@ namespace PlotCreator.Service.Implementations
                         Picture = character.Picture,
                         Deathday = character.Deathday,
                     };
-                    charactersModel.Add(model);
+                    characterModels.Add(model);
                 }
-                baseResponse.Data = charactersModel;
+                baseResponse.Data = characterModels;
                 baseResponse.StatusCode = StatusCode.Ok; 
                 return baseResponse;
             }
