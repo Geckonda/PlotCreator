@@ -18,20 +18,16 @@ namespace PlotCreator.Domain.ViewModels
     {
         public int Id { get; set; }
         public int UserId { get; set; } 
-        public int Access_ModificatorId { get; set; } 
-        public string? Access_Modificator { get; set; }
+        public Access_Modificator? Access_Modificator { get; set; }
         public List<Access_Modificator>? Access_Modificators { get; set; }
 
         [Required(ErrorMessage = "Обязательное поле")]
         public string? Title { get; set; }
-        public int RatingId { get; set; }
-        public string? Rating { get; set; }
+        public Rating? Rating { get; set; }
         public List<Rating>? Ratings { get; set; }
-        public int GenreId { get; set; }
-        public string? Genre { get; set; }
+        public Genre? Genre { get; set; }
         public List<Genre>? Genres { get; set; }
-        public int Book_StatusId { get; set; }
-        public string? Book_Status { get; set; }
+        public Book_Status? Book_Status { get; set; }
         public List<Book_Status>? Book_Statuses { get; set; }
 
         [Required(ErrorMessage = "Обязательное поле")]

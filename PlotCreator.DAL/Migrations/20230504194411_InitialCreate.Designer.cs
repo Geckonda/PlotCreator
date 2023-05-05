@@ -12,8 +12,8 @@ using PlotCreator.DAL;
 namespace PlotCreator.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20230503122154_initialCreate")]
-    partial class initialCreate
+    [Migration("20230504194411_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -180,6 +180,9 @@ namespace PlotCreator.DAL.Migrations
 
                     b.Property<string>("Heading")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

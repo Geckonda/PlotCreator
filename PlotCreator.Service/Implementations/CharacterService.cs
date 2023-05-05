@@ -18,8 +18,8 @@ namespace PlotCreator.Service.Implementations
 {
     public class CharacterService : ICharacterService
     {
-        private readonly ICharacterRepository<Character> _characterRepository;
-        public CharacterService(ICharacterRepository<Character> characterRepository)
+        private readonly IPlotterRepository<Character> _characterRepository;
+        public CharacterService(IPlotterRepository<Character> characterRepository)
         {
             _characterRepository= characterRepository;
         }
@@ -132,7 +132,7 @@ namespace PlotCreator.Service.Implementations
             var baseResponse = new BaseResponse<IEnumerable<CharacterViewModel>>();
             try
             {
-                var characters = await _characterRepository.GetAllCharacters(userId);
+                var characters = await _characterRepository.GetAllByUserId(userId);
                 /* if (!characters.Any())
                  {
                      baseResponse.Description = "Не найдено ни одного персонажа";
@@ -182,7 +182,7 @@ namespace PlotCreator.Service.Implementations
             var baseResponse = new BaseResponse<IEnumerable<CharacterViewModel>>();
             try
             {
-                var characters = await _characterRepository.GetBookCharacters(bookId);
+                var characters = await _characterRepository.GetAllByAnotherEntityId(bookId);
                /* if (!characters.Any())
                 {
                     baseResponse.Description = "Не найдено ни одного персонажа";
@@ -278,8 +278,12 @@ namespace PlotCreator.Service.Implementations
             var baseResponse = new BaseResponse<CharacterViewModel>();
             try
             {
-                var emptyModel = await _characterRepository.GetEmptyViewModel();
-                baseResponse.Data = emptyModel;
+                var emptyCharactrer = await _characterRepository.GetEmptyViewModel();
+				var emptyModel = new CharacterViewModel()
+				{
+                    Worldviews = emptyCharactrer.Worldviews,
+				};
+				baseResponse.Data = emptyModel;
                 baseResponse.StatusCode = StatusCode.Ok;
                 return baseResponse;
             }

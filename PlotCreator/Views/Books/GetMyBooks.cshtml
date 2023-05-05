@@ -22,9 +22,9 @@
 			<div class="card-body">
 				<h5 class="card-title">@book.Title</h5>
 				<p class="card-text">@book.Description</p>
-				<p class="card-text">Рейтинг: @book.Rate</p>
-				<p class="card-text">Статус: @book.Status</p>
-				<p class="card-text">Жанр: @book.GenreString</p>
+				<p class="card-text">Рейтинг: @book.Rating.Rate</p>
+				<p class="card-text">Статус: @book.Book_Status.Status</p>
+				<p class="card-text">Жанр: @book.Genre.Name</p>
 				<a class="btn btn-dark" asp-controller="Books" asp-action="MyBook" asp-route-id="@book.Id">Подробнее</a>
 			</div>
 		</div>

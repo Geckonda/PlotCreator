@@ -18,8 +18,8 @@ namespace PlotCreator.Service.Implementations
 {
     public class BookService : IBookService
     {
-        private readonly IBookRepository<Book> _bookRepository;
-        public BookService(IBookRepository<Book> bookRepository)
+        private readonly IPlotterRepository<Book> _bookRepository;
+        public BookService(IPlotterRepository<Book> bookRepository)
         {
             _bookRepository = bookRepository;
         }
@@ -31,11 +31,11 @@ namespace PlotCreator.Service.Implementations
                 var book = new Book()
                 {
                     UserId = model.UserId,
-                    Access_ModificatorId = model.Access_ModificatorId,
+                    Access_ModificatorId = model.Access_Modificator!.Id,
                     Title = model.Title,
-                    RatingId = model.RatingId,
-                    GenreId = model.GenreId,
-                    Book_StatusId = model.Book_StatusId,
+                    RatingId = model.Rating!.Id,
+                    GenreId = model.Genre!.Id,
+                    Book_StatusId = model.Book_Status!.Id,
                     Description = model.Description,
                     Book_cover = model.Book_cover,
                 };
@@ -58,8 +58,7 @@ namespace PlotCreator.Service.Implementations
             var baseResponse = new BaseResponse<bool>();
             try
             {
-                var book = await _bookRepository.GetAll()
-                    .FirstOrDefaultAsync(x => x.Id == id);
+                var book = await _bookRepository.GetOne(id);
                 if(book == null)
                 {
                     baseResponse.Description = "Книга не найдена";
@@ -80,13 +79,12 @@ namespace PlotCreator.Service.Implementations
             }
         }
 
-        public async Task<IBaseResponse<Book>> EditBook(int? id, BookViewModel model)
+        public async Task<IBaseResponse<Book>> EditBook(BookViewModel model)
         {
             var baseResponse = new BaseResponse<Book>();
             try
             {
-                var book = await _bookRepository.GetAll(model.UserId)
-                    .FirstOrDefaultAsync(x => x.Id ==id);
+                var book = await _bookRepository.GetOne(model.Id);
 				if (book == null)
 				{
 					baseResponse.Description = "Книга не найдена";
@@ -95,10 +93,10 @@ namespace PlotCreator.Service.Implementations
 				}
                 book.Title = model.Title;
                 book.Description = model.Description;
-				book.Access_ModificatorId = model.Access_ModificatorId;
-                book.RatingId = model.RatingId;
-                book.GenreId = model.GenreId;
-                book.Book_StatusId = model.Book_StatusId;
+				book.Access_ModificatorId = model.Access_Modificator!.Id;
+                book.RatingId = model.Rating!.Id;
+                book.GenreId = model.Genre!.Id;
+                book.Book_StatusId = model.Book_Status!.Id;
                 book.Book_cover = model.Book_cover;
 
                 await _bookRepository.Update(book);
@@ -120,7 +118,7 @@ namespace PlotCreator.Service.Implementations
             var baseResponse = new BaseResponse<BookViewModel>();
             try
             {
-                var book = await _bookRepository.GetBookViewModel(id);
+                var book = await _bookRepository.GetOne(id);
                 if (book == null)
                 {
                     baseResponse.Description = "Не найдено ни одной книги";
@@ -131,19 +129,15 @@ namespace PlotCreator.Service.Implementations
                 {
                     Id = id,
                     UserId = book.UserId,
-                    Access_ModificatorId = book.Access_ModificatorId,
                     Access_Modificator = book.Access_Modificator,
                     Access_Modificators = book.Access_Modificators,
                     Title = book.Title,
-                    RatingId = book.RatingId,
                     Rating = book.Rating,
                     Ratings = book.Ratings,
-                    GenreId = book.GenreId,
                     Genre = book.Genre,
-                    Genres= book.Genres,
-                    Book_StatusId = book.Book_StatusId,
+                    Genres = book.Genres,
                     Book_Status = book.Book_Status,
-                    Book_Statuses = book.Book_Statuses,
+                    Book_Statuses = book.Book_Statuses, 
                     Description = book.Description,
                     Book_cover = book.Book_cover,
                     Ideas = book.Ideas,
@@ -169,7 +163,7 @@ namespace PlotCreator.Service.Implementations
             var baseResponse = new BaseResponse<IEnumerable<Book>>();
             try
             {
-                var books = _bookRepository.GetAll(userId);
+                var books = await _bookRepository.GetAllByUserId(userId);
                 //if(!books.Any())
                 //{
                 //    baseResponse.Description= "Не найдено ни одной книги";
@@ -209,7 +203,14 @@ namespace PlotCreator.Service.Implementations
 			var baseResponse = new BaseResponse<BookViewModel>();
 			try
 			{
-				var emptyModel = await _bookRepository.GetEmptyBookViewModel();
+				var emptyBook = await _bookRepository.GetEmptyViewModel();
+                var emptyModel = new BookViewModel()
+                {
+                    Access_Modificators = emptyBook.Access_Modificators,
+                    Ratings = emptyBook.Ratings,
+                    Genres = emptyBook.Genres,
+                    Book_Statuses = emptyBook.Book_Statuses,
+                };
 				baseResponse.Data = emptyModel;
 				baseResponse.StatusCode = StatusCode.Ok;
 				return baseResponse;

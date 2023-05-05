@@ -33,9 +33,9 @@
                 <div class="book-info">
                     <h1 class="text-center">@Model.Title</h1>
                     <div class="line-divider"></div>
-                    <h3>Рейтинг: @Model.Rating</h3>
-                    <h3>Жанр: @Model.Genre</h3>
-                    <h3 class="mb-4">Статус: @Model.Book_Status</h3>
+                    <h3>Рейтинг: @Model.Rating!.Rate</h3>
+                    <h3>Жанр: @Model.Genre!.Name</h3>
+                    <h3 class="mb-4">Статус: @Model.Book_Status!.Status</h3>
                     <div class="line-divider"></div>
                     <p><strong>Описание:</strong>@Model.Description</p>
                 </div>
