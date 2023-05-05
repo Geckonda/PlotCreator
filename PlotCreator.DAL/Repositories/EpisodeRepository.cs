@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace PlotCreator.DAL.Repositories
 {
-    public class EpisodeRepository : IPlotterRepository<Episode>
+    public class EpisodeRepository : IEpisodeRepository
     {
         private readonly ApplicationDBContext _db;
         public EpisodeRepository(ApplicationDBContext db)

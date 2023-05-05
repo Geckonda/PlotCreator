@@ -18,8 +18,8 @@ namespace PlotCreator.Service.Implementations
 {
     public class CharacterService : ICharacterService
     {
-        private readonly IPlotterRepository<Character> _characterRepository;
-        public CharacterService(IPlotterRepository<Character> characterRepository)
+        private readonly ICharacterRepository _characterRepository;
+        public CharacterService(ICharacterRepository characterRepository)
         {
             _characterRepository= characterRepository;
         }

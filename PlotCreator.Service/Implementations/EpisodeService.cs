@@ -15,8 +15,8 @@ namespace PlotCreator.Service.Implementations
 {
     public class EpisodeService : IEpisodeService
     {
-        private readonly IPlotterRepository<Episode> _episodeRepository;
-        public EpisodeService(IPlotterRepository<Episode> episodeRepository)
+        private readonly IEpisodeRepository _episodeRepository;
+        public EpisodeService(IEpisodeRepository episodeRepository)
         {
             _episodeRepository = episodeRepository;
         }
