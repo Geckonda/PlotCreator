@@ -46,10 +46,7 @@ namespace PlotCreator.Controllers
 
             var response = await _ideaService.GetIdeas(id);
             if(response.StatusCode == Domain.Enum.StatusCode.Ok)
-                return View("GetIdeas", response.Data.ToList());
-            if(response.StatusCode == Domain.Enum.StatusCode.NotFound)
-                return RedirectToAction("Save", "Ideas",
-                    new { id = 0, UserId = id });
+                return View("GetIdeas", response.Data.ToList());;
             return RedirectToAction("Error");
         }
 
