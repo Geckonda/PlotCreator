@@ -54,6 +54,7 @@
                         @endauth*@
                         <a class="btn btn-own" asp-controller="Characters" asp-action="GetBookCharacters" asp-route-bookId=@Model.Id>Персонажи</a>
                         <a class="btn btn-own mb-2" asp-controller="Episodes" asp-action="GetBookepisodes" asp-route-bookId=@Model.Id asp-route-userId=@Model.UserId>Эпизоды</a>
+                        <a class="btn btn-own mb-2" asp-controller="Events" asp-action="GetBookEvents" asp-route-bookId=@Model.Id asp-route-userId=@Model.UserId>События</a>
 
                     </nav>
                 </div>

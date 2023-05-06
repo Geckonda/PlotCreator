@@ -1,4 +1,5 @@
-﻿using PlotCreator.DAL.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using PlotCreator.DAL.Interfaces;
 using PlotCreator.Domain.Entity;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace PlotCreator.DAL.Repositories
 {
-    public class EventRepository : IPlotterRepository<Event>
+    public class EventRepository : IEventRepository
     {
         private readonly ApplicationDBContext _db;
 
@@ -37,18 +38,25 @@ namespace PlotCreator.DAL.Repositories
 
         public IQueryable<Event> GetAll()
         {
-            return _db.Events;
+            return _db.Events
+                .Include(x => x.Book)
+                .Include(x => x.Book!.User);
         }
 
         public async Task<IQueryable<Event>> GetAllByAnotherEntityId(int entityId)
         {
             return _db.Events
-                .Where(x => x.BookId == entityId);
+                .Include(x => x.Book)
+                .Include(x => x.Book!.User)
+                .Where(x => x.Book!.Id == entityId);
         }
 
-        public Task<IQueryable<Event>> GetAllByUserId(int userId)
+        public async Task<IQueryable<Event>> GetAllByUserId(int userId)
         {
-            throw new NotImplementedException();
+            return _db.Events
+                .Include(x => x.Book)
+                .Include(x => x.Book!.User)
+                .Where(x => x.Book!.User!.Id == userId);
         }
 
         public Task<Event> GetEmptyViewModel()
@@ -60,8 +68,21 @@ namespace PlotCreator.DAL.Repositories
         {
             return _db.Events
                 .Where(x => x.Id == id)
+                .Include(x => x.Book)
+                .Include(x => x.Book!.User)
                 .First();
         }
 
+        public async Task<Book> GetEventBook(int bookId)
+        {
+            return _db.Books
+                .Where(x => x.Id == bookId)
+                .Include(x => x.User)
+                .Include(x => x.Access_Modificator)
+                .Include(x => x.Rating)
+                .Include(x => x.Genre)
+                .Include(x => x.Book_Status)
+                .First();
+        }
     }
 }

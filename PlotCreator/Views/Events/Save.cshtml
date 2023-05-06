@@ -1,0 +1,62 @@
+﻿@model PlotCreator.Domain.ViewModels.EventViewModel
+
+@{
+    var textTitle = Model?.Id == 0 ? "Добавление события" : "Редактирование события";
+    ViewBag.Title = textTitle;
+    Layout = "_Layout";
+}
+
+<div style="padding: 10px;"></div>
+<div class="col-md-12">
+    <div class="card-body">
+        <div class="card card-outline-secondary" style="background-color: white">
+            <div class="card-header">
+                <h3 class="mb-0 text-center ParagraphHome">@textTitle</h3>
+            </div>
+            <div class="card-body">
+                <form asp-action="Save" enctype="multipart/form-data">
+                    <input asp-for="Id" type="text" value="@Model?.Id" hidden />
+                    <input asp-for="Book!.Id" type="text" value="@Model?.Book!.Id" hidden />
+                    <input asp-for="Book!.User!.Id" type="text" value="@Model?.Book!.User!.Id" hidden />
+                    <div asp-validation-summary="All" style="font-size:23px; font-family:Impact, serif" class="text-danger text-center"></div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Title">Название</label>
+                        <input asp-for="Title" class="form-control" type="text" value="@Model?.Title" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="Description">Содержание</label>
+                        <textarea asp-for="Description" class="form-control" rows="10" required>@Model?.Description</textarea>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Beginning">Начало события</label>
+                        <input asp-for="Beginning" class="form-control" type="datetime-local" value="@Model?.Beginning.ToString("yyyy-MM-ddThh:mm")" required>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Ending">Конец события (Не обязательно)</label>
+                        <input asp-for="Ending" class="form-control" type="datetime-local" value="@Model?.Ending.ToString("yyyy-MM-ddThh:mm")">
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="ChekhovsGun">Чеховское ружье</label>
+                        <input asp-for="ChekhovsGun" class="form-check-input" type="checkbox">
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label asp-for="IsHidden">Событие для автора</label>
+                        <input asp-for="IsHidden" class="form-check-input" type="checkbox">
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Colour">Цвет события</label>
+                        <input asp-for="Colour"  type="color" class="form-control form-control-color" value="@Model?.Colour" title="Choose your color">
+                    </div>
+
+                    <button class="btn btn-primary btn-lg float-right" type="submit">Сохранить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
