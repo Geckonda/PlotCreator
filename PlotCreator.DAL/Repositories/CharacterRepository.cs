@@ -2,6 +2,7 @@
 using PlotCreator.DAL.Interfaces;
 using PlotCreator.Domain.Entity;
 using PlotCreator.Domain.Entity.Multiple_Tables;
+using PlotCreator.Domain.Helpers.SQL;
 using PlotCreator.Domain.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -115,7 +116,8 @@ namespace PlotCreator.DAL.Repositories
 		public async Task<IQueryable<Character>> GetAllByAnotherEntityId(int entityId)
 		{
 			return (from ch in _db.Characters
-					where ch.Books_Characters.FirstOrDefault().BookId == entityId
+					join b_ch in _db.Books_Characters on ch.Id equals b_ch.CharacterId
+					where b_ch.BookId == entityId
 					select new Character
 					{
 						Id = ch.Id,
@@ -142,5 +144,59 @@ namespace PlotCreator.DAL.Repositories
 		{
 			return _db.Characters;
 		}
-	}
+
+		public async Task<IQueryable<Character>> GetAllExcludeCurrentBookCharacters(int userId, int bookId)
+		{
+			var SQLReaderHelper = new SQLCharacterReaderHelper(
+				"Server=(localdb)\\MSSQLLocalDB;Database=Plot;Trusted_Connection=True;MultipleActiveResultSets=True",
+				userId,
+				bookId);
+			int[] result = await SQLReaderHelper.ReadUnique();
+			/*var characters = (from ch in _db.Characters
+							 join b_ch in _db.Books_Characters on ch.Id equals b_ch.CharacterId
+							 where (b_ch.BookId != bookId) && ch.UserId == userId
+							 select new Character
+							 {
+								 Id = ch.Id,
+								 UserId = ch.UserId,
+								 Name = ch.Name,
+								 Birthday = ch.Birthday,
+								 Gender = ch.Gender,
+								 Height = ch.Height,
+								 Weight = ch.Weight,
+								 Personality = ch.Personality,
+								 Appearance = ch.Appearance,
+								 Goals = ch.Goals,
+								 Motivation = ch.Motivation,
+								 History = ch.History,
+								 WorldviewId = ch.WorldviewId,
+								 Worldview = ch.Worldview,
+								 Worldviews = _db.Worldview.ToList(),
+								 Picture = ch.Picture,
+								 Deathday = ch.Deathday,
+							 });*/
+			var characters = _db.Characters
+				.Where(x => result.Contains(x.Id))
+				.Include(x => x.Worldview)
+				.Include(x => x.Books_Characters)
+				.Where(x => x.UserId == userId);
+
+			return characters;
+		}
+
+		public async Task AddCharactersToBook(Book_Character entity)
+		{
+			await _db.Books_Characters.AddAsync(entity);
+			await _db.SaveChangesAsync();
+		}
+
+        public async Task<int> GetLastUserCharacterId(int userId)
+        {
+			return _db.Characters
+				.Where(x => x.UserId == userId)
+				.OrderByDescending(x => x.Id)
+                .Select(x => x.Id)
+				.First();
+        }
+    }
 }

@@ -150,12 +150,6 @@ namespace PlotCreator.Service.Implementations
             {
                 var ideas = _ideaRepository.GetAll()
                     .Where(x => x.UserId == userId);
-                if (!ideas.Any())
-                {
-                    baseResponse.Description = "Идея не найдена";
-                    baseResponse.StatusCode = StatusCode.NotFound;
-                    return baseResponse;
-                }
                 baseResponse.Data = ideas;
                 baseResponse.StatusCode = StatusCode.Ok;
                 return baseResponse;

@@ -8,7 +8,7 @@
 <h1>Мои персонажи</h1>
 <div style="padding: 10px;"></div>
 <div style="width: max-content;padding:2px 4px;  background-color:forestgreen; border-radius: 4px;">
-	<a style="text-decoration:none;color:white;" asp-area="" asp-action="Save" asp-route-id="0" asp-route-userId="@User.FindFirst("userId").Value">Добавить Персонажа</a>
+	<a style="text-decoration:none;color:white;" asp-area="" asp-action="Save" asp-route-id="0" asp-route-bookId="0" asp-route-userId="@User.FindFirst("userId").Value">Добавить Персонажа</a>
 </div>
 <div class="container d-flex justify-content-around flex-wrap">
 	@if (!Model.Any())

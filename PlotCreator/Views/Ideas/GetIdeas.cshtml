@@ -24,12 +24,16 @@
         color: #3a4675d4;
     }
 </style>
-<h1>Сцены с персонажем</h1>
+<h1>Мои идеи</h1>
 <div style="padding: 10px;"></div>
 <div style="width: max-content;padding:2px 4px;  background-color:forestgreen; border-radius: 4px;">
-    <a style="text-decoration:none;color:white;" asp-area="" asp-action="Save" asp-route-id="0" asp-route-userId=@Model[0].UserId>Добавить идею</a>
+    <a style="text-decoration:none;color:white;" asp-area="" asp-action="Save" asp-route-id="0" asp-route-userId=@User.FindFirst("userId")!.Value>Добавить идею</a>
 </div>
 <div class="cont-cont">
+	@if (!Model.Any())
+	{
+		<h2 class="text-info">Идей не найдено!</h2>
+	}
     @foreach (var idea in Model)
     {
         <a class="SceneContainer" asp-controller="Ideas" asp-action="MyIdea" asp-route-id="@idea.Id">
