@@ -19,5 +19,11 @@ namespace PlotCreator.Service.Interfaces
         Task<IBaseResponse<CharacterViewModel>> CreateCharacter(CharacterViewModel model);
         Task<IBaseResponse<CharacterViewModel>> EditCharacter(CharacterViewModel model);
         Task<IBaseResponse<bool>> DeleteCharacter(int id);
+
+        //
+        Task<int> GetLastUserCharacterId(int userId);
+        //Совмещение таблиц
+        Task<IBaseResponse<IEnumerable<CharacterViewModel>>> GetCharacterExcludeBook(int userId, int bookId);
+        Task<IBaseResponse<bool>> AddCharactersToBook(int bookId, int[] characterIds);
     }
 }

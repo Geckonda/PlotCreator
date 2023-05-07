@@ -2,6 +2,7 @@
 using PlotCreator.DAL.Interfaces;
 using PlotCreator.DAL.Repositories;
 using PlotCreator.Domain.Entity;
+using PlotCreator.Domain.Entity.Multiple_Tables;
 using PlotCreator.Domain.Enum;
 using PlotCreator.Domain.Response.Implementations;
 using PlotCreator.Domain.Response.Interfaces;
@@ -23,7 +24,35 @@ namespace PlotCreator.Service.Implementations
         {
             _characterRepository= characterRepository;
         }
-        public async Task<IBaseResponse<CharacterViewModel>> CreateCharacter(CharacterViewModel model)
+
+		public async Task<IBaseResponse<bool>> AddCharactersToBook(int bookId, int[] characterIds)
+		{
+			var baseResponse = new BaseResponse<bool>();
+			try
+			{
+                for (int i = 0; i < characterIds.Length; i++)
+				{
+					var mediator = new Book_Character()
+					{
+						BookId = bookId,
+                        CharacterId = characterIds[i],
+					};
+					await _characterRepository.AddCharactersToBook(mediator);
+				}
+				baseResponse.StatusCode = StatusCode.Ok;
+				return baseResponse;
+			}
+			catch (Exception ex)
+			{
+				return new BaseResponse<bool>()
+				{
+					Description = $"[CharacterService | AddCharactersToBook]: {ex.Message}",
+					StatusCode = StatusCode.InternalServerError,
+				};
+			}
+		}
+
+		public async Task<IBaseResponse<CharacterViewModel>> CreateCharacter(CharacterViewModel model)
         {
             var baseResponse = new BaseResponse<CharacterViewModel>();
             try
@@ -273,6 +302,51 @@ namespace PlotCreator.Service.Implementations
             }
         }
 
+		public async Task<IBaseResponse<IEnumerable<CharacterViewModel>>> GetCharacterExcludeBook(int userId, int bookId)
+		{
+			var baseResponse = new BaseResponse<IEnumerable<CharacterViewModel>>();
+			try
+			{
+				var characters = await _characterRepository.GetAllExcludeCurrentBookCharacters(userId, bookId);
+				List<CharacterViewModel> characterModels = new List<CharacterViewModel>();
+				foreach (var character in characters)
+				{
+					var model = new CharacterViewModel()
+					{
+						Id = character.Id,
+						UserId = character.UserId,
+						Name = character.Name,
+						Birthday = character.Birthday,
+						Gender = character.Gender,
+						Height = character.Height,
+						Weight = character.Weight,
+						Personality = character.Personality,
+						Appearance = character.Appearance,
+						Goals = character.Goals,
+						Motivation = character.Motivation,
+						History = character.History,
+						WorldviewId = character.WorldviewId,
+						Worldview = character.Worldview,
+						Worldviews = character.Worldviews,
+						Picture = character.Picture,
+						Deathday = character.Deathday,
+					};
+					characterModels.Add(model);
+				}
+				baseResponse.Data = characterModels;
+				baseResponse.StatusCode = StatusCode.Ok;
+				return baseResponse;
+			}
+			catch (Exception ex)
+			{
+				return new BaseResponse<IEnumerable<CharacterViewModel>>()
+				{
+					Description = $"[CharacterService | GetBookCharacters]: {ex.Message}",
+					StatusCode = StatusCode.InternalServerError,
+				};
+			}
+		}
+
 		public async Task<IBaseResponse<CharacterViewModel>> GetEmptyViewModel()
 		{
             var baseResponse = new BaseResponse<CharacterViewModel>();
@@ -297,7 +371,19 @@ namespace PlotCreator.Service.Implementations
 			}
 		}
 
-		public async Task<int> GetUserId(int characterId)
+        public async Task<int> GetLastUserCharacterId(int userId)
+        {
+            try
+            {
+                return  await _characterRepository.GetLastUserCharacterId(userId);
+            }
+            catch (Exception)
+            {
+                return 0;
+            }
+        }
+
+        public async Task<int> GetUserId(int characterId)
         {
             try
             {

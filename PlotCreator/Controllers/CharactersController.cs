@@ -55,6 +55,7 @@ namespace PlotCreator.Controllers
 			//if (!CheckByContentId(bookId).Result)//Invalid?
 			//	return View("404");
 
+			ViewData["bookId"] = bookId;
 			var response = await _characterService.GetBookCharacters(bookId);
             if(response.StatusCode == Domain.Enum.StatusCode.Ok)
                 return View(response.Data);
@@ -65,19 +66,19 @@ namespace PlotCreator.Controllers
 		{
 			if (!CheckByUserId(userId))
 				return View("404");
-
 			var response = await _characterService.GetAllCharacters(userId);
 			if (response.StatusCode == Domain.Enum.StatusCode.Ok)
 				return View(response.Data);
 			return RedirectToAction("Error");
 		}
 		[HttpGet]
-		public async Task<IActionResult> Save(int id, int userId)
+		public async Task<IActionResult> Save(int id, int bookId, int userId)
 		{
 			if (!CheckByUserId(userId))
 				return View("404");
 			IBaseResponse<CharacterViewModel> response;
-			if(id == 0)
+			ViewData["bookId"] = bookId;
+			if (id == 0)
 			{
 				response = await _characterService.GetEmptyViewModel();
 				response.Data.UserId = Convert.ToInt32(User.FindFirst("userId")!.Value);
@@ -90,24 +91,34 @@ namespace PlotCreator.Controllers
 			return RedirectToAction("Error");
 		}
 		[HttpPost]
-		public async Task<IActionResult> Save(CharacterViewModel model)
+		public async Task<IActionResult> Save(CharacterViewModel model, int bookId)
 		{
             if (!CheckByUserId(model.UserId))
                 return View("404");
 			ImageHelper imageHelper = new ImageHelper(_webHostEnvironment.WebRootPath, "Characters");
 			//if (ModelState.IsValid)
 			//{
-                if (model.PictureImage != null)
+            if (model.PictureImage != null)
+			{
+				if (model.Picture != null)
+					await imageHelper.DeletePreviousImage(model.Picture);
+				model.Picture = await imageHelper.SaveImage(model.PictureImage);
+            }
+			if (model.Id == 0)
+			{
+				await _characterService.CreateCharacter(model);
+				if (bookId != 0)
 				{
-					if (model.Picture != null)
-						await imageHelper.DeletePreviousImage(model.Picture);
-					model.Picture = await imageHelper.SaveImage(model.PictureImage);
+					int characterId = await _characterService.GetLastUserCharacterId(bookId);
+					await _characterService.AddCharactersToBook(bookId, new int[] { characterId });
+                    return RedirectToRoute(new { controller = "Characters", action = "GetBookCharacters", bookId = bookId });
                 }
-				if (model.Id == 0)
-					await _characterService.CreateCharacter(model);
-				else
-					await _characterService.EditCharacter(model);
+
 				return RedirectToRoute(new { controller = "Characters", action = "GetAllCharacters", model.UserId });
+			}
+			else
+				await _characterService.EditCharacter(model);
+			return RedirectToRoute(new { controller = "Characters", action = "GetCharacter", model.Id });
 			////}
 			//return RedirectToAction("Save", new { id = model.Id});
         }
@@ -120,5 +131,23 @@ namespace PlotCreator.Controllers
                 return RedirectToAction($"GetAllCharacters", new { userId = userId });
             return RedirectToAction("Error");
         }
+		[HttpGet]
+		public async Task<IActionResult> AddCharacterToBook(int userId, int bookId)
+		{
+			var response = await _characterService.GetCharacterExcludeBook(userId, bookId);
+
+			ViewData["bookId"] = bookId;
+			if (response.StatusCode == Domain.Enum.StatusCode.Ok)
+				return View(response.Data);
+			return RedirectToAction("Error");
+		}
+		[HttpPost]
+		public async Task<IActionResult> AddCharacterToBook(int bookId, int[] characterIds)
+		{
+			var response = await _characterService.AddCharactersToBook(bookId, characterIds);
+			if (response.StatusCode == Domain.Enum.StatusCode.Ok)
+				return RedirectToAction($"GetBookCharacters", new {bookId = bookId});
+			return RedirectToAction("Error");
+		}
 	}
 }

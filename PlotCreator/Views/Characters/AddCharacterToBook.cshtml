@@ -1,0 +1,29 @@
+﻿@model List<PlotCreator.Domain.ViewModels.CharacterViewModel>
+
+@{
+	ViewData["title"] = "Добавление персонажа к книге";
+}
+
+
+<h1>Мои персонажи</h1>
+<div style="padding: 10px;"></div>
+<div class="container d-flex justify-content-around flex-wrap">
+	@if (!Model.Any())
+	{
+		<h2 class="text-info">Персонажей не найдено!</h2>
+	}
+	<div class="list-group">
+		<form asp-action="AddCharacterToBook" enctype="multipart/form-data">
+			<input name="bookId" type="number" value=@ViewData["bookId"] hidden />
+			@foreach (var character in Model)
+			{
+				<label class="list-group-item">
+					<input class="form-check-input me-1" type="checkbox" value="@character.Id" name="characterIds">
+					<img src="@character.Picture" class="card-img-top" style="width: 10rem;">
+					@character.Name
+				</label>
+			}
+			<button class="btn btn-dark btn-lg float-right" type="submit">Сохранить</button>
+		</form>
+	</div>
+</div>

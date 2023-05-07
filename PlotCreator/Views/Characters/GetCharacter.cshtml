@@ -17,7 +17,7 @@
 				<p class="card-text">Статус: @Model.Weight</p>
 				<p class="card-text">Жанр: @Model.Personality</p>
 
-			<a class="btn btn-own" asp-controller="Characters" asp-action="Save" asp-route-id=@Model.Id asp-route-userId="@User.FindFirst("userId").Value">Редактировать</a>
+			<a class="btn btn-own" asp-controller="Characters" asp-action="Save" asp-route-id=@Model.Id asp-route-bookId="0" asp-route-userId="@User.FindFirst("userId").Value">Редактировать</a>
 			<a class="btn btn-danger" asp-controller="Characters" asp-action="Delete" asp-route-id="@Model.Id">Удалить</a>
 			</div>
 		</div>
