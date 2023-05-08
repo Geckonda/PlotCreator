@@ -109,7 +109,7 @@ namespace PlotCreator.Controllers
 				await _characterService.CreateCharacter(model);
 				if (bookId != 0)
 				{
-					int characterId = await _characterService.GetLastUserCharacterId(bookId);
+					int characterId = await _characterService.GetLastUserCharacterId(model.UserId);
 					await _characterService.AddCharactersToBook(bookId, new int[] { characterId });
                     return RedirectToRoute(new { controller = "Characters", action = "GetBookCharacters", bookId = bookId });
                 }
@@ -149,5 +149,23 @@ namespace PlotCreator.Controllers
 				return RedirectToAction($"GetBookCharacters", new {bookId = bookId});
 			return RedirectToAction("Error");
 		}
-	}
+        [HttpGet]
+        public async Task<IActionResult> DeleteCharacterFromBook(int userId, int bookId)
+        {
+            var response = await _characterService.GetBookCharacters(bookId);
+
+            ViewData["bookId"] = bookId;
+            if (response.StatusCode == Domain.Enum.StatusCode.Ok)
+                return View(response.Data);
+            return RedirectToAction("Error");
+        }
+        [HttpPost]
+        public async Task<IActionResult> DeleteCharacterFromBook(int bookId, int[] characterIds)
+        {
+            var response = await _characterService.DeleteCharactersFromBook(bookId, characterIds);
+            if (response.StatusCode == Domain.Enum.StatusCode.Ok)
+                return RedirectToAction($"GetBookCharacters", new { bookId = bookId });
+            return RedirectToAction("Error");
+        }
+    }
 }

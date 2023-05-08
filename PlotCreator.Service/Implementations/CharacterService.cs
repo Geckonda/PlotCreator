@@ -116,6 +116,26 @@ namespace PlotCreator.Service.Implementations
 
         }
 
+        public async Task<IBaseResponse<bool>> DeleteCharactersFromBook(int bookId, int[] characterIds)
+        {
+            var baseResponse = new BaseResponse<bool>();
+            try
+            {
+				var mediators =  _characterRepository.GetBookCharactersRelations(bookId, characterIds);
+				await _characterRepository.DeleteCharactersFromBook(mediators);
+                baseResponse.StatusCode = StatusCode.Ok;
+                return baseResponse;
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse<bool>()
+                {
+                    Description = $"[CharacterService | DeleteCharactersFromBook]: {ex.Message}",
+                    StatusCode = StatusCode.InternalServerError,
+                };
+            }
+        }
+
         public async Task<IBaseResponse<CharacterViewModel>> EditCharacter(CharacterViewModel model)
         {
             var baseResponse = new BaseResponse<CharacterViewModel>();

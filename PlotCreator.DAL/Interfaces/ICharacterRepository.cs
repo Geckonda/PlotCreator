@@ -14,7 +14,11 @@ namespace PlotCreator.DAL.Interfaces
         Task<IQueryable<Character>> GetAllByAnotherEntityId(int entityId);
         Task<IQueryable<Character>> GetAllExcludeCurrentBookCharacters(int userId, int bookId);
         Task<Character> GetEmptyViewModel();
+
+        //Мульти-запросы
+        IQueryable<Book_Character> GetBookCharactersRelations(int bookId, int[] characterIds);
         Task<int> GetLastUserCharacterId(int userId);
         Task AddCharactersToBook(Book_Character entities);
+        Task DeleteCharactersFromBook(IEnumerable<Book_Character> entities);
     }
 }

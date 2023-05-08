@@ -25,5 +25,6 @@ namespace PlotCreator.Service.Interfaces
         //Совмещение таблиц
         Task<IBaseResponse<IEnumerable<CharacterViewModel>>> GetCharacterExcludeBook(int userId, int bookId);
         Task<IBaseResponse<bool>> AddCharactersToBook(int bookId, int[] characterIds);
+        Task<IBaseResponse<bool>> DeleteCharactersFromBook(int bookId, int[] characterIds);
     }
 }

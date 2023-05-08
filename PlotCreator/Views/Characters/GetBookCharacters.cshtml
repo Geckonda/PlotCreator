@@ -16,6 +16,10 @@
 		<li><a class="dropdown-item" asp-controller="Characters" asp-action="AddCharacterToBook" asp-route-userId="@User.FindFirst("userId")!.Value" asp-route-bookId=@ViewData["bookId"]>Добавить существующего</a></li>
 		@*<li><button class="dropdown-item" type="button" id="GetCharacters">Получить всех персонажей</button></li>*@
 	</ul>
+	@if (Model.Any())
+	{
+		<a class="btn btn-danger" asp-controller="Characters" asp-action="DeleteCharacterFromBook" asp-route-bookId="@ViewData["bookId"]" asp-route-userId="@User.FindFirst("userId")!.Value">Удалить персонажа</a>
+	}
 </div>
 <div class="container d-flex justify-content-around flex-wrap">
 	@if (!Model.Any())

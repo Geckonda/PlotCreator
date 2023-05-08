@@ -38,7 +38,7 @@ namespace PlotCreator.Domain.Helpers.SQL
 				"AND Characters.Id NOT IN " +
 				"(SELECT CharacterId FROM [Book-Character]" +
 				$"WHERE BookId = {_bookId}))) " +
-				$"OR [Book-Character].BookId is null";
+				$"OR ([Book-Character].BookId is null AND Characters.UserId = {_userId})";
 			using (SqlConnection connection = new SqlConnection(_connectionString))
 			{
 				connection.Open();
@@ -55,14 +55,7 @@ namespace PlotCreator.Domain.Helpers.SQL
 				}
 				reader.Close();
 			}
-			int[] Ids = new int[result.Count];
-			int counter = 0;
-			foreach (var id in result)
-			{
-				Ids[counter] = id;
-				counter++;
-			}
-			return Ids;
+			return result.ToArray();
 		}
 	}
 }

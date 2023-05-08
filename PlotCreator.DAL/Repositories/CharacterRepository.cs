@@ -48,29 +48,6 @@ namespace PlotCreator.DAL.Repositories
 			character.Worldviews = _db.Worldview.ToList();
 
             return character;
-
-           /* return (from ch in _db.Characters
-                    where ch.Id == id
-                    select new Character
-                    {
-                        Id = ch.Id,
-                        UserId = ch.UserId,
-                        Name = ch.Name,
-                        Birthday = ch.Birthday,
-                        Gender = ch.Gender,
-                        Height = ch.Height,
-                        Weight = ch.Weight,
-                        Personality = ch.Personality,
-                        Appearance = ch.Appearance,
-                        Goals = ch.Goals,
-                        Motivation = ch.Motivation, 
-                        History = ch.History,
-                        WorldviewId = ch.WorldviewId,
-                        Worldview = ch.Worldview,
-                        Worldviews = _db.Worldview.ToList(),
-                        Picture = ch.Picture,
-                        Deathday = ch.Deathday,
-                    }).First();*/
         }
 
 		public async Task<Character> GetEmptyViewModel()
@@ -80,64 +57,20 @@ namespace PlotCreator.DAL.Repositories
 				Worldviews = _db.Worldview.ToList(),
 			};
 		}
-
 		public async Task<IQueryable<Character>> GetAllByUserId(int userId)
 		{
-			var characters = _db.Characters
+            return _db.Characters
 				.Where(x => x.UserId == userId)
 				.Include(x => x.Worldview);
-
-            return characters;
-
-            /*return (from ch in _db.Characters
-					where ch.UserId == userId
-					select new Character
-					{
-						Id = ch.Id,
-						UserId = ch.UserId,
-						Name = ch.Name,
-						Birthday = ch.Birthday,
-						Gender = ch.Gender,
-						Height = ch.Height,
-						Weight = ch.Weight,
-						Personality = ch.Personality,
-						Appearance = ch.Appearance,
-						Goals = ch.Goals,
-						Motivation = ch.Motivation,
-						History = ch.History,
-						WorldviewId = ch.WorldviewId,
-						Worldview = ch.Worldview,
-						Worldviews = _db.Worldview.ToList(),
-						Picture = ch.Picture,
-						Deathday = ch.Deathday,
-					});*/
 		}
 
 		public async Task<IQueryable<Character>> GetAllByAnotherEntityId(int entityId)
 		{
-			return (from ch in _db.Characters
-					join b_ch in _db.Books_Characters on ch.Id equals b_ch.CharacterId
-					where b_ch.BookId == entityId
-					select new Character
-					{
-						Id = ch.Id,
-						UserId = ch.UserId,
-						Name = ch.Name,
-						Birthday = ch.Birthday,
-						Gender = ch.Gender,
-						Height = ch.Height,
-						Weight = ch.Weight,
-						Personality = ch.Personality,
-						Appearance = ch.Appearance,
-						Goals = ch.Goals,
-						Motivation = ch.Motivation,
-						History = ch.History,
-						WorldviewId = ch.WorldviewId,
-						Worldview = ch.Worldview,
-						Worldviews = _db.Worldview.ToList(),
-						Picture = ch.Picture,
-						Deathday = ch.Deathday,
-					});
+			return _db.Books_Characters
+						.Include(x => x.Character)
+							.ThenInclude(x => x.Worldview)
+						.Where(x => x.BookId == entityId)
+						.Select(x => x.Character!);
 		}
 
 		public IQueryable<Character> GetAll()
@@ -147,36 +80,24 @@ namespace PlotCreator.DAL.Repositories
 
 		public async Task<IQueryable<Character>> GetAllExcludeCurrentBookCharacters(int userId, int bookId)
 		{
-			var SQLReaderHelper = new SQLCharacterReaderHelper(
-				"Server=(localdb)\\MSSQLLocalDB;Database=Plot;Trusted_Connection=True;MultipleActiveResultSets=True",
-				userId,
-				bookId);
-			int[] result = await SQLReaderHelper.ReadUnique();
-			/*var characters = (from ch in _db.Characters
-							 join b_ch in _db.Books_Characters on ch.Id equals b_ch.CharacterId
-							 where (b_ch.BookId != bookId) && ch.UserId == userId
-							 select new Character
-							 {
-								 Id = ch.Id,
-								 UserId = ch.UserId,
-								 Name = ch.Name,
-								 Birthday = ch.Birthday,
-								 Gender = ch.Gender,
-								 Height = ch.Height,
-								 Weight = ch.Weight,
-								 Personality = ch.Personality,
-								 Appearance = ch.Appearance,
-								 Goals = ch.Goals,
-								 Motivation = ch.Motivation,
-								 History = ch.History,
-								 WorldviewId = ch.WorldviewId,
-								 Worldview = ch.Worldview,
-								 Worldviews = _db.Worldview.ToList(),
-								 Picture = ch.Picture,
-								 Deathday = ch.Deathday,
-							 });*/
+            var CharactersWithNullBookId = _db.Characters
+							.Include(x => x.Books_Characters)
+							.Where(x =>  x.UserId == userId)
+							.Where(x => x.Books_Characters.Count == 0)
+                            .Select(x => x.Id);
+
+			var second = _db.Books_Characters
+							.Where(x => x.BookId == bookId)
+                            .Select(x => x.CharacterId);
+
+			var result = _db.Books_Characters
+                            .Include(x => x.Character)
+							.Where(x => x.Character!.UserId == userId && x.BookId != bookId)
+							.Select(x => x.CharacterId);
+
 			var characters = _db.Characters
-				.Where(x => result.Contains(x.Id))
+				.Where(x => (!second.Contains(x.Id) && result.Contains(x.Id))
+				|| CharactersWithNullBookId.Contains(x.Id))
 				.Include(x => x.Worldview)
 				.Include(x => x.Books_Characters)
 				.Where(x => x.UserId == userId);
@@ -198,5 +119,18 @@ namespace PlotCreator.DAL.Repositories
                 .Select(x => x.Id)
 				.First();
         }
-    }
+
+        public async Task DeleteCharactersFromBook(IEnumerable<Book_Character> entities)
+        {
+            _db.Books_Characters.RemoveRange(entities);
+            await _db.SaveChangesAsync();
+        }
+
+		public IQueryable<Book_Character> GetBookCharactersRelations(int bookId, int[] characterIds)
+		{
+			return _db.Books_Characters
+						.Where(x => characterIds.Contains(x.CharacterId)
+						&& x.BookId == bookId);
+		}
+	}
 }
