@@ -81,7 +81,7 @@ namespace PlotCreator.Controllers
 			if (id == 0)
 			{
 				response = await _characterService.GetEmptyViewModel();
-				response.Data.UserId = Convert.ToInt32(User.FindFirst("userId")!.Value);
+				response.Data.UserId = userId;
 				return View(response.Data);
 			}
 			response = await _characterService.GetCharacter(id);

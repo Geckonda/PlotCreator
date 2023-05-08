@@ -27,7 +27,11 @@ namespace PlotCreator.DAL.Repositories
         public async Task Delete(Book entity)
         {
             _db.Books.Remove(entity);
-            await _db.SaveChangesAsync();
+
+			_db.Books_Characters.RemoveRange(
+				_db.Books_Characters
+				.Where(x => x.BookId == entity.Id));
+			await _db.SaveChangesAsync();
         }
 		public async Task<Book> Update(Book entity)
 		{
