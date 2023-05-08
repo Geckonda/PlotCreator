@@ -11,7 +11,7 @@ namespace PlotCreator.DAL.Interfaces
 {
     public interface ICharacterRepository : IPlotterRepository<Character>
     {
-        Task<IQueryable<Character>> GetAllByAnotherEntityId(int entityId);
+        Task<IQueryable<Character>> GetAllByBookId(int bookId);
         Task<IQueryable<Character>> GetAllExcludeCurrentBookCharacters(int userId, int bookId);
         Task<Character> GetEmptyViewModel();
 

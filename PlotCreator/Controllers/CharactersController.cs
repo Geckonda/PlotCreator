@@ -22,6 +22,18 @@ namespace PlotCreator.Controllers
             _characterService = characterService;
             _webHostEnvironment = webHostEnvironment;
         }
+
+		private async Task SaveImage(CharacterViewModel model)
+		{
+			ImageHelper imageHelper = new ImageHelper(_webHostEnvironment.WebRootPath, "Characters");
+			if (model.PictureImage != null)
+			{
+				if (model.Picture != null)
+					await imageHelper.DeletePreviousImage(model.Picture);
+				model.Picture = await imageHelper.SaveImage(model.PictureImage);
+			}
+		}
+
 		public async Task<bool> CheckByContentId(int contentId)
         {
             var authorizedUser = Convert.ToInt32(User.FindFirst("userId")!.Value);
@@ -38,6 +50,7 @@ namespace PlotCreator.Controllers
 				return true;
 			return false;
 		}
+
 		[HttpGet]
 		public async Task<IActionResult> GetCharacter(int id)
         {
@@ -49,6 +62,7 @@ namespace PlotCreator.Controllers
                 return View(response.Data);
             return RedirectToAction("Error");
         }
+
 		[HttpGet]
 		public async Task<IActionResult> GetBookCharacters(int bookId)
         {
@@ -61,6 +75,7 @@ namespace PlotCreator.Controllers
                 return View(response.Data);
             return RedirectToAction("Error");
         }
+
 		[HttpGet]
 		public async Task<IActionResult> GetAllCharacters(int userId)
 		{
@@ -71,6 +86,7 @@ namespace PlotCreator.Controllers
 				return View(response.Data);
 			return RedirectToAction("Error");
 		}
+
 		[HttpGet]
 		public async Task<IActionResult> Save(int id, int bookId, int userId)
 		{
@@ -90,20 +106,13 @@ namespace PlotCreator.Controllers
 
 			return RedirectToAction("Error");
 		}
+
 		[HttpPost]
 		public async Task<IActionResult> Save(CharacterViewModel model, int bookId)
 		{
             if (!CheckByUserId(model.UserId))
                 return View("404");
-			ImageHelper imageHelper = new ImageHelper(_webHostEnvironment.WebRootPath, "Characters");
-			//if (ModelState.IsValid)
-			//{
-            if (model.PictureImage != null)
-			{
-				if (model.Picture != null)
-					await imageHelper.DeletePreviousImage(model.Picture);
-				model.Picture = await imageHelper.SaveImage(model.PictureImage);
-            }
+			await SaveImage(model);
 			if (model.Id == 0)
 			{
 				await _characterService.CreateCharacter(model);
@@ -113,14 +122,11 @@ namespace PlotCreator.Controllers
 					await _characterService.AddCharactersToBook(bookId, new int[] { characterId });
                     return RedirectToRoute(new { controller = "Characters", action = "GetBookCharacters", bookId = bookId });
                 }
-
 				return RedirectToRoute(new { controller = "Characters", action = "GetAllCharacters", model.UserId });
 			}
 			else
 				await _characterService.EditCharacter(model);
 			return RedirectToRoute(new { controller = "Characters", action = "GetCharacter", model.Id });
-			////}
-			//return RedirectToAction("Save", new { id = model.Id});
         }
 
 		public async Task<IActionResult> Delete(int id)
@@ -131,6 +137,7 @@ namespace PlotCreator.Controllers
                 return RedirectToAction($"GetAllCharacters", new { userId = userId });
             return RedirectToAction("Error");
         }
+
 		[HttpGet]
 		public async Task<IActionResult> AddCharacterToBook(int userId, int bookId)
 		{
@@ -141,6 +148,7 @@ namespace PlotCreator.Controllers
 				return View(response.Data);
 			return RedirectToAction("Error");
 		}
+
 		[HttpPost]
 		public async Task<IActionResult> AddCharacterToBook(int bookId, int[] characterIds)
 		{
@@ -149,6 +157,7 @@ namespace PlotCreator.Controllers
 				return RedirectToAction($"GetBookCharacters", new {bookId = bookId});
 			return RedirectToAction("Error");
 		}
+
         [HttpGet]
         public async Task<IActionResult> DeleteCharacterFromBook(int userId, int bookId)
         {
@@ -159,6 +168,7 @@ namespace PlotCreator.Controllers
                 return View(response.Data);
             return RedirectToAction("Error");
         }
+
         [HttpPost]
         public async Task<IActionResult> DeleteCharacterFromBook(int bookId, int[] characterIds)
         {

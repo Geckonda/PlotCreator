@@ -182,11 +182,6 @@ namespace PlotCreator.Service.Implementations
             try
             {
                 var characters = await _characterRepository.GetAllByUserId(userId);
-                /* if (!characters.Any())
-                 {
-                     baseResponse.Description = "Не найдено ни одного персонажа";
-                     baseResponse.StatusCode = StatusCode.NotFound;
-                 }*/
                 List<CharacterViewModel> characterModels = new List<CharacterViewModel>();
                 foreach (var character in characters)
                 {
@@ -231,12 +226,7 @@ namespace PlotCreator.Service.Implementations
             var baseResponse = new BaseResponse<IEnumerable<CharacterViewModel>>();
             try
             {
-                var characters = await _characterRepository.GetAllByAnotherEntityId(bookId);
-               /* if (!characters.Any())
-                {
-                    baseResponse.Description = "Не найдено ни одного персонажа";
-                    baseResponse.StatusCode = StatusCode.NotFound;
-                }*/
+                var characters = await _characterRepository.GetAllByBookId(bookId);
                 List<CharacterViewModel> characterModels = new List<CharacterViewModel>();
                 foreach (var character in characters)
                 {
@@ -399,7 +389,7 @@ namespace PlotCreator.Service.Implementations
             }
             catch (Exception)
             {
-                return 0;
+                return -666;
             }
         }
 
@@ -412,7 +402,7 @@ namespace PlotCreator.Service.Implementations
 			}
 			catch (Exception)
 			{
-				return 0;
+				return -666;
 			}
 		}
     }

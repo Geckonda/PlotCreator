@@ -29,11 +29,10 @@ namespace PlotCreator.DAL.Repositories
 
         public async Task Delete(Character entity)
         {
-            _db.Characters.Remove(entity);
-
-			_db.Books_Characters.RemoveRange(
-				_db.Books_Characters
-				.Where(x => x.CharacterId == entity.Id));
+			await DeleteCharactersFromBook(entity.Books_Characters);
+			//Удаление из эпизодов
+			//Удаление из событий
+			_db.Characters.Remove(entity);
             await _db.SaveChangesAsync();
         }
         public async Task<Character> Update(Character entity)
@@ -48,6 +47,9 @@ namespace PlotCreator.DAL.Repositories
 			var character = _db.Characters
 				.Where(x => x.Id == id)
 				.Include(x => x.Worldview)
+				.Include(x => x.Books_Characters)
+				.Include(x => x.Events_Characters)
+				.Include(x => x.Groups_Characters)
 				.First();
 			character.Worldviews = _db.Worldview.ToList();
 
@@ -68,12 +70,12 @@ namespace PlotCreator.DAL.Repositories
 				.Include(x => x.Worldview);
 		}
 
-		public async Task<IQueryable<Character>> GetAllByAnotherEntityId(int entityId)
+		public async Task<IQueryable<Character>> GetAllByBookId(int bookId)
 		{
 			return _db.Books_Characters
 						.Include(x => x.Character)
 							.ThenInclude(x => x.Worldview)
-						.Where(x => x.BookId == entityId)
+						.Where(x => x.BookId == bookId)
 						.Select(x => x.Character!);
 		}
 
@@ -81,32 +83,43 @@ namespace PlotCreator.DAL.Repositories
 		{
 			return _db.Characters;
 		}
-
-		public async Task<IQueryable<Character>> GetAllExcludeCurrentBookCharacters(int userId, int bookId)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="userId">ID пользователя</param>
+		/// <param name="bookId">ID книги</param>
+		/// <returns>Возвращает всех персонажей, незакрепленных текущей книгой. (Без дубликатов)</returns>
+		public Task<IQueryable<Character>> GetAllExcludeCurrentBookCharacters(int userId, int bookId)
 		{
+			//ID Персонажей ПОЛЬЗОВАТЕЛЯ, неприкрепленные ни к одной из книг
             var CharactersWithNullBookId = _db.Characters
 							.Include(x => x.Books_Characters)
 							.Where(x =>  x.UserId == userId)
 							.Where(x => x.Books_Characters.Count == 0)
                             .Select(x => x.Id);
 
-			var second = _db.Books_Characters
+			//ID персонажей текущей книги
+			var CharactersFromCurrentBook = _db.Books_Characters
 							.Where(x => x.BookId == bookId)
                             .Select(x => x.CharacterId);
 
-			var result = _db.Books_Characters
+			//ID персонажей, принадлежащих пользователю, но не принадлежащих текущей книге
+			var CharactersFromOthersUserBooks = _db.Books_Characters
                             .Include(x => x.Character)
-							.Where(x => x.Character!.UserId == userId && x.BookId != bookId)
+							.Where(x => x.Character!.UserId == userId)
+							.Where(x => x.BookId != bookId)
 							.Select(x => x.CharacterId);
 
 			var characters = _db.Characters
-				.Where(x => (!second.Contains(x.Id) && result.Contains(x.Id))
+				.Where(x =>
+					(!CharactersFromCurrentBook.Contains(x.Id)
+					&& CharactersFromOthersUserBooks.Contains(x.Id))
 				|| CharactersWithNullBookId.Contains(x.Id))
 				.Include(x => x.Worldview)
 				.Include(x => x.Books_Characters)
 				.Where(x => x.UserId == userId);
 
-			return characters;
+			return Task.FromResult(characters);
 		}
 
 		public async Task AddCharactersToBook(Book_Character entity)

@@ -45,12 +45,10 @@ namespace PlotCreator.Domain.Entity
         public Worldview? Worldview { get; set; } // Навигационное свойство
         [NotMapped]
         public List<Worldview>? Worldviews { get; set; }
+
 		[NotMapped]
 		public List<Book>? Books{ get; set; }
 
-		////Файловая шняга
-		//[NotMapped]
-		//public File? Picture { get; set; } 
 		public string? Picture { get; set; }
 
         [Column(TypeName = "Date")]
