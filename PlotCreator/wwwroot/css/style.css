@@ -1,5 +1,16 @@
-﻿:root {
+﻿
+
+
+:root {
     --main-dark: #212529;
+    --middle-dark: #545862
+}
+
+a {
+    color: var(--main-dark);
+}
+a:hover{
+    color: var(--middle-dark);
 }
 
 
@@ -41,4 +52,16 @@ footer {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+/**/
+.SceneContainer {
+    padding: 5px 10px;
+    width: auto;
+    background-color: white;
+    display: flex;
+    margin-bottom: 5px;
+    text-decoration: none;
+    align-items: center;
+    list-style: none;
 }

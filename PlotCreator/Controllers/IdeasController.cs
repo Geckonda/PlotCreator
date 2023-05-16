@@ -63,11 +63,26 @@ namespace PlotCreator.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Save(int id, int userId)
+        public async Task<IActionResult> GetBookIdeas(int bookId)
+        {
+            //if (!CheckByContentId(bookId).Result)//Invalid?
+            //	return View("404");
+
+            ViewData["bookId"] = bookId;
+            var response = await _ideaService.GetBookIdeas(bookId);
+            if (response.StatusCode == Domain.Enum.StatusCode.Ok)
+                return View(response.Data);
+            return RedirectToAction("Error");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Save(int id, int bookId, int userId)
         {
             if (!CheckByUserId(userId))
                 return View("404");
 
+
+            ViewData["bookId"] = bookId;
             if (id == 0)
             {
                 var newIdea = new IdeaViewModel()
@@ -84,7 +99,7 @@ namespace PlotCreator.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Save(IdeaViewModel model)
+        public async Task<IActionResult> Save(IdeaViewModel model, int bookId)
         {
             if (!CheckByUserId(model.UserId))
                 return View("404");
@@ -94,14 +109,22 @@ namespace PlotCreator.Controllers
                 if(model.Id == 0)
                 {
                     await _ideaService.CreateIdea(model);
-                }
+                    if(bookId != 0)
+                    {
+                        int ideaId = await _ideaService.GetLastUserIdeaId(model.UserId);
+                        await _ideaService.AddIdeasToBook(bookId, new int[] { ideaId });
+                        return RedirectToRoute(new { controller = "Ideas", action = "GetBookIdeas", bookId = bookId });
+					}
+					return RedirectToRoute(new { controller = "Ideas", action = "MyIdeas", id = model.UserId });
+				}
                 else
                 {
                     await _ideaService.EditIdea(model.Id, model);
-                }
-            }
-            return RedirectToRoute(new { controller = "Ideas", action = "MyIdeas", id = model.UserId });
-        }
+					return RedirectToRoute(new { controller = "Ideas", action = "MyIdea", id = model.Id });
+				}
+			}
+			return RedirectToAction("Error");
+		}
 
         public async Task<IActionResult> Delete(int id)
         {
@@ -111,5 +134,45 @@ namespace PlotCreator.Controllers
                 return RedirectToAction($"MyIdeas", new { id = userId });
             return RedirectToAction("Error");
         }
+
+        [HttpGet]
+        public async Task<IActionResult> AddIdeasToBook(int userId, int bookId)
+        {
+            var response = await _ideaService.GetIdeaExcludeBook(userId, bookId);
+
+            ViewData["bookId"] = bookId;
+            if (response.StatusCode == Domain.Enum.StatusCode.Ok)
+                return View(response.Data);
+            return RedirectToAction("Error");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddIdeasToBook(int bookId, int[] ideaIds)
+        {
+            var response = await _ideaService.AddIdeasToBook(bookId, ideaIds);
+            if (response.StatusCode == Domain.Enum.StatusCode.Ok)
+                return RedirectToAction($"GetBookIdeas", new { bookId = bookId });
+            return RedirectToAction("Error");
+        }
+        [HttpGet]
+        public async Task<IActionResult> DeleteIdeasFromBook(int userId, int bookId)
+        {
+            var response = await _ideaService.GetBookIdeas(bookId);
+
+            ViewData["bookId"] = bookId;
+            if (response.StatusCode == Domain.Enum.StatusCode.Ok)
+                return View(response.Data);
+            return RedirectToAction("Error");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteIdeasFromBook(int bookId, int[] ideaIds)
+        {
+            var response = await _ideaService.DeleteIdeasFromBook(bookId, ideaIds);
+            if (response.StatusCode == Domain.Enum.StatusCode.Ok)
+                return RedirectToAction($"GetBookIdeas", new { bookId = bookId });
+            return RedirectToAction("Error");
+        }
+
     }
 }

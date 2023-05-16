@@ -13,10 +13,19 @@ namespace PlotCreator.Service.Interfaces
     public interface IIdeaService : IUserInfo
     {
 
-        Task<IBaseResponse<IEnumerable<Idea>>> GetIdeas(int userId);
+        Task<IBaseResponse<IEnumerable<IdeaViewModel>>> GetIdeas(int userId);
+        Task<IBaseResponse<IEnumerable<IdeaViewModel>>> GetBookIdeas(int bookId);
         Task<IBaseResponse<IdeaViewModel>> GetIdea(int id);
         Task<IBaseResponse<IdeaViewModel>> CreateIdea(IdeaViewModel ideaViewModel);
-        Task<IBaseResponse<Idea>> EditIdea(int? id, IdeaViewModel ideaViewModel);
+        Task<IBaseResponse<Idea>> EditIdea(int id, IdeaViewModel ideaViewModel);
         Task<IBaseResponse<bool>> DeleteIdea(int id);
+
+        //
+        Task<int> GetLastUserIdeaId(int userId);
+        //Совмещение таблиц
+        Task<IBaseResponse<IEnumerable<IdeaViewModel>>> GetIdeaExcludeBook(int userId, int bookId);
+        Task<IBaseResponse<bool>> AddIdeasToBook(int bookId, int[] ideaIds);
+        Task<IBaseResponse<bool>> DeleteIdeasFromBook(int bookId, int[] ideaIds);
+
     }
 }

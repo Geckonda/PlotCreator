@@ -1,0 +1,31 @@
+﻿@model List<PlotCreator.Domain.ViewModels.IdeaViewModel>
+
+@{
+	ViewData["title"] = "Удаление идеи из книги";
+}
+
+
+<h1>Мои идеи</h1>
+<div style="padding: 10px;"></div>
+<div class="container d-flex justify-content-around flex-wrap">
+	@if (!Model.Any())
+	{
+			<h2 class="text-info">Идей не найдено!</h2>
+	}
+	else
+	{
+			<div class="list-group">
+				<form asp-action="DeleteIdeasFromBook" enctype="multipart/form-data">
+					<input name="bookId" type="number" value=@ViewData["bookId"] hidden />
+				@foreach (var idea in Model)
+				{
+							<label class="list-group-item">
+								<input class="form-check-input me-1" type="checkbox" value="@idea.Id" name="ideaIds">
+						@idea.Topic
+							</label>
+				}
+					<button class="btn btn-danger btn-lg float-right" type="submit">Удалить</button>
+				</form>
+			</div>
+	}
+</div>
