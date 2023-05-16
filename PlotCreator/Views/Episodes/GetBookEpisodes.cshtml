@@ -37,9 +37,9 @@
 <div class="cont-cont">
     @foreach (var episode in Model)
     {
-            <a class="SceneContainer" asp-controller="Episodes" asp-action="GetBookEpisode" asp-route-id="@episode.Id">
-                <div style="width:5px;height:5px;border-radius:50%;background-color:#3a4675d4;text-align:center;"> </div>
-                <h4>@episode.Heading</h4>
-            </a>
+        <a class="SceneContainer" asp-controller="Episodes" asp-action="GetBookEpisode" asp-route-id="@episode.Id">
+            <div class="listPointer"></div>
+            <h4>@episode.Heading</h4>
+        </a>
     }
 </div>

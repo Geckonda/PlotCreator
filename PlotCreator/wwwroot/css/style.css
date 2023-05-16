@@ -1,6 +1,24 @@
-﻿
+﻿/*Обнуление*/
+* {
+    padding: 0;
+    margin: 0;
+    border: 0;
+    margin-bottom: 0;
+}
 
+*, *:before, *:after {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
 
+h1, h2, h3, h4, h5, h6 {
+    margin-bottom: 0;
+}
+p {
+    margin-bottom: 0;
+}
+/*Конец обнуления*/
 :root {
     --main-dark: #212529;
     --middle-dark: #545862
@@ -62,6 +80,10 @@ footer {
     display: flex;
     margin-bottom: 5px;
     text-decoration: none;
-    align-items: center;
+    align-items: end;
     list-style: none;
+}
+.listPointer {
+    border: 10px solid transparent;
+    border-left: 10px solid var(--main-dark);
 }

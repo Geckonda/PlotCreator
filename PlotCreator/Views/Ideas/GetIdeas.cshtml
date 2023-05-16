@@ -17,9 +17,8 @@
     @foreach (var idea in Model)
     {
         <a class="SceneContainer" asp-controller="Ideas" asp-action="MyIdea" asp-route-id="@idea.Id">
-            <div style="width:5px;height:5px;border-radius:50%;background-color:#3a4675d4;text-align:center;"> </div>
+            <div class="listPointer"></div>
             <h4>@idea.Topic</h4>
-            <p>@idea.Content</p>
         </a>
     }
 </div>
