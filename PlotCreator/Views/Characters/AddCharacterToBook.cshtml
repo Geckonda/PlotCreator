@@ -12,6 +12,7 @@
 	{
 		<h2 class="text-info">Персонажей не найдено!</h2>
 	}
+	else{
 	<div class="list-group">
 		<form asp-action="AddCharacterToBook" enctype="multipart/form-data">
 			<input name="bookId" type="number" value=@ViewData["bookId"] hidden />
@@ -26,4 +27,5 @@
 			<button class="btn btn-dark btn-lg float-right" type="submit">Сохранить</button>
 		</form>
 	</div>
+	}
 </div>

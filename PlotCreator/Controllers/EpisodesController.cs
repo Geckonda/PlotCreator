@@ -79,10 +79,11 @@ namespace PlotCreator.Controllers
                 return View("404");
             var episodeResponse = await _episodeService.GetEpisode(id);
             var bookId = episodeResponse.Data.Book?.Id;
+            var userId = episodeResponse.Data.Book?.UserId;
             var response = await _episodeService.DeleteEpisode(id);
             if (response.StatusCode == Domain.Enum.StatusCode.Ok  && bookId != 0)
             {
-                return RedirectToAction($"GetBookEpisodes", new { bookId = bookId });
+                return RedirectToAction($"GetBookEpisodes", new { bookId = bookId, userId = userId });
             }
                 
             return RedirectToAction("Error");

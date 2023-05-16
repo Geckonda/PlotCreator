@@ -29,12 +29,18 @@
 <div style="width: max-content;padding:2px 4px;  background-color:forestgreen; border-radius: 4px;">
     <a style="text-decoration:none;color:white;" asp-area="" asp-action="Save" asp-route-id="0" asp-route-bookId=@ViewData["BookId"]>Добавить событие</a>
 </div>
+
+<hr class="dropdown-divider w-100 mb-3">
+@if (!Model.Any())
+{
+    <h2 class="text-info">Событий не найдено!</h2>
+}
 <div class="cont-cont">
     @foreach (var Event in Model)
     {
         <a class="SceneContainer" asp-controller="Events" asp-action="GetBookEvent" asp-route-id="@Event.Id">
             <div style="width:5px;height:5px;border-radius:50%;background-color:#3a4675d4;text-align:center;"> </div>
-            <h4>@Event.Title</h4>
+            <h4 style="color: @Event.Colour">@Event.Title</h4>
             <p>@Event.Description</p>
         </a>
     }
