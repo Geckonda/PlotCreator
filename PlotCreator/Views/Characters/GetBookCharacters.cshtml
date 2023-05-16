@@ -21,6 +21,7 @@
 		<a class="btn btn-danger" asp-controller="Characters" asp-action="DeleteCharacterFromBook" asp-route-bookId="@ViewData["bookId"]" asp-route-userId="@User.FindFirst("userId")!.Value">Удалить персонажа</a>
 	}
 </div>
+<hr class="dropdown-divider w-100 mb-3">
 <div class="container d-flex justify-content-around flex-wrap">
 	@if (!Model.Any())
 	{
@@ -36,6 +37,7 @@
 				<p class="card-text">Рост: @character.Height</p>
 				<p class="card-text">Вес: @character.Weight</p>
 				<p class="card-text">Характер: @character.Personality</p>
+				<p class="card-text">Мировоззрение: @character.Worldview.Name</p>
 				<a class="btn btn-dark" asp-controller="Characters" asp-action="GetCharacter" asp-route-id="@character.Id">Подробнее</a>
 			</div>
 		</div>

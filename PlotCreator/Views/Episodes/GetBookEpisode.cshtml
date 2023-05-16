@@ -21,7 +21,7 @@
     <div class="cont-cont">
         <div class=" right" style="text-align: right; margin-bottom:10px;">
         <a asp-controller="Episodes" asp-action="Save" asp-route-id="@Model.Id" asp-route-bookId="@Model.Book!.Id" style="color:#3a4675d4;">Изменить</a>
-        <a asp-controller="Episodes" asp-action="Delete" asp-route-id="@Model.Id" style="color:red; margin-left:10px;">Удалить</a>
+        <a asp-controller="Episodes" asp-action="Delete" asp-route-id="@Model.Id"   style="color:red; margin-left:10px;">Удалить</a>
         </div>
         <p>@Model.Content</p>
     </div>

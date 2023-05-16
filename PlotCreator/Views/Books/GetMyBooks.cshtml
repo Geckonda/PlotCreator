@@ -11,6 +11,7 @@
 	<a style="text-decoration:none;color:white;" asp-area="" asp-action="Save" asp-route-id="0" asp-route-userId="@User.FindFirst("userId").Value">Добавить книгу</a>
 </div>
 <div class="container d-flex justify-content-around flex-wrap">
+	<hr class="dropdown-divider w-100 mb-3">
 	@if (!Model.Any())
 	{
 		<h2 class="text-info">Книг не найдено!</h2>
