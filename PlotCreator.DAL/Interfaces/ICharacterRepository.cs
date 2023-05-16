@@ -1,4 +1,5 @@
-﻿using PlotCreator.Domain.Entity;
+﻿using PlotCreator.DAL.Interfaces.Helpers;
+using PlotCreator.Domain.Entity;
 using PlotCreator.Domain.Entity.Multiple_Tables;
 using PlotCreator.Domain.ViewModels;
 using System;
@@ -9,16 +10,12 @@ using System.Threading.Tasks;
 
 namespace PlotCreator.DAL.Interfaces
 {
-    public interface ICharacterRepository : IPlotterRepository<Character>
-    {
-        Task<IQueryable<Character>> GetAllByBookId(int bookId);
-        Task<IQueryable<Character>> GetAllExcludeCurrentBookCharacters(int userId, int bookId);
+    public interface ICharacterRepository : IPlotterRepository<Character>, IBookHelper<Character>, IBookMediator<Book_Character>
+	{
         Task<Character> GetEmptyViewModel();
+		Task<int> GetLastUserCharacterId(int userId);
 
-        //Мульти-запросы
-        IQueryable<Book_Character> GetBookCharactersRelations(int bookId, int[] characterIds);
-        Task<int> GetLastUserCharacterId(int userId);
-        Task AddCharactersToBook(Book_Character entities);
-        Task DeleteCharactersFromBook(IEnumerable<Book_Character> entities);
+		//Мульти-запросы
+		Task<IQueryable<Character>> GetAllExcludeCurrentBookCharacters(int userId, int bookId);
     }
 }

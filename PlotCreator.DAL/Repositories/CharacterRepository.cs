@@ -29,7 +29,7 @@ namespace PlotCreator.DAL.Repositories
 
         public async Task Delete(Character entity)
         {
-			await DeleteCharactersFromBook(entity.Books_Characters);
+			await DeleteEntitiesFromBook(entity.Books_Characters);
 			//Удаление из эпизодов
 			//Удаление из событий
 			_db.Characters.Remove(entity);
@@ -122,9 +122,9 @@ namespace PlotCreator.DAL.Repositories
 			return Task.FromResult(characters);
 		}
 
-		public async Task AddCharactersToBook(Book_Character entity)
+		public async Task AddEntitiesToBook(IEnumerable<Book_Character> entity)
 		{
-			await _db.Books_Characters.AddAsync(entity);
+			await _db.Books_Characters.AddRangeAsync(entity);
 			await _db.SaveChangesAsync();
 		}
 
@@ -137,17 +137,29 @@ namespace PlotCreator.DAL.Repositories
 				.First();
         }
 
-        public async Task DeleteCharactersFromBook(IEnumerable<Book_Character> entities)
+        public async Task DeleteEntitiesFromBook(IEnumerable<Book_Character> entities)
         {
             _db.Books_Characters.RemoveRange(entities);
             await _db.SaveChangesAsync();
         }
 
-		public IQueryable<Book_Character> GetBookCharactersRelations(int bookId, int[] characterIds)
+		public IQueryable<Book_Character> GetBookEntitiesRelations(int bookId, int[] characterIds)
 		{
 			return _db.Books_Characters
 						.Where(x => characterIds.Contains(x.CharacterId)
 						&& x.BookId == bookId);
+		}
+
+		public async Task<Book> GetBook(int bookId)
+		{
+			return _db.Books
+				.Where(x => x.Id == bookId)
+				.Include(x => x.User)
+				.Include(x => x.Access_Modificator)
+				.Include(x => x.Rating)
+				.Include(x => x.Genre)
+				.Include(x => x.Book_Status)
+				.First();
 		}
 	}
 }

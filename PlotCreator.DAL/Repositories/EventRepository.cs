@@ -43,12 +43,12 @@ namespace PlotCreator.DAL.Repositories
                 .Include(x => x.Book!.User);
         }
 
-        public async Task<IQueryable<Event>> GetAllByAnotherEntityId(int entityId)
+        public async Task<IQueryable<Event>> GetAllByBookId(int bookId)
         {
             return _db.Events
                 .Include(x => x.Book)
                 .Include(x => x.Book!.User)
-                .Where(x => x.Book!.Id == entityId);
+                .Where(x => x.Book!.Id == bookId);
         }
 
         public async Task<IQueryable<Event>> GetAllByUserId(int userId)
@@ -73,7 +73,7 @@ namespace PlotCreator.DAL.Repositories
                 .First();
         }
 
-        public async Task<Book> GetEventBook(int bookId)
+        public async Task<Book> GetBook(int bookId)
         {
             return _db.Books
                 .Where(x => x.Id == bookId)

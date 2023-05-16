@@ -40,7 +40,7 @@ namespace PlotCreator.Service.Implementations
                     };
                     mediators.Add(mediator);
                 }
-                await _ideaRepository.AddIdeasToBook(mediators);
+                await _ideaRepository.AddEntitiesToBook(mediators);
                 baseResponse.StatusCode = StatusCode.Ok;
                 return baseResponse;
             }
@@ -111,8 +111,8 @@ namespace PlotCreator.Service.Implementations
             var baseResponse = new BaseResponse<bool>();
             try
             {
-                var mediators = _ideaRepository.GetBookIdeasRelations(bookId, ideaIds);
-                await _ideaRepository.DeleteIdeasFromBook(mediators);
+                var mediators = _ideaRepository.GetBookEntitiesRelations(bookId, ideaIds);
+                await _ideaRepository.DeleteEntitiesFromBook(mediators);
                 baseResponse.StatusCode = StatusCode.Ok;
                 return baseResponse;
             }

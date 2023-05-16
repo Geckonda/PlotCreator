@@ -145,7 +145,7 @@ namespace PlotCreator.Service.Implementations
             var baseResponse = new BaseResponse<IEnumerable<EpisodeViewModel>>();
             try
             {
-                var episodes = await _episodeRepository.GetAllByAnotherEntityId(bookId);
+                var episodes = await _episodeRepository.GetAllByBookId(bookId);
                 List<EpisodeViewModel> episodeModels = new List<EpisodeViewModel>();
                 foreach (var episode in episodes)
                 {
@@ -178,7 +178,7 @@ namespace PlotCreator.Service.Implementations
             var baseResponse = new BaseResponse<EpisodeViewModel>();
             try
             {
-                var book = await _episodeRepository.GetEpisodeBook(bookId);
+                var book = await _episodeRepository.GetBook(bookId);
                 var emptyModel = new EpisodeViewModel()
                 {
                     Book = book,

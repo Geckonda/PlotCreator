@@ -30,6 +30,7 @@ namespace PlotCreator.Service.Implementations
 			var baseResponse = new BaseResponse<bool>();
 			try
 			{
+                List<Book_Character> mediators = new();
                 for (int i = 0; i < characterIds.Length; i++)
 				{
 					var mediator = new Book_Character()
@@ -37,8 +38,9 @@ namespace PlotCreator.Service.Implementations
 						BookId = bookId,
                         CharacterId = characterIds[i],
 					};
-					await _characterRepository.AddCharactersToBook(mediator);
+					mediators.Add(mediator);
 				}
+				await _characterRepository.AddEntitiesToBook(mediators);
 				baseResponse.StatusCode = StatusCode.Ok;
 				return baseResponse;
 			}
@@ -121,8 +123,8 @@ namespace PlotCreator.Service.Implementations
             var baseResponse = new BaseResponse<bool>();
             try
             {
-				var mediators =  _characterRepository.GetBookCharactersRelations(bookId, characterIds);
-				await _characterRepository.DeleteCharactersFromBook(mediators);
+				var mediators =  _characterRepository.GetBookEntitiesRelations(bookId, characterIds);
+				await _characterRepository.DeleteEntitiesFromBook(mediators);
                 baseResponse.StatusCode = StatusCode.Ok;
                 return baseResponse;
             }

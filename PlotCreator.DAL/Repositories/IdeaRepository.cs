@@ -26,7 +26,7 @@ namespace PlotCreator.DAL.Repositories
             await _db.SaveChangesAsync();
         }
 
-        public async Task AddIdeasToBook(IEnumerable<Book_Idea> entities)
+        public async Task AddEntitiesToBook(IEnumerable<Book_Idea> entities)
         {
             await _db.AddRangeAsync(entities);
             await _db.SaveChangesAsync();
@@ -34,13 +34,13 @@ namespace PlotCreator.DAL.Repositories
 
         public async Task Delete(Idea entity)
 		{
-            await DeleteIdeasFromBook(entity.Books_Ideas);
+            await DeleteEntitiesFromBook(entity.Books_Ideas);
 
 			_db.Remove(entity);
             await _db.SaveChangesAsync();
         }
 
-        public async Task DeleteIdeasFromBook(IEnumerable<Book_Idea> entities)
+        public async Task DeleteEntitiesFromBook(IEnumerable<Book_Idea> entities)
         {
             _db.RemoveRange(entities);
             await _db.SaveChangesAsync();
@@ -92,7 +92,19 @@ namespace PlotCreator.DAL.Repositories
                 .Where(x => x.UserId == userid);
         }
 
-        public IQueryable<Book_Idea> GetBookIdeasRelations(int bookId, int[] ideaIds)
+		public async Task<Book> GetBook(int bookId)
+		{
+			return _db.Books
+				.Where(x => x.Id == bookId)
+				.Include(x => x.User)
+				.Include(x => x.Access_Modificator)
+				.Include(x => x.Rating)
+				.Include(x => x.Genre)
+				.Include(x => x.Book_Status)
+				.First();
+		}
+
+		public IQueryable<Book_Idea> GetBookEntitiesRelations(int bookId, int[] ideaIds)
         {
             return _db.Books_Ideas
                 .Where(x => ideaIds.Contains(x.IdeaId)

@@ -164,7 +164,7 @@ namespace PlotCreator.Service.Implementations
             var baseResponse = new BaseResponse<IEnumerable<EventViewModel>>();
             try
             {
-                var Events = await _eventRepository.GetAllByAnotherEntityId(bookId);
+                var Events = await _eventRepository.GetAllByBookId(bookId);
                 List<EventViewModel> EventModels = new List<EventViewModel>();
                 foreach (var Event in Events)
                 {
@@ -202,7 +202,7 @@ namespace PlotCreator.Service.Implementations
             var baseResponse = new BaseResponse<EventViewModel>();
             try
             {
-                var book = await _eventRepository.GetEventBook(bookId);
+                var book = await _eventRepository.GetBook(bookId);
                 var emptyModel = new EventViewModel()
                 {
                     Book = book,

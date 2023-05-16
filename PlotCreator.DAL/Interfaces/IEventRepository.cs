@@ -1,4 +1,5 @@
-﻿using PlotCreator.Domain.Entity;
+﻿using PlotCreator.DAL.Interfaces.Helpers;
+using PlotCreator.Domain.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,9 +8,8 @@ using System.Threading.Tasks;
 
 namespace PlotCreator.DAL.Interfaces
 {
-    public interface IEventRepository : IPlotterRepository<Event>
+    public interface IEventRepository : IPlotterRepository<Event>, IBookHelper<Event>
     {
-        Task<IQueryable<Event>> GetAllByAnotherEntityId(int entityId);
-        Task<Book> GetEventBook(int bookId);
+
     }
 }

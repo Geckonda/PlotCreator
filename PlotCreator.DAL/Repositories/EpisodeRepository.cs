@@ -40,10 +40,10 @@ namespace PlotCreator.DAL.Repositories
                 .Include(x => x.Book!.User);
         }
 
-        public async Task<IQueryable<Episode>> GetAllByAnotherEntityId(int entityId)
+        public async Task<IQueryable<Episode>> GetAllByBookId(int bookId)
         {
             return _db.Episodes
-                .Where(x => x.BookId == entityId)
+                .Where(x => x.BookId == bookId)
                 .Include(x => x.Book)
                 .Include(x => x.Book!.User);
         }
@@ -65,7 +65,7 @@ namespace PlotCreator.DAL.Repositories
                 .First();
         }
 
-        public async Task<Book> GetEpisodeBook(int bookId)
+        public async Task<Book> GetBook(int bookId)
         {
             return _db.Books
                 .Where(x => x.Id == bookId)
