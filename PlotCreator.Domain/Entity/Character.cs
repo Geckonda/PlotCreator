@@ -49,6 +49,9 @@ namespace PlotCreator.Domain.Entity
 		[NotMapped]
 		public List<Book>? Books{ get; set; }
 
+		[NotMapped]
+		public List<Group>? Groups { get; set; }
+
 		public string? Picture { get; set; }
 
         [Column(TypeName = "Date")]

@@ -12,12 +12,12 @@
 		<img src="@Model.Picture" class="card-img-top" alt="...">
 				<div class="card-body">
 				<h5 class="card-title">@Model.Name</h5>
-				<p class="card-text">@Model.Gender</p>
-				<p class="card-text">Рейтинг: @Model.Height</p>
-				<p class="card-text">Статус: @Model.Weight</p>
-				<p class="card-text">Жанр: @Model.Personality</p>
+				<p class="card-text">Пол: @Model.Gender</p>
+				<p class="card-text">Рост: @Model.Height</p>
+				<p class="card-text">Вес: @Model.Weight</p>
+				<p class="card-text">Характер: @Model.Personality</p>
 
-			<a class="btn btn-own" asp-controller="Characters" asp-action="Save" asp-route-id=@Model.Id asp-route-bookId="0" asp-route-userId="@User.FindFirst("userId").Value">Редактировать</a>
+			<a class="btn btn-own" asp-controller="Characters" asp-action="Save" asp-route-id=@Model.Id asp-route-bookId="@ViewData["bookId"]" asp-route-userId="@User.FindFirst("userId").Value">Редактировать</a>
 			<a class="btn btn-danger" asp-controller="Characters" asp-action="Delete" asp-route-id="@Model.Id">Удалить</a>
 			</div>
 		</div>

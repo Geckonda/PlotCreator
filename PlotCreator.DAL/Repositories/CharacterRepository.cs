@@ -30,6 +30,7 @@ namespace PlotCreator.DAL.Repositories
         public async Task Delete(Character entity)
         {
 			await DeleteEntitiesFromBook(entity.Books_Characters);
+			await DeleteGroupsFromEntity(entity.Groups_Characters);
 			//Удаление из эпизодов
 			//Удаление из событий
 			_db.Characters.Remove(entity);
@@ -56,11 +57,16 @@ namespace PlotCreator.DAL.Repositories
             return character;
         }
 
-		public async Task<Character> GetEmptyViewModel()
+		public async Task<Character> GetEmptyViewModel(int bookId)
 		{
 			return new Character()
 			{
 				Worldviews = _db.Worldview.ToList(),
+				Groups = _db.Groups
+							.Where(x => x.BookId== bookId)
+							.GroupBy(x => x.Id)
+                            .Select(x => x.FirstOrDefault()!)//! || ? 
+							.ToList(),
 			};
 		}
 		public async Task<IQueryable<Character>> GetAllByUserId(int userId)
@@ -161,5 +167,54 @@ namespace PlotCreator.DAL.Repositories
 				.Include(x => x.Book_Status)
 				.First();
 		}
-	}
+
+        public async Task<IQueryable<Group_Character>> GetEntityGroups(int entityId)
+        {
+			return _db.Groups_Characters
+					.Where(x => x.CharacterId == entityId);
+        }
+
+        public async Task<IQueryable<Group_Character>> GetAllEntityGroupsByBookId(int bookId)
+        {
+			return _db.Groups_Characters
+					.Include(x => x.Group)
+					.Where(x => x.Group.BookId == bookId);
+        }
+
+        public async Task AddGroupsToEntity(IEnumerable<Group_Character> groups)
+        {
+            await _db.Groups_Characters.AddRangeAsync(groups);
+            await _db.SaveChangesAsync();
+        }
+
+        public async Task DeleteGroupsFromEntity(IEnumerable<Group_Character> groups)
+        {
+			_db.RemoveRange(groups);
+			await _db.SaveChangesAsync();
+        }
+
+        public async Task EditGroupsEntityRelation(IEnumerable<Group_Character> groups, int characterId, int bookId)
+        {
+            var groupsForDelete = _db.Groups_Characters
+                                        .Where(x => x.CharacterId == characterId)
+                                        .Include(x => x.Group)
+                                        .Where(x => x.Group.BookId == bookId)
+                                        .Where(x => !groups.Select(x => x.GroupId).Contains(x.GroupId))
+                                        .ToList();
+
+			if (groupsForDelete.Count > 0)
+				await DeleteGroupsFromEntity(groupsForDelete);
+
+			var existedGroups = _db.Groups_Characters
+                                        .Where(x => x.CharacterId == characterId)
+                                        .Include(x => x.Group)
+                                        .Where(x => x.Group.BookId == bookId)
+                                        .ToList();
+			if(groups.Any()) 
+				await AddGroupsToEntity(groups
+					.Where(x => !existedGroups
+					.Select(x => x.GroupId)
+					.Contains(x.GroupId)));
+        }
+    }
 }

@@ -38,7 +38,7 @@
 				<p class="card-text">Вес: @character.Weight</p>
 				<p class="card-text">Характер: @character.Personality</p>
 				<p class="card-text">Мировоззрение: @character.Worldview.Name</p>
-				<a class="btn btn-dark" asp-controller="Characters" asp-action="GetCharacter" asp-route-id="@character.Id">Подробнее</a>
+				<a class="btn btn-dark" asp-controller="Characters" asp-action="GetCharacter" asp-route-id="@character.Id" asp-route-bookId="@ViewData["bookId"]">Подробнее</a>
 			</div>
 		</div>
 	}

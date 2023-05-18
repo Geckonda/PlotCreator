@@ -54,7 +54,30 @@ namespace PlotCreator.Service.Implementations
 			}
 		}
 
-		public async Task<IBaseResponse<CharacterViewModel>> CreateCharacter(CharacterViewModel model)
+        public async Task<bool> AddGroupsCharacterRelation(int characterId, int[] groupIds)
+        {
+            try
+            {
+                List<Group_Character> mediators = new();
+                for (int i = 0; i < groupIds.Length; i++)
+                {
+                    var mediator = new Group_Character()
+                    {
+                        CharacterId = characterId,
+                        GroupId = groupIds[i],
+                    };
+                    mediators.Add(mediator);
+                }
+                await _characterRepository.AddGroupsToEntity(mediators);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public async Task<IBaseResponse<CharacterViewModel>> CreateCharacter(CharacterViewModel model)
         {
             var baseResponse = new BaseResponse<CharacterViewModel>();
             try
@@ -138,6 +161,29 @@ namespace PlotCreator.Service.Implementations
             }
         }
 
+        public async Task<bool> DeleteGroupsCharacterRelation(int characterId, int[] groupIds)
+        {
+            try
+            {
+                List<Group_Character> mediators = new();
+                for (int i = 0; i < groupIds.Length; i++)
+                {
+                    var mediator = new Group_Character()
+                    {
+                        CharacterId = characterId,
+                        GroupId = groupIds[i],
+                    };
+                    mediators.Add(mediator);
+                }
+                await _characterRepository.DeleteGroupsFromEntity(mediators);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
         public async Task<IBaseResponse<CharacterViewModel>> EditCharacter(CharacterViewModel model)
         {
             var baseResponse = new BaseResponse<CharacterViewModel>();
@@ -175,6 +221,29 @@ namespace PlotCreator.Service.Implementations
                     Description = $"[CharacterService | EditCharacter]: {ex.Message}",
                     StatusCode = StatusCode.InternalServerError,
                 };
+            }
+        }
+
+        public async Task<bool> EditGroupsCharacterRelation(int characterId, int[] groupIds, int bookId)
+        {
+            try
+            {
+                List<Group_Character> mediators = new();
+                for (int i = 0; i < groupIds.Length; i++)
+                {
+                    var mediator = new Group_Character()
+                    {
+                        CharacterId = characterId,
+                        GroupId = groupIds[i],
+                    };
+                    mediators.Add(mediator);
+                }
+                await _characterRepository.EditGroupsEntityRelation(mediators,characterId, bookId);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
             }
         }
 
@@ -299,6 +368,8 @@ namespace PlotCreator.Service.Implementations
                     Worldviews = character.Worldviews,
                     Picture = character.Picture,
                     Deathday = character.Deathday,
+                    Groups = character.Groups,
+                    OwnGroups = character.Groups_Characters
                 };
                 baseResponse.Data = data;
                 baseResponse.StatusCode = StatusCode.Ok;
@@ -342,6 +413,7 @@ namespace PlotCreator.Service.Implementations
 						Worldviews = character.Worldviews,
 						Picture = character.Picture,
 						Deathday = character.Deathday,
+						Groups = character.Groups,
 					};
 					characterModels.Add(model);
 				}
@@ -359,15 +431,16 @@ namespace PlotCreator.Service.Implementations
 			}
 		}
 
-		public async Task<IBaseResponse<CharacterViewModel>> GetEmptyViewModel()
+		public async Task<IBaseResponse<CharacterViewModel>> GetEmptyViewModel(int bookId)
 		{
             var baseResponse = new BaseResponse<CharacterViewModel>();
             try
             {
-                var emptyCharactrer = await _characterRepository.GetEmptyViewModel();
+                var emptyCharactrer = await _characterRepository.GetEmptyViewModel(bookId);
 				var emptyModel = new CharacterViewModel()
 				{
                     Worldviews = emptyCharactrer.Worldviews,
+                    Groups = emptyCharactrer.Groups,
 				};
 				baseResponse.Data = emptyModel;
                 baseResponse.StatusCode = StatusCode.Ok;

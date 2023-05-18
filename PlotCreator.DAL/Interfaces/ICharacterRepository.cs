@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace PlotCreator.DAL.Interfaces
 {
-    public interface ICharacterRepository : IPlotterRepository<Character>, IBookHelper<Character>, IBookMediator<Book_Character>
+    public interface ICharacterRepository : IPlotterRepository<Character>, IBookHelper<Character>, IBookMediator<Book_Character>, IGroupMediator<Group_Character>
 	{
-        Task<Character> GetEmptyViewModel();
+        Task<Character> GetEmptyViewModel(int bookId);
 		Task<int> GetLastUserCharacterId(int userId);
 
 		//Мульти-запросы

@@ -37,10 +37,14 @@ namespace PlotCreator.Domain.ViewModels
         public int WorldviewId { get; set; } 
         public Worldview? Worldview { get; set; } 
         public List<Worldview>? Worldviews { get; set; } 
+        public List<Group>? Groups { get; set; } 
 
         public string? Picture { get; set; }
         public IFormFile? PictureImage { get; set; }
         public DateTime Deathday { get; set; }
 
-    }
+
+		public List<Group_Character>? OwnGroups { get; set; }
+		public int[]? checkedGroups{ get; set; }
+	}
 }

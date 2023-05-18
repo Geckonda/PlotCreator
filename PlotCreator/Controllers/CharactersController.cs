@@ -15,11 +15,15 @@ namespace PlotCreator.Controllers
     public class CharactersController : Controller, IInspector<bool>
     {
         private readonly ICharacterService _characterService;
+		private readonly IGroupService _groupService;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public CharactersController(ICharacterService characterService, IWebHostEnvironment webHostEnvironment)
+        public CharactersController(ICharacterService characterService,
+			IGroupService groupService,
+			IWebHostEnvironment webHostEnvironment)
         {
             _characterService = characterService;
+			_groupService = groupService;
             _webHostEnvironment = webHostEnvironment;
         }
 
@@ -33,7 +37,13 @@ namespace PlotCreator.Controllers
 				model.Picture = await imageHelper.SaveImage(model.PictureImage);
 			}
 		}
-
+		private async Task<List<Group>> GetGroups(int bookId)
+		{
+			var response = await _groupService.GetBookGroups(bookId);
+            if (response.StatusCode == Domain.Enum.StatusCode.Ok)
+                return response.Data.ToList();
+            return null;
+        }
 		public async Task<bool> CheckByContentId(int contentId)
         {
             var authorizedUser = Convert.ToInt32(User.FindFirst("userId")!.Value);
@@ -52,11 +62,12 @@ namespace PlotCreator.Controllers
 		}
 
 		[HttpGet]
-		public async Task<IActionResult> GetCharacter(int id)
+		public async Task<IActionResult> GetCharacter(int id, int? bookId)
         {
 			if (!CheckByContentId(id).Result)
 				return View("404");
 
+			ViewData["bookId"] = bookId;
 			var response = await _characterService.GetCharacter(id);
             if (response.StatusCode == Domain.Enum.StatusCode.Ok)
                 return View(response.Data);
@@ -94,14 +105,18 @@ namespace PlotCreator.Controllers
 				return View("404");
 			IBaseResponse<CharacterViewModel> response;
 			ViewData["bookId"] = bookId;
-			if (id == 0)
+            if (id == 0)
 			{
-				response = await _characterService.GetEmptyViewModel();
-				response.Data.UserId = userId;
+				response = await _characterService.GetEmptyViewModel(bookId);
+                if (bookId != 0)
+                    response.Data.Groups = await GetGroups(bookId);
+                response.Data.UserId = userId;
 				return View(response.Data);
 			}
 			response = await _characterService.GetCharacter(id);
-			if (response.StatusCode == Domain.Enum.StatusCode.Ok)
+            if (bookId != 0)
+                response.Data.Groups = await GetGroups(bookId);
+            if (response.StatusCode == Domain.Enum.StatusCode.Ok)
 				return View(response.Data);
 
 			return RedirectToAction("Error");
@@ -120,13 +135,22 @@ namespace PlotCreator.Controllers
 				{
 					int characterId = await _characterService.GetLastUserCharacterId(model.UserId);
 					await _characterService.AddCharactersToBook(bookId, new int[] { characterId });
+					await _characterService.AddGroupsCharacterRelation(characterId, model.checkedGroups);
                     return RedirectToRoute(new { controller = "Characters", action = "GetBookCharacters", bookId = bookId });
                 }
 				return RedirectToRoute(new { controller = "Characters", action = "GetAllCharacters", model.UserId });
 			}
 			else
-				await _characterService.EditCharacter(model);
-			return RedirectToRoute(new { controller = "Characters", action = "GetCharacter", model.Id });
+            {
+                await _characterService.EditCharacter(model);
+                if (bookId != 0)
+				{
+					if (model.checkedGroups == null)
+						model.checkedGroups = new int[0];
+                    await _characterService.EditGroupsCharacterRelation(model.Id, model.checkedGroups, bookId);
+                }
+            }
+			return RedirectToRoute(new { controller = "Characters", action = "GetCharacter", model.Id, bookId = bookId });
         }
 
 		public async Task<IActionResult> Delete(int id)
