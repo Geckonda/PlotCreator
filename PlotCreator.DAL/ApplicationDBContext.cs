@@ -34,7 +34,7 @@ namespace PlotCreator.DAL
 
         public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options) : base(options)
         {
-            Database.EnsureCreated();
+           /* Database.EnsureCreated();*/
         }
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{

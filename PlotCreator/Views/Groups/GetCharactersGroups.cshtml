@@ -1,0 +1,115 @@
+﻿@model List<PlotCreator.Domain.ViewModels.GroupViewModel>
+
+@{
+    ViewBag.Title = "Группы";
+    Layout = "_Layout";
+    var newGroup = new PlotCreator.Domain.ViewModels.GroupViewModel();
+    newGroup.Book = new();
+
+    var currentGroup = new PlotCreator.Domain.ViewModels.GroupViewModel();
+    currentGroup.Book = new();
+}
+
+<h1>Группы</h1>
+<div style="padding: 10px;"></div>
+<div style="width: max-content;padding:2px 4px;  background-color:forestgreen; border-radius: 4px;">
+    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#saveForm">Добавить группу</button>
+</div>
+
+<hr class="dropdown-divider w-100 mb-3">
+@if (!Model.Any())
+{
+    <h2 class="text-info">Групп не найдено!</h2>
+}
+<div class="cont-cont">
+    @foreach (var group in Model)
+    {
+        <button type="button" class="btn btn-dark m-3" data-bs-toggle="modal" data-bs-target="#modelDescription" data-bs-description="@group.Description" data-bs-groupId="@group.Id" data-bs-name="@group.Name">@group.Name</button>
+    }
+</div>
+
+@*Описание групп*@
+<div class="modal fade" id="modelDescription" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Описание группы</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="descriptionText"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="updateButton" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modelUpdate">Редактировать</button>
+                <a class="btn btn-danger" id="deleteButton" asp-action="Delete" asp-route-bookId="@ViewData["bookId"]">Удалить</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@*Создание группы*@
+<div class="modal fade" id="saveForm" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Добавление группы</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form asp-action="Save">
+            <input asp-for="@newGroup.Book.Id" type="text" value="@ViewData["bookId"]" hidden />
+            <input asp-for="@newGroup.Parent" type="text" value="Character" hidden />
+              <div class="mb-3">
+                <label for="Name" class="col-form-label">Название:</label>
+                <input type="text" class="form-control" asp-for="@newGroup.Name" required>
+              </div>
+              <div class="mb-3">
+                <label for="Description" class="col-form-label">Описание:</label>
+                <textarea class="form-control" asp-for="@newGroup.Description" rows="5" required></textarea>
+              </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+@*Обновление группы*@
+<div class="modal fade" id="modelUpdate" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+                <h5 class="modal-title">Обновление группы</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form asp-action="Edit" method="post">
+            <input asp-for="@currentGroup.Id" type="text" id="editFormIdField" hidden />
+            <input asp-for="@currentGroup.Book.Id" type="text" value="@ViewData["bookId"]" hidden />
+            <input asp-for="@currentGroup.Parent" type="text" value="Character" hidden />
+              <div class="mb-3">
+                <label for="Name" class="col-form-label">Название:</label>
+                <input type="text" class="form-control" asp-for="@currentGroup.Name" id="editFormNameField" required>
+              </div>
+              <div class="mb-3">
+                <label for="Description" class="col-form-label">Описание:</label>
+                <textarea class="form-control" asp-for="@currentGroup.Description" id="editFormDescriptionField" rows="5" required></textarea>
+              </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+@section Scripts{
+
+    <script src="~/js/Groups/modal.js"></script>
+}

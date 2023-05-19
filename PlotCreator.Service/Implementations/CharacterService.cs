@@ -58,6 +58,9 @@ namespace PlotCreator.Service.Implementations
         {
             try
             {
+                if (groupIds == null)
+                    return false;
+
                 List<Group_Character> mediators = new();
                 for (int i = 0; i < groupIds.Length; i++)
                 {

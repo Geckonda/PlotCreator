@@ -133,7 +133,13 @@
                             
                             @if (Model.Groups.Count == 0)
                             {
-                                <label class="text-danger">Доступно только при прикпреплении персонажа к книге</label>
+                                <div class="alert alert-warning d-flex align-items-center" role="alert">
+                                    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Warning:"><use xlink:href="#exclamation-triangle-fill" /></svg>
+                                    <div>
+                                        Доступно только при прикпреплении персонажа к книге
+                                    </div>
+                                </div>
+                                @*<label class="text-danger">Доступно только при прикпреплении персонажа к книге</label>*@
                             }
                             <div class="container d-flex jus flex-wrap">
                                 @foreach (var group in Model!.Groups!)
