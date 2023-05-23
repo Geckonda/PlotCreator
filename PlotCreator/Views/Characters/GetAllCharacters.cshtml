@@ -7,8 +7,12 @@
 
 <h1>Мои персонажи</h1>
 <div style="padding: 10px;"></div>
-<div style="width: max-content;padding:2px 4px;  background-color:forestgreen; border-radius: 4px;">
-	<a style="text-decoration:none;color:white;" asp-area="" asp-action="Save" asp-route-id="0" asp-route-bookId="0" asp-route-userId="@User.FindFirst("userId").Value">Добавить Персонажа</a>
+<div style="width: max-content;padding:2px 4px; border-radius: 4px;">
+	<a class="btn btn-success" style="text-decoration:none;color:white;" asp-area="" asp-action="Save" asp-route-id="0" asp-route-bookId="0" asp-route-userId="@User.FindFirst("userId").Value">Добавить Персонажа</a>
+	
+	<a class="btn btn-primary" data-bs-toggle="offcanvas" href="#offcanvasFilters" role="button" aria-controls="offcanvasFilters">
+	  Фильтры
+	</a>
 </div>
 <hr class="dropdown-divider w-100 mb-3">
 <div class="container justify-content-center d-flex flex-wrap">
@@ -28,3 +32,32 @@
 		</a>
 	}
 </div>
+
+@*Фильтры*@
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasFilters">
+	<div class="offcanvas-header">
+		<h5 class="offcanvas-title" id="offcanvasFiltersLabel">Фильтры персонажей</h5>
+		<button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+	</div>
+	<div class="offcanvas-body">
+		<div>
+			<strong class="text-warning">В разработке</strong>
+		</div>
+		@*<button class="btn btn-primary" id="filterBTN" data-bs-userId = "@User.FindFirst("userId").Value">Фильтруй!</button>
+		<div class="dropdown mt-3">
+			<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown">
+				Кнопка раскрывающегося списка
+			</button>
+			<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+				<li><a class="dropdown-item" href="#">Действие</a></li>
+				<li><a class="dropdown-item" href="#">Другое действие</a></li>
+				<li><a class="dropdown-item" href="#">Что-то еще здесь</a></li>
+			</ul>
+		</div>*@
+	</div>
+</div>
+
+@section Scripts{
+
+	<script src="~/js/Characters/filter.js"></script>
+}
