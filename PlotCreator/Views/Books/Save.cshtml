@@ -118,7 +118,7 @@
                     <div class="form-group mb-3">
                         <label asp-for="@Model.Book_cover" class="col-form-label">Обложка книги (необязательно)</label>
                         <div class="col-sm-15">
-                            <input asp-for="@Model.Book_coverImage" type="file" class="form-control" name="Book_coverImage" value="@Model?.Book_cover">
+                            <input asp-for="@Model.Book_coverImage" type="file" class="form-control" name="Book_coverImage" value="@Model?.Book_cover" accept="image/*">
                         </div>
                     </div>
                     <button class="btn btn-dark btn-lg float-right" type="submit">Сохранить</button>

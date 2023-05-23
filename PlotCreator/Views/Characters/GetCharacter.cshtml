@@ -4,21 +4,137 @@
 	ViewData["title"] = Model.Name;
 }
 
-
-<h1>Мои персонажи</h1>
+<div class="container w-100 d-flex justify-content-between pb-1">
+	@if (ViewData["bookId"] != null)
+	{
+		<a class="text-secondary" asp-controller="Characters" asp-action="GetBookCharacters" asp-route-bookId=@ViewData["bookId"]>Назад</a>
+	}
+	else
+	{
+		<a class="text-secondary text-center" asp-controller="Characters" asp-action="GetAllCharacters"
+	   asp-route-userId="@User.FindFirst("userId").Value">Назад</a>
+	}
+	<div class="w-auto d-flex align-items-center ">
+		<a class="btn btn-own" asp-controller="Characters" asp-action="Save" asp-route-id=@Model.Id asp-route-bookId="@ViewData["bookId"]" asp-route-userId="@User.FindFirst("userId").Value">Редактировать</a>
+		<a class="btn btn-danger" asp-controller="Characters" asp-action="Delete" asp-route-id="@Model.Id">Удалить</a>
+	</div>
+</div>
 <div style="padding: 10px;"></div>
-<div class="container d-flex justify-content-around flex-wrap">
-	<div class="card" style="width: 18rem;">
-		<img src="@Model.Picture" class="card-img-top" alt="...">
-				<div class="card-body">
-				<h5 class="card-title">@Model.Name</h5>
-				<p class="card-text">Пол: @Model.Gender</p>
-				<p class="card-text">Рост: @Model.Height</p>
-				<p class="card-text">Вес: @Model.Weight</p>
-				<p class="card-text">Характер: @Model.Personality</p>
+<div class="container">
 
-			<a class="btn btn-own" asp-controller="Characters" asp-action="Save" asp-route-id=@Model.Id asp-route-bookId="@ViewData["bookId"]" asp-route-userId="@User.FindFirst("userId").Value">Редактировать</a>
-			<a class="btn btn-danger" asp-controller="Characters" asp-action="Delete" asp-route-id="@Model.Id">Удалить</a>
+	<div class="container d-flex mb-3 justify-content-center flex-wrap">
+		<div class="mb-3" style="width: 250px;">
+			<img src="@Model.Picture" class="img-fluid border border-dark border-2" alt="...">
+		</div>
+		<div class="flex-md-fill" style="margin-left:16px;">
+			<h2 class="card-title">@Model.Name</h2>
+			<p class="card-text">Дата рождения: @Model.Birthday.ToString("D")</p>
+			<p class="card-text">Пол: @Model.Gender</p>
+			<p class="card-text">Рост: @Model.Height см</p>
+			<p class="card-text">Вес: @Model.Weight кг</p>
+			@*Мировоззрение*@
+			<p>
+				Мировоззрение:
+				<a class="" data-bs-toggle="collapse" href="#WorldviewInfo" role="button" aria-expanded="false" aria-controls="collapseExample">
+					 @Model.Worldview!.Name
+			  </a>
+			</p>
+			<div class="collapse" id="WorldviewInfo">
+				<div class="card card-body" style="max-width: 450px;">
+				  @Model.Worldview!.Description
+			  </div>
 			</div>
 		</div>
+	</div>
+	<div class="container">
+		<div class="accordion" id="AdditionDescription">
+			@*Характер персонажа*@
+			<div class="accordion-item">
+				<h2 class="accordion-header" id="headingOne">
+					<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#CharacterPersonality" aria-expanded="false" aria-controls="CharacterPersonality">
+						Характер
+					</button>
+				</h2>
+				<div id="CharacterPersonality" class="accordion-collapse collapse " aria-labelledby="headingOne">
+					<div class="accordion-body">
+						@if(Model.Personality is null)
+						{
+							<p class="text-secondary">Пусто</p>			
+						}
+						@Model.Personality
+					</div>
+				</div>
+			</div>
+			@*Внешний вид персонажа*@
+			<div class="accordion-item">
+				<h2 class="accordion-header" id="headingTwo">
+					<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#CharacterAppearance" aria-expanded="false" aria-controls="CharacterAppearance">
+						Внешний вид
+					</button>
+				</h2>
+				<div id="CharacterAppearance" class="accordion-collapse collapse " aria-labelledby="headingTwo">
+					<div class="accordion-body">
+						@if (Model.Appearance is null)
+						{
+							<p class="text-secondary">Пусто</p>
+						}
+						@Model.Appearance
+					</div>
+				</div>
+			</div>
+			@*Цели персонажа*@
+			<div class="accordion-item">
+				<h2 class="accordion-header" id="headingThree">
+					<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#CharacterGoals" aria-expanded="false" aria-controls="CharacterGoals">
+						Цели
+					</button>
+				</h2>
+				<div id="CharacterGoals" class="accordion-collapse collapse " aria-labelledby="headingThree">
+					<div class="accordion-body">
+						@if (Model.Goals is null)
+						{
+							<p class="text-secondary">Пусто</p>
+						}
+						@Model.Goals
+					</div>
+				</div>
+			</div>
+			@*Мотивация персонажа*@
+			<div class="accordion-item">
+				<h2 class="accordion-header" id="headingFour">
+					<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#CharacterMotivation" aria-expanded="false" aria-controls="CharacterMotivation">
+						Мотивация
+					</button>
+				</h2>
+				<div id="CharacterMotivation" class="accordion-collapse collapse" aria-labelledby="headingFour">
+					<div class="accordion-body">
+						@if (Model.Motivation is null)
+						{
+							<p class="text-secondary">Пусто</p>
+						}
+						@Model.Motivation
+					</div>
+				</div>
+			</div>
+			@*История персонажа*@
+			<div class="accordion-item">
+				<h2 class="accordion-header" id="headingFive">
+					<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#CharacterHistory" aria-expanded="false" aria-controls="CharacterHistory">
+						История до главных событий
+					</button>
+				</h2>
+				<div id="CharacterHistory" class="accordion-collapse collapse" aria-labelledby="headingFive">
+					<div class="accordion-body">
+						@if (Model.History is null)
+						{
+							<p class="text-secondary">Пусто</p>
+						}
+						@Model.History
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
 </div>
+

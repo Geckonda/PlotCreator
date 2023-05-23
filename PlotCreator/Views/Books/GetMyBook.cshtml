@@ -7,58 +7,44 @@
     <link rel="stylesheet" href="~/css/books/books.css" asp-append-version="true" />
 }
 
-<div class="container container-color" >
-        <div class="container w-100 d-flex justify-content-between pb-1">
-            <h2>@Model.Title</h2>
-            <div class="w-auto d-flex align-items-center " >
-               @* @auth()
-                    @if(auth()->user()->isBookOwner($book->id_book))*@
+<div class="container " >
+    <div class="container w-100 d-flex justify-content-between pb-1">
+        <a class="btn btn-dark" aria-current="page" asp-controller="Books" asp-action="MyBooks"
+           asp-route-userId="@User.FindFirst("userId").Value">Мои книги</a>
+        <div class="w-auto d-flex align-items-center " >
+        <a class="btn btn-own" asp-controller="Books" asp-action="Save" asp-route-id="@Model.Id" asp-route-userId=@Model.UserId>Редактировать</a>
+        <a class="btn btn-danger" asp-controller="Books" asp-action="Delete" asp-route-id="@Model.Id">Удалить</a>
+        </div>
+    </div>
+    <div class="line-divider"></div>
+        <div class="info-block">
+            <div class="nav-block">
+                <nav class="navbar navbar-expand-lg navbar-light  d-flex justify-content-around">
+                    <a class="btn btn-own" asp-controller="Ideas" asp-action="GetBookIdeas" asp-route-bookId=@Model.Id>Идеи</a>
+                    <a class="btn btn-own" asp-controller="Characters" asp-action="GetBookCharacters" asp-route-bookId=@Model.Id>Персонажи</a>
+                    <a class="btn btn-own" asp-controller="Groups" asp-action="GetCharactersGroups" asp-route-bookId=@Model.Id>Группы</a>
+                    <a class="btn btn-own mb-2" asp-controller="Episodes" asp-action="GetBookepisodes" asp-route-bookId=@Model.Id asp-route-userId=@Model.UserId>Эпизоды</a>
+                    <a class="btn btn-own mb-2" asp-controller="Events" asp-action="GetBookEvents" asp-route-bookId=@Model.Id asp-route-userId=@Model.UserId>События</a>
 
-            <a class="btn btn-own" asp-controller="Books" asp-action="Save" asp-route-id="@Model.Id" asp-route-userId=@Model.UserId>Редактировать</a>
-            <a class="btn btn-danger" asp-controller="Books" asp-action="Delete" asp-route-id="@Model.Id">Удалить</a>
-                @*    @endif
-                @endauth*@
+                </nav>
             </div>
         </div>
-        <div class="line-divider "></div>
-       @* @if( session('msg') !== null )
-            <div class="mt-2">
-                <div class="alert alert-success" role="alert">
-                    {{ session('msg') }}
-                </div>
-            </div>
-        @endif *@
-        <div class="book-container">
-            <div class="content-block">
-                <div class="book-info">
-                    <h1 class="text-center">@Model.Title</h1>
-                    <div class="line-divider"></div>
-                    <h3>Рейтинг: @Model.Rating!.Rate</h3>
-                    <h3>Жанр: @Model.Genre!.Name</h3>
-                    <h3 class="mb-4">Статус: @Model.Book_Status!.Status</h3>
-                    <div class="line-divider"></div>
-                    <p><strong>Описание:</strong>@Model.Description</p>
-                </div>
-
-                <div class="line-divider"></div>
-            <div class="info-block">
-                <div class="img-book-cover-block">
-                    <img src="@Model.Book_cover" alt="" class="img-book-cover">
-                </div>
-                <div class="nav-block">
-                    <nav class="navbar navbar-expand-lg navbar-light  d-flex justify-content-around">
-                        <a class="btn btn-own" asp-controller="Ideas" asp-action="GetBookIdeas" asp-route-bookId=@Model.Id>Идеи</a>
-                        <a class="btn btn-own" asp-controller="Characters" asp-action="GetBookCharacters" asp-route-bookId=@Model.Id>Персонажи</a>
-                        <a class="btn btn-own" asp-controller="Groups" asp-action="GetCharactersGroups" asp-route-bookId=@Model.Id>Группы</a>
-                        <a class="btn btn-own mb-2" asp-controller="Episodes" asp-action="GetBookepisodes" asp-route-bookId=@Model.Id asp-route-userId=@Model.UserId>Эпизоды</a>
-                        <a class="btn btn-own mb-2" asp-controller="Events" asp-action="GetBookEvents" asp-route-bookId=@Model.Id asp-route-userId=@Model.UserId>События</a>
-
-                    </nav>
-                </div>
-            </div>
-
-
-
-            </div>
-
+    </div>
+    <div class="line-divider "></div>
+    <div class="book-container">
+    <div class="container d-flex mb-3">
+        <div class="container w-25">
+            <img src="@Model.Book_cover" class="card-img-top border border-dark border-2" alt="...">
         </div>
+        <div class="container w-75">
+            <h2 class="card-title">@Model.Title</h2>
+            <p class="card-text">Уровень доступа: @Model.Access_Modificator!.Modificator</p>
+            <p class="card-text">Возрастной рейтинг: @Model.Rating!.Rate</p>
+            <p class="card-text">Жанр: @Model.Genre!.Name</p>
+            <p class="card-text">Статус:  <strong>@Model.Book_Status!.Status</strong> </p>
+            <p class="card-text">Описание: @Model.Description</p>
+        </div>
+    </div>
+
+    
+</div>

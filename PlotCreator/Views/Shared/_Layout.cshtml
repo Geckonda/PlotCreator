@@ -7,6 +7,11 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+
+    @*Шрифты*@
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&display=swap" rel="stylesheet">
     @RenderSection("Styles", false)
 </head>
 <body>
@@ -57,7 +62,8 @@
                                             @if(User.IsInRole("Admin")){
                                             <li><a class="dropdown-item" href="#">Админ панель</a></li>
                                             }
-
+                                            <li class="dropdown-item">@User.FindFirst("login").Value</li>
+                                            <li><hr class="dropdown-divider"></li>
                                             <li>
                                             <form method="post" asp-controller="Account" asp-action="Logout">
                                                 <input class="dropdown-item" type="submit" value="Выход" />
@@ -78,11 +84,11 @@
 
         <footer class="border-top footer text-muted">
             <div class="d-flex flex-column align-items-center">
-                &copy; 2023 - PlotCreator - @if (User.Identity.IsAuthenticated)
+                &copy; 2023 - PlotCreator @* @if (User.Identity.IsAuthenticated)
                 {
                     <div>@User.FindFirst("userId");</div>
                     <div>@User.FindFirst("login").Value;</div>
-                }
+                }*@
             </div>
         </footer>
     </div>

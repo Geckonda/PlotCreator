@@ -6,14 +6,16 @@
     margin-bottom: 0;
 }
 
-*, *:before, *:after {
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-}
+    *, *:before, *:after {
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        font-family: 'Comfortaa';
+    }
 
 h1, h2, h3, h4, h5, h6 {
     margin-bottom: 0;
+    font-family: 'Comfortaa', cursive;
+    font-weight: 700;
 }
 p {
     margin-bottom: 0;
@@ -51,7 +53,7 @@ header {
 main {
     flex: 1 1 auto;
     margin: 32px 0;
-    width:80%;
+    width:90%;
 }
 
 footer {
