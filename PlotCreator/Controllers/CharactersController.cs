@@ -148,9 +148,10 @@ namespace PlotCreator.Controllers
 					if (model.checkedGroups == null)
 						model.checkedGroups = new int[0];
                     await _characterService.EditGroupsCharacterRelation(model.Id, model.checkedGroups, bookId);
-                }
-            }
-			return RedirectToRoute(new { controller = "Characters", action = "GetCharacter", model.Id, bookId = bookId });
+					return RedirectToRoute(new { controller = "Characters", action = "GetCharacter", model.Id, bookId = bookId });
+				}
+				return RedirectToRoute(new { controller = "Characters", action = "GetCharacter", model.Id });
+			}
         }
 
 		public async Task<IActionResult> Delete(int id)

@@ -17,7 +17,7 @@
 <body>
     <div class="wrapper">
         <header>
-            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <nav class="navbar navbar-expand-lg navbar-dark">
             <div class="container-fluid">
 
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">PlotCreator</a>
@@ -43,36 +43,24 @@
                         }
                     </ul>
                     <div class="d-flex" >
-                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Личный кабинет
-                                </a>
-                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                        @if (!User.Identity.IsAuthenticated)
-                                        {
-                                            <li><a class="dropdown-item" asp-controller="Account" asp-action="Login">Авторизация</a></li>
-                                            <li><a class="dropdown-item" asp-controller="Account" asp-action="Register">Регистрация</a></li>
-                                        }
+                        @if (!User.Identity.IsAuthenticated)
+                        {
+                            <a class="nav-link active" asp-controller="Account" asp-action="Login">Авторизация</a>
+                            <a class="nav-link active" asp-controller="Account" asp-action="Register">Регистрация</a>
+                        }
 
-                                        @*<li><hr class="dropdown-divider"></li>*@
+                        @*<li><hr class="dropdown-divider"></li>*@
 
-                                        @if (User.Identity.IsAuthenticated)
-                                        {
-                                            @if(User.IsInRole("Admin")){
-                                            <li><a class="dropdown-item" href="#">Админ панель</a></li>
-                                            }
-                                            <li class="dropdown-item">@User.FindFirst("login").Value</li>
-                                            <li><hr class="dropdown-divider"></li>
-                                            <li>
-                                            <form method="post" asp-controller="Account" asp-action="Logout">
-                                                <input class="dropdown-item" type="submit" value="Выход" />
-                                            </form>
-                                            </li>
-                                        }
-                                </ul>
-                            </li>
-                        </ul>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            @if(User.IsInRole("Admin")){
+                                <a class="nav-link active" href="#">Админ панель</a>
+                            }
+                            <a class="nav-link active">@User.FindFirst("login").Value</a>
+                            <form method="post" asp-controller="Account" asp-action="Logout">
+                                    <input class="nav-link active" type="submit" value="Выход" />
+                            </form>
+                        }
                     </div>
                 </div>
             </div>

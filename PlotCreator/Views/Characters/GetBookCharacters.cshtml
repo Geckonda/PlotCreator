@@ -4,11 +4,14 @@
 	ViewData["title"] = "Мои персонажи";
 }
 
+@section Styles{
+	<link rel="stylesheet" href="~/css/character/characterCards.css" asp-append-version="true" />
+}
 
 <h1>Персонажи</h1>
 <div style="padding: 10px;"></div>
 <div class="dropdown">
-	<button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown" >
+	<button class="btn btn-success dropdown-toggle mb-3" type="button" data-bs-toggle="dropdown" >
 		Добавить персонажа
 	</button>
 	<ul class="dropdown-menu">
@@ -18,27 +21,33 @@
 	</ul>
 	@if (Model.Any())
 	{
-		<a class="btn btn-danger" asp-controller="Characters" asp-action="DeleteCharacterFromBook" asp-route-bookId="@ViewData["bookId"]" asp-route-userId="@User.FindFirst("userId")!.Value">Удалить персонажа</a>
+		<a class="btn btn-danger  mb-3" asp-controller="Characters" asp-action="DeleteCharacterFromBook" asp-route-bookId="@ViewData["bookId"]" asp-route-userId="@User.FindFirst("userId")!.Value">Удалить персонажа</a>
 	}
 </div>
 <hr class="dropdown-divider w-100 mb-3">
-<div class="container d-flex justify-content-around flex-wrap">
+<div class="justify-content-center d-flex flex-wrap">
 	@if (!Model.Any())
 	{
 		<h2 class="text-info">Персонажей не найдено!</h2>
 	}
 	@foreach (var character in Model)
 	{
-		<div class="card" style="width: 18rem;">
-		<img src="@character.Picture" class="card-img-top" alt="...">
-			<div class="card-body">
-				<h5 class="card-title">@character.Name</h5>
-				<p class="card-text">Пол: @character.Gender</p>
-				<p class="card-text">Рост: @character.Height</p>
-				<p class="card-text">Вес: @character.Weight</p>
-				<p class="card-text">Мировоззрение: @character.Worldview.Name</p>
-				<a class="btn btn-dark" asp-controller="Characters" asp-action="GetCharacter" asp-route-id="@character.Id" asp-route-bookId="@ViewData["bookId"]">Подробнее</a>
-			</div>
+		<div class="card rounded-3 m-2">
+			<a class="m-2" asp-controller="Characters" asp-action="GetCharacter" asp-route-id="@character.Id" asp-route-bookId="@ViewData["bookId"]">
+			
+					@if(character.Picture is null)
+					{
+						<img src="/images/default/default.png" class="character-card-image">
+					}
+					else
+					{
+						<img src="@character.Picture" class="character-card-image">
+					}
+					<div class="card-body d-flex justify-content-center">
+						<p>@character.Name</p>
+					</div>
+			
+			</a>
 		</div>
 	}
 </div>

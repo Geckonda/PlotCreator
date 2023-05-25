@@ -5,7 +5,7 @@
 }
 
 
-<h1>Мои идеи</h1>
+<h1>Текущие идеи</h1>
 <div style="padding: 10px;"></div>
 <div class="container d-flex justify-content-around flex-wrap">
 	@if (!Model.Any())
@@ -15,15 +15,17 @@
 	else
 	{
 			<div class="list-group">
-				<form asp-action="DeleteIdeasFromBook" enctype="multipart/form-data">
-					<input name="bookId" type="number" value=@ViewData["bookId"] hidden />
-				@foreach (var idea in Model)
-				{
-							<label class="list-group-item">
-								<input class="form-check-input me-1" type="checkbox" value="@idea.Id" name="ideaIds">
-						@idea.Topic
-							</label>
-				}
+				<form asp-action="DeleteIdeasFromBook" class="d-flex flex-column align-items-center" enctype="multipart/form-data">
+					<div class="d-flex flex-wrap flex-column body-frame mb-5">
+						<input name="bookId" type="number" value=@ViewData["bookId"] hidden />
+						@foreach (var idea in Model)
+						{
+							<label class="list-group-item m-3 body-frame-invert">
+							<input class="form-check-input me-1" type="checkbox" value="@idea.Id" name="ideaIds">
+								@idea.Topic
+								</label>
+						}
+					</div>
 					<button class="btn btn-danger btn-lg float-right" type="submit">Удалить</button>
 				</form>
 			</div>

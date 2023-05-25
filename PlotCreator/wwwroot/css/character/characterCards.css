@@ -1,0 +1,89 @@
+﻿@import '../style.css';
+
+:root{
+    --w-huge:18rem;
+    --w-standard:14rem;
+    --w-small:11rem;
+    --w-ex-small:9rem;
+    --br-radius: 0.3rem;
+
+    /* Colours */
+    
+    --extra-dark: #3A1800;
+    --middle-dark:#3D1E07;
+    --main-dark: #aa734c;
+    --main-light: #F7AB76;
+    --extra-light: #F7E3D4;
+}
+
+/* Карточки персонажей */
+.card{
+    width: var(--w-huge);
+    background-color: var(--extra-dark);
+    box-shadow: inset -50px 10px 75px var(--main-dark);
+}
+.card-body p{
+    color: var(--extra-light);
+}
+.character-card-image{
+    width: 100%;
+    height: var(--w-huge);
+    object-fit: cover;
+    border-radius: var(--br-radius);
+}
+.card-small{
+    width: var(--w-small);
+}
+.character-card-small-image{
+    width: 100%;
+    height: var(--w-small);
+    object-fit: cover;
+    border-radius: var(--br-radius);
+}
+/* Таблички имен */
+.name-frame{
+    color:white;
+    background-color:black;
+    text-align:center;
+    height:auto;
+    padding:3px;
+    border-radius: var(--br-radius);
+    font-size: small;
+}
+p{
+    text-align: center;
+}
+
+
+
+
+/* ------------------------------ */
+@media(max-width:768px){
+    .card{
+        width: var(--w-huge);
+    }
+    .character-card-image{
+        height: var(--w-huge);
+    }
+}
+
+@media(max-width:590px){
+    .card{
+        width: var(--w-small);
+    }
+    .character-card-image{
+        height: var(--w-small);
+    }
+}
+
+@media(max-width:436px){
+    .card-small{
+        width: var(--w-ex-small);
+    }
+    .character-card-small-image{
+        height: var(--w-ex-small);
+    }
+    .name-frame{
+        font-size: x-small;
+    }
+}

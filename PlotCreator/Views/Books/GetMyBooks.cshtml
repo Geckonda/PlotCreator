@@ -7,10 +7,8 @@
 
 <h1>Мои книги</h1>
 <div style="padding: 10px;"></div>
-<div style="width: max-content;padding:2px 4px;  background-color:forestgreen; border-radius: 4px;">
-	<a style="text-decoration:none;color:white;" asp-area="" asp-action="Save" asp-route-id="0" asp-route-userId="@User.FindFirst("userId").Value">Добавить книгу</a>
-</div>
-	<hr class="dropdown-divider w-100 mb-3">
+<a class="btn btn-success" asp-area="" asp-action="Save" asp-route-id="0" asp-route-userId="@User.FindFirst("userId").Value">Добавить книгу</a>
+<hr class="dropdown-divider w-100 mb-3">
 <div class="container d-flex justify-content-around flex-wrap">
 	@if (!Model.Any())
 	{
@@ -18,14 +16,21 @@
 	}
 	@foreach (var book in Model)
 	{
-		<a class=" m-3" asp-controller="Books" asp-action="MyBook" asp-route-id="@book.Id">
+		<a class="m-3" asp-controller="Books" asp-action="MyBook" asp-route-id="@book.Id">
 			<div class="card position-relative" style="width: 14rem;background-color:transparent;">
-				<img src="@book.Book_cover" class="card-img-top" alt="..." style="width:100%;height: 28rem;object-fit: cover;">
-				<div class="m-2 p-2 border border-dark rounded position-absolute top-0 start-0 fs-6 fw-bolder bg-warning bg-gradient">@book.Rating!.Rate</div>
+				@if(book.Book_cover == null)
+				{
+					<img src="/images/default/default.png" class="card-img-top book-cover" alt="...">
+				}
+				else
+				{
+					<img src="@book.Book_cover" class="card-img-top book-cover" alt="...">
+				}
+				<div class="m-2 p-2 border border-dark rounded position-absolute top-0 start-0 fs-6 fw-bolder body-frame">@book.Rating!.Rate</div>
 				<div class="position-absolute bottom-0 start-50 translate-middle-x d-flex flex-column align-items-center " style="width:80%;">
-					<h5 class="card-title" style="color:white;">@book.Title</h5>
-					<p class="card-text col-10 text-truncate" style="color:white; text-align:center;">@book.Genre.Name</p>
-					<div class="w-100 h-100  position-absolute rounded-3" style="filter:blur(50%);background-color:rgba(0,0,0,0.90); z-index:-1;"></div>
+					<h5 class="card-title" style="color:var(--extra-light);padding-top:5px;">@book.Title</h5>
+					<p class="card-text col-10 text-truncate" style="color:var(--extra-light); text-align:center;">@book.Genre.Name</p>
+					<div class="w-100 h-100  position-absolute rounded-3 body-frame-invert" style=" z-index:-1;"></div>
 				</div>
 			</div>
 		</a>

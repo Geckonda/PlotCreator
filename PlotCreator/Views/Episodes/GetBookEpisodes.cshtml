@@ -4,31 +4,9 @@
     ViewBag.Title = "Мои эпизоды";
     Layout = "_Layout";
 }
-<style>
-    .cont-cont {
-    }
-
-    .SceneContainer {
-        padding: 5px 10px;
-        width: auto;
-        background-color: white;
-        display: flex;
-        margin-bottom: 5px;
-        text-decoration: none;
-        align-items: center;
-    }
-
-    p {
-        margin: auto;
-        margin-left: 15px;
-        color: #3a4675d4;
-    }
-</style>
 <h1>Эпизоды</h1>
 <div style="padding: 10px;"></div>
-<div style="width: max-content;padding:2px 4px;  background-color:forestgreen; border-radius: 4px;">
-    <a style="text-decoration:none;color:white;" asp-area="" asp-action="Save" asp-route-id="0" asp-route-bookId=@ViewData["BookId"]>Добавить эпизод</a>
-</div>
+<a class="btn btn-success" asp-area="" asp-action="Save" asp-route-id="0" asp-route-bookId=@ViewData["BookId"]>Добавить эпизод</a>
 <hr class="dropdown-divider w-100 mb-3">
 @if (!Model.Any())
 {

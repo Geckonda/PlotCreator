@@ -9,42 +9,65 @@
 
 <div class="container " >
     <div class="container w-100 d-flex justify-content-between pb-1">
-        <a class="btn btn-dark" aria-current="page" asp-controller="Books" asp-action="MyBooks"
-           asp-route-userId="@User.FindFirst("userId").Value">Мои книги</a>
+        <a class="" aria-current="page" asp-controller="Books" asp-action="MyBooks"
+           asp-route-userId="@User.FindFirst("userId").Value">Вернуться</a>
         <div class="w-auto d-flex align-items-center " >
-        <a class="btn btn-own" asp-controller="Books" asp-action="Save" asp-route-id="@Model.Id" asp-route-userId=@Model.UserId>Редактировать</a>
-        <a class="btn btn-danger" asp-controller="Books" asp-action="Delete" asp-route-id="@Model.Id">Удалить</a>
+
+            <div class="dropdown">
+              <button class="" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <svg class="text-extra-dark" xmlns="http://www.w3.org/2000/svg" width="32" height="32" style="background-color:var(--extra-light);" fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
+                  <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/>
+                  <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"/>
+                </svg>
+              </button>
+              <ul class="dropdown-menu p-0">
+                <li>
+                    <a class="btn btn-success" asp-controller="Books" asp-action="Save" asp-route-id="@Model.Id" asp-route-userId=@Model.UserId>Редактировать</a>
+                </li>
+                <li>
+                    <a class="btn btn-danger w-100" asp-controller="Books" asp-action="Delete" asp-route-id="@Model.Id">Удалить</a>
+                </li>
+              </ul>
+            </div>
         </div>
     </div>
     <div class="line-divider"></div>
         <div class="info-block">
             <div class="nav-block">
-                <nav class="navbar navbar-expand-lg navbar-light  d-flex justify-content-around">
-                    <a class="btn btn-own" asp-controller="Ideas" asp-action="GetBookIdeas" asp-route-bookId=@Model.Id>Идеи</a>
-                    <a class="btn btn-own" asp-controller="Characters" asp-action="GetBookCharacters" asp-route-bookId=@Model.Id>Персонажи</a>
-                    <a class="btn btn-own" asp-controller="Groups" asp-action="GetCharactersGroups" asp-route-bookId=@Model.Id>Группы</a>
-                    <a class="btn btn-own mb-2" asp-controller="Episodes" asp-action="GetBookepisodes" asp-route-bookId=@Model.Id asp-route-userId=@Model.UserId>Эпизоды</a>
-                    <a class="btn btn-own mb-2" asp-controller="Events" asp-action="GetBookEvents" asp-route-bookId=@Model.Id asp-route-userId=@Model.UserId>События</a>
-
-                </nav>
+                <div class="d-flex flex-wrap justify-content-around">
+                    <a class="btn btn-success mb-2" asp-controller="Ideas" asp-action="GetBookIdeas" asp-route-bookId=@Model.Id>Идеи</a>
+                    <a class="btn btn-success mb-2" asp-controller="Characters" asp-action="GetBookCharacters" asp-route-bookId=@Model.Id>Персонажи</a>
+                    <a class="btn btn-success mb-2" asp-controller="Groups" asp-action="GetCharactersGroups" asp-route-bookId=@Model.Id>Группы</a>
+                    <a class="btn btn-success mb-2" asp-controller="Episodes" asp-action="GetBookepisodes" asp-route-bookId=@Model.Id asp-route-userId=@Model.UserId>Эпизоды</a>
+                    <a class="btn btn-success mb-2" asp-controller="Events" asp-action="GetBookEvents" asp-route-bookId=@Model.Id asp-route-userId=@Model.UserId>События</a>
+                </div>
             </div>
         </div>
     </div>
     <div class="line-divider "></div>
     <div class="book-container">
-    <div class="container d-flex mb-3">
-        <div class="container w-25">
-            <img src="@Model.Book_cover" class="card-img-top border border-dark border-2" alt="...">
+    <div class="container d-flex mb-3 justify-content-center flex-wrap">
+        <div class="mb-3">
+            @if(Model.Book_cover == null)
+            {
+                <img src="/images/default/default.png" class="card-img-top border border-dark border-2 book-cover" alt="...">
+            }
+            else
+            {
+                <img src="@Model.Book_cover" class="card-img-top border border-dark border-2 book-cover" alt="...">    
+            }            
         </div>
         <div class="container w-75">
-            <h2 class="card-title">@Model.Title</h2>
-            <p class="card-text">Уровень доступа: @Model.Access_Modificator!.Modificator</p>
-            <p class="card-text">Возрастной рейтинг: @Model.Rating!.Rate</p>
-            <p class="card-text">Жанр: @Model.Genre!.Name</p>
-            <p class="card-text">Статус:  <strong>@Model.Book_Status!.Status</strong> </p>
-            <p class="card-text">Описание: @Model.Description</p>
+            <h2 class="card-title text-center mb-3">@Model.Title</h2>
+            <p class="card-text mb-2">Уровень доступа:<strong class="text-extra-dark"> @Model.Access_Modificator!.Modificator</strong></p>
+            <p class="card-text mb-2"> Возрастной рейтинг: <strong class="text-extra-dark">@Model.Rating!.Rate</strong></p>
+            <p class="card-text mb-2">Жанр: <strong class="text-extra-dark">@Model.Genre!.Name</strong></p>
+            <p class="card-text mb-5">Статус:  <strong class="text-extra-dark">@Model.Book_Status!.Status</strong> </p>
+            <p class="card-text">Описание:
+                <strong class="text-extra-dark">
+                    @Model.Description
+                </strong>
+            </p>
         </div>
     </div>
-
-    
 </div>

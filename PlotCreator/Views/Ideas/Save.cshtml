@@ -7,13 +7,11 @@
 }
 
 <div style="padding: 10px;"></div>
-<div class="col-md-12">
+<div class="col-md-12 d-flex justify-content-center">
     <div class="card-body">
-        <div class="card card-outline-secondary" style="background-color: white">
-            <div class="card-header">
+        <div class="card card-outline-secondary">
+            <div class="card-body body-frame">
                 <h3 class="mb-0 text-center ParagraphHome">@textTitle</h3>
-            </div>
-            <div class="card-body">
                 <form asp-action="Save" enctype="multipart/form-data">
                     <input asp-for="Id" type="text"  value="@Model?.Id" hidden />
                     <input asp-for="UserId" type="text" value="@Model?.UserId" hidden />
@@ -28,7 +26,9 @@
                         <label asp-for="Content">Содержание</label>
                         <textarea asp-for="Content" class="form-control" rows="15">@Model?.Content</textarea>
                     </div>
-                    <button class="btn btn-primary btn-lg float-right" type="submit">Сохранить</button>
+                    <div class="w-100 d-flex justify-content-center">
+                        <button class="btn btn-success" type="submit">Сохранить</button>
+                    </div>
                 </form>
             </div>
         </div>

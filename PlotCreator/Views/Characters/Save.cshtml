@@ -7,13 +7,11 @@
 }
 
 <div style="padding: 10px;"></div>
-<div class="col-md-12">
+<div class="col-md-12 d-flex justify-content-center">
     <div class="card-body">
         <div class="card card-outline-secondary" style="background-color: white">
-            <div class="card-header">
+            <div class="card-body body-frame">
                 <h3 class="mb-0 text-center ParagraphHome">@textTitle</h3>
-            </div>
-            <div class="card-body">
                 <form asp-action="Save" enctype="multipart/form-data">
                     <input asp-for="Id" type="text" value="@Model?.Id" hidden />
                     <input asp-for="UserId" type="text" value="@Model?.UserId" hidden />
@@ -62,13 +60,13 @@
                     </div>
 
                     <div class="form-group mb-3">
-                        <label asp-for="Height">Рост</label>
+                        <label asp-for="Height">Рост:</label>
                         <input asp-for="Height" class="form-control" type="number" value="@Model?.Height">
                         <span asp-validation-for="@Model.Height" class="text-danger"></span>
                     </div>
 
                     <div class="form-group mb-3">
-                        <label asp-for="Weight">Вес</label>
+                        <label asp-for="Weight">Вес:</label>
                         <input asp-for="Weight" class="form-control" type="number" value="@Model?.Weight">
                         <span asp-validation-for="@Model.Weight" class="text-danger"></span>
                     </div>
@@ -149,23 +147,23 @@
                                         {
                                             @if (Model.OwnGroups.Select(x => x.GroupId).Contains(group.Id))
                                             {
-                                                <input class="form-check-input" type="checkbox" value="@group.Id" checked name="checkedGroups">
-                                                <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" value="@group.Id" checked name="checkedGroups" id="@group.Id Group">
+                                                <label class="form-check-label" for="@group.Id Group">
                                                     @group.Name
                                                 </label>
                                             }
                                             else
                                             {
-                                                <input class="form-check-input" type="checkbox" value="@group.Id" name="checkedGroups">
-                                                <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" value="@group.Id" name="checkedGroups" id="@group.Id Group">
+                                                <label class="form-check-label" for="@group.Id Group">
                                                     @group.Name
                                                 </label>
                                             }
                                         }
                                         else
                                         {
-                                            <input class="form-check-input" type="checkbox" value="@group.Id" name="checkedGroups">
-                                                <label class="form-check-label">
+                                            <input class="form-check-input" type="checkbox" value="@group.Id" name="checkedGroups" id="@group.Id Group">
+                                            <label class="form-check-label" for="@group.Id Group">
                                                     @group.Name
                                                 </label>
                                         }
@@ -176,12 +174,14 @@
                     }
 
                     <div class="form-group mb-3">
-                        <label asp-for="@Model.Picture" class="col-form-label">Рисунок персонажа (необязательно)</label>
+                        <label asp-for="@Model.Picture" class="col-form-label">Портрет персонажа</label>
                         <div class="col-sm-15">
                             <input asp-for="@Model.PictureImage" type="file" class="form-control" value="@Model?.PictureImage">
                         </div>
                     </div>
-                    <button class="btn btn-dark btn-lg float-right" type="submit">Сохранить</button>
+                    <div class="w-100 d-flex justify-content-center">
+                        <button class="btn btn-success" type="submit">Сохранить</button>
+                    </div>
                 </form>
             </div>
         </div>
