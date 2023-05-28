@@ -94,7 +94,6 @@ input, input:hover, input:focus, input:active, select, option,textarea, textarea
 .accordion-body{
     background-color: var(--extra-light);
     box-shadow: inset 0px 0px 10px var(--main-dark);
-    color: var(--extra-dark);
 }
 .accordion-button::after{
     background-image: none;
@@ -205,4 +204,32 @@ footer {
 .listPointer {
     border: 10px solid transparent;
     border-left: 10px solid var(--main-dark);
+}
+
+/*Поисковик с кнопкой "добавить"*/
+.panel-container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.serch-container{
+    width: 400px;
+}
+@media(max-width:876px){
+    .serch-container{
+        width: 300px;
+    }
+}
+@media(max-width:510px){
+    .serch-container{
+        margin-top: 10px;
+    }
+}
+.hide{
+    /* opacity: 1;
+    animation-name: a1;
+    animation-duration: 2s;
+    animation-fill-mode: forwards; */
+    display: none;
 }

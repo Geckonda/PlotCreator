@@ -4,15 +4,23 @@
     ViewBag.Title = Model.Heading;
     Layout = "_Layout";
 }
+@section Styles{
+    <link rel="stylesheet" href="~/css/text.css" asp-append-version="true" />
+}
+
 <div class=" right" style="text-align: right; margin-bottom:10px;">
     <a class="btn btn-success" asp-controller="Episodes" asp-action="Save" asp-route-id="@Model.Id" asp-route-bookId="@Model.Book!.Id" >Изменить</a>
     <a class="btn btn-danger" asp-controller="Episodes" asp-action="Delete" asp-route-id="@Model.Id"   style="margin-left:10px;">Удалить</a>
  </div>
 
 <div style="padding: 10px;"></div>
-    <div class="cont-cont">
-        
-    <h2>@Model.Heading</h2>
+<div class="cont-cont">
+    <h2 class="heading">@Model.Heading</h2>
+    <p id="response-text-block" class="d-none">@Model.Content</p>
     <hr class="dropdown-divider w-100 mb-3">
-        <p class="fs-3">@Model.Content</p>
-    </div>
+    <div id="main-text-block"></div>
+</div>
+
+ @section Scripts{
+    <script src="~/js/textConstructor.js"></script>
+ }

@@ -3,7 +3,10 @@
 @{
 	ViewData["title"] = Model.Name;
 }
-
+@section Styles{
+	<link rel="stylesheet" href="~/css/text.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/character/characterProfile.css" asp-append-version="true" />
+}
 <div class="container w-100 d-flex justify-content-between pb-1">
 	@if (ViewData["bookId"] != null)
 	{
@@ -45,21 +48,36 @@
         </div>
 			
 			</div>
-			<p class="card-text">Дата рождения: @Model.Birthday.ToString("D")</p>
-			<p class="card-text">Пол: @Model.Gender</p>
-			<p class="card-text">Рост: @Model.Height см</p>
-			<p class="card-text">Вес: @Model.Weight кг</p>
+			<p class="card-text">Дата рождения: <strong class="text-extra-dark">@Model.Birthday.ToString("D")</strong></p>
+			<p class="card-text">Пол: <strong class="text-extra-dark">@Model.Gender</strong></p>
+			<p class="card-text">Рост: <strong class="text-extra-dark">@Model.Height см</strong></p>
+			<p class="card-text">Вес: <strong class="text-extra-dark">@Model.Weight кг</strong></p>
 			@*Мировоззрение*@
 			<p>
 				Мировоззрение:
-				<a class="" data-bs-toggle="collapse" href="#WorldviewInfo" role="button" aria-expanded="false" aria-controls="collapseExample">
+				<a class="text-extra-dark" data-bs-toggle="collapse" href="#WorldviewInfo" role="button" aria-expanded="false">
 					 @Model.Worldview!.Name
 			  </a>
 			</p>
 			<div class="collapse" id="WorldviewInfo">
 				<div class="card card-body body-frame-invert" style="max-width: 450px;">
 				  @Model.Worldview!.Description
-			  </div>
+				</div>
+			</div>
+			@*Группы персонажа*@
+			<p>
+				Группы:
+				<a class="text-extra-dark" data-bs-toggle="collapse" href="#GroupInfo" role="button" aria-expanded="false" >
+					@Model.OwnGroups!.Count
+				</a>
+			</p>
+			<div class="collapse" id="GroupInfo">
+				<div class="card body-frame-invert d-flex flex-wrap" style="max-width: 450px;">
+					@foreach (var group in Model.OwnGroups)
+					{
+						<button type="button" class="btn body-frame-invert group-btn" data-bs-toggle="modal" data-bs-target="#modelDescription" data-bs-description="@group.Group!.Description" data-bs-groupId="@group.Group!.Id" data-bs-name="@group.Group!.Name">@group.Group!.Name</button>
+					}
+				</div>
 			</div>
 		</div>
 	</div>
@@ -146,7 +164,8 @@
 						{
 							<p style="color: var(--main-dark);">Пусто</p>
 						}
-						@Model.History
+						<p id="response-text-block" class="d-none">@Model.History</p>
+						<div id="main-text-block"></div>
 					</div>
 				</div>
 			</div>
@@ -155,3 +174,23 @@
 
 </div>
 
+
+@*Модальное окно групп*@
+<div class="modal fade" id="modelDescription" tabindex="-1"  aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content body-frame">
+            <div class="modal-body">
+                <div class="d-flex justify-content-between">
+					<h5 class="modal-title" id="nameGroupText">Описание группы</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <p id="descriptionText"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+	<script src="~/js/textConstructor.js"></script>
+	<script src="~/js/Characters/modal.js"></script>
+ }

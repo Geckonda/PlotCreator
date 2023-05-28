@@ -1,0 +1,9 @@
+@import 'style.css';
+.paragraph{
+    text-indent: 5%;
+    text-align: justify;
+}
+.heading{
+    text-indent: 5%;
+    text-shadow: 4px 4px 8px var(--main-dark);
+}

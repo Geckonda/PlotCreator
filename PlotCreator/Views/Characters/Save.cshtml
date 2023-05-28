@@ -32,7 +32,7 @@
                     </div>
                     <div class="form-group mb-3">
                         <label asp-for="Deathday">Дата смерти</label>
-                        <input asp-for="Deathday" class="form-control" type="date" value="@Model?.Deathday">
+                        <input asp-for="Deathday" class="form-control" type="date" value="@Model?.Deathday.ToString("yyyy-MM-dd")">
                         <span asp-validation-for="@Model.Deathday" class="text-danger"></span>
                     </div>
                     

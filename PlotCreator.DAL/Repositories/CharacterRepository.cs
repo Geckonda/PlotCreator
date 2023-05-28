@@ -51,6 +51,7 @@ namespace PlotCreator.DAL.Repositories
 				.Include(x => x.Books_Characters)
 				.Include(x => x.Events_Characters)
 				.Include(x => x.Groups_Characters)
+					.ThenInclude(x => x.Group)
 				.First();
 			character.Worldviews = _db.Worldview.ToList();
 
