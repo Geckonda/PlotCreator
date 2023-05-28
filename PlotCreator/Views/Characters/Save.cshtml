@@ -124,11 +124,11 @@
                         </select>
                     </div>
 
-                    @if (Model.Groups != null)
+                    @if (Model.Groups.Any())
                     {
                         <div class="form-group mb-3">
                             <label>Принадлежность персонажа к группам: </label>
-                            
+                           @* 
                             @if (Model.Groups.Count == 0)
                             {
                                 <div class="alert alert-warning d-flex align-items-center" role="alert">
@@ -137,8 +137,9 @@
                                         Доступно только при прикреплении персонажа к книге
                                     </div>
                                 </div>
-                                @*<label class="text-danger">Доступно только при прикреплении персонажа к книге</label>*@
+                                @*<label class="text-danger">Доступно только при прикреплении персонажа к книге</label>
                             }
+                            *@
                             <div class="container d-flex jus flex-wrap">
                                 @foreach (var group in Model!.Groups!)
                                 {

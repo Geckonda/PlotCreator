@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PlotCreator.DAL.Interfaces;
 using PlotCreator.Domain.Entity;
+using PlotCreator.Domain.Entity.Multiple_Tables;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -25,6 +27,8 @@ namespace PlotCreator.DAL.Repositories
 
         public async Task Delete(Event entity)
         {
+            await DeleteGroupsFromEntity(entity.Groups_Events);
+
             _db.Remove(entity);
             await _db.SaveChangesAsync();
         }
@@ -59,9 +63,17 @@ namespace PlotCreator.DAL.Repositories
                 .Where(x => x.Book!.User!.Id == userId);
         }
 
-        public Task<Event> GetEmptyViewModel()
+        public async Task<Event> GetEmptyViewModel(int bookId)
         {
-            throw new NotImplementedException();
+            return new Event()
+            {
+                Groups = _db.Groups
+                    .Where(x => x.BookId == bookId)
+                    .Where(x => x.Parent == "Event")
+                    .GroupBy(x => x.Id)
+                    .Select(x => x.First())
+                    .ToList()
+            };
         }
 
         public async Task<Event> GetOne(int id)
@@ -70,6 +82,7 @@ namespace PlotCreator.DAL.Repositories
                 .Where(x => x.Id == id)
                 .Include(x => x.Book)
                 .Include(x => x.Book!.User)
+                .Include(x => x.Groups_Events)
                 .First();
         }
 
@@ -83,6 +96,63 @@ namespace PlotCreator.DAL.Repositories
                 .Include(x => x.Genre)
                 .Include(x => x.Book_Status)
                 .First();
+        }
+
+        public async Task<IQueryable<Group_Event>> GetEntityGroups(int entityId)
+        {
+            return _db.Groups_Events
+                        .Where(x => x.EventId == entityId);
+        }
+        public async Task<int> GetLastUserEventId(int bookId)
+        {
+            return _db.Events
+                .Where(x => x.BookId == bookId)
+                .OrderByDescending(x => x.Id)
+                .Select(x => x.Id)
+                .First();
+        }
+
+        public async Task<IQueryable<Group_Event>> GetAllEntityGroupsByBookId(int bookId)
+        {
+            return _db.Groups_Events
+                    .Include(x => x.Group)
+                    .Where(x => x.Group!.BookId == bookId);
+        }
+
+        public async Task AddGroupsToEntity(IEnumerable<Group_Event> groups)
+        {
+            await _db.Groups_Events.AddRangeAsync(groups);
+            await _db.SaveChangesAsync();
+        }
+
+        public async Task DeleteGroupsFromEntity(IEnumerable<Group_Event> groups)
+        {
+            _db.RemoveRange(groups);
+            await _db.SaveChangesAsync();
+        }
+
+        public async Task EditGroupsEntityRelation(IEnumerable<Group_Event> groups, int eventId, int bookId)
+        {
+            var groupsForDelete = _db.Groups_Events
+                                       .Where(x => x.EventId == eventId)
+                                       .Include(x => x.Group)
+                                       .Where(x => x.Group!.BookId == bookId)
+                                       .Where(x => !groups.Select(x => x.GroupId).Contains(x.GroupId))
+                                       .ToList();
+
+            if (groupsForDelete.Count > 0)
+                await DeleteGroupsFromEntity(groupsForDelete);
+
+            var existedGroups = _db.Groups_Events
+                                        .Where(x => x.EventId == eventId)
+                                        .Include(x => x.Group)
+                                        .Where(x => x.Group!.BookId == bookId)
+                                        .ToList();
+            if (groups.Any())
+                await AddGroupsToEntity(groups
+                    .Where(x => !existedGroups
+                    .Select(x => x.GroupId)
+                    .Contains(x.GroupId)));
         }
     }
 }

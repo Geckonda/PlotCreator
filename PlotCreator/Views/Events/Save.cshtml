@@ -51,7 +51,43 @@
                         <label asp-for="Colour">Цвет события</label>
                         <input asp-for="Colour"  type="color" class="form-control form-control-color" value="@Model?.Colour" title="Choose your color">
                     </div>
-
+                       @if (Model.Groups.Any())
+                       {
+                            <div class="form-group mb-3">
+                                <label>Принадлежность события к группам: </label>
+                            </div>
+                       }
+                        <div class="container d-flex jus flex-wrap">
+                            @foreach (var group in Model!.Groups!)
+                            {
+                                <div class="form-check m-3">
+                                    @if (Model.OwnGroups != null)
+                                    {
+                                        @if (Model.OwnGroups.Select(x => x.GroupId).Contains(group.Id))
+                                        {
+                                            <input class="form-check-input" type="checkbox" value="@group.Id" checked name="checkedGroups" id="@group.Id Group">
+                                            <label class="form-check-label" for="@group.Id Group">
+                                                @group.Name
+                                            </label>
+                                        }
+                                        else
+                                        {
+                                            <input class="form-check-input" type="checkbox" value="@group.Id" name="checkedGroups" id="@group.Id Group">
+                                            <label class="form-check-label" for="@group.Id Group">
+                                                @group.Name
+                                            </label>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <input class="form-check-input" type="checkbox" value="@group.Id" name="checkedGroups" id="@group.Id Group">
+                                        <label class="form-check-label" for="@group.Id Group">
+                                            @group.Name
+                                        </label>
+                                    }
+                                </div>
+                            }
+                        </div>
                      <div class="w-100 d-flex justify-content-center">
                         <button class="btn btn-success" type="submit">Сохранить</button>
                     </div>

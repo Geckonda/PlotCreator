@@ -28,6 +28,10 @@ namespace PlotCreator.Domain.Entity
         public string? Icon { get; set; }
         public string? Colour { get; set; }
 
+
+        [NotMapped]
+        public List<Group>? Groups { get; set; }
+
         //Навигационные свойства для зависимых таблиц 
         //  |  |  |  |  |
         //  v  v  v  v  v

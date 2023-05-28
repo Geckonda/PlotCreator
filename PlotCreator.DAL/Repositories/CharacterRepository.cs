@@ -65,7 +65,8 @@ namespace PlotCreator.DAL.Repositories
 				Worldviews = _db.Worldview.ToList(),
 				Groups = _db.Groups
 							.Where(x => x.BookId== bookId)
-							.GroupBy(x => x.Id)
+							.Where(x => x.Parent == "Character")
+                            .GroupBy(x => x.Id)
                             .Select(x => x.FirstOrDefault()!)//! || ? 
 							.ToList(),
 			};

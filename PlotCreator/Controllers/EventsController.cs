@@ -1,6 +1,9 @@
 ﻿using Azure;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using PlotCreator.Domain.Entity;
 using PlotCreator.Domain.Helpers.Interfaces;
+using PlotCreator.Domain.Response.Interfaces;
 using PlotCreator.Domain.ViewModels;
 using PlotCreator.Service.Implementations;
 using PlotCreator.Service.Interfaces;
@@ -10,10 +13,20 @@ namespace PlotCreator.Controllers
     public class EventsController : Controller, IInspector<bool>
     {
         private readonly IEventService _eventService;
-        public EventsController(IEventService eventService)
+        private readonly IGroupService _groupService;
+        public EventsController(IEventService eventService, IGroupService groupService)
         {
             _eventService = eventService;
+            _groupService = groupService;
         }
+        private async Task<List<Group>> GetGroups(int bookId, string parent)
+        {
+            var response = await _groupService.GetBookGroupsByParent(bookId, parent);
+            if (response.StatusCode == Domain.Enum.StatusCode.Ok)
+                return response.Data.ToList();
+            return null;
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetBookEvents(int bookId, int userId)
         {
@@ -26,10 +39,12 @@ namespace PlotCreator.Controllers
             return RedirectToAction("Error");
         }
         [HttpGet]
-        public async Task<IActionResult> GetBookEvent(int id)
+        public async Task<IActionResult> GetBookEvent(int id, int? bookId)
         {
             if (!CheckByContentId(id).Result)
                 return View("404");
+
+            ViewData["bookId"] = bookId;
             var response = await _eventService.GetEvent(id);
             if (response.StatusCode == Domain.Enum.StatusCode.Ok)
                 return View(response.Data);
@@ -42,6 +57,8 @@ namespace PlotCreator.Controllers
             var response = await _eventService.GetEmptyViewModel(bookId);
             if (!CheckByUserId(response.Data.Book!.User!.Id))
                 return View("404");
+
+            ViewData["bookId"] = bookId;
             if (id == 0)
             {
                 if (response.StatusCode == Domain.Enum.StatusCode.Ok)
@@ -49,6 +66,7 @@ namespace PlotCreator.Controllers
                 return RedirectToAction("Error");
             }
             response = await _eventService.GetEvent(id);
+            response.Data.Groups = await GetGroups(bookId, "Event");
             if (response.StatusCode == Domain.Enum.StatusCode.Ok)
                 return View(response.Data);
 
@@ -62,15 +80,20 @@ namespace PlotCreator.Controllers
                 return View("404");
 
             if (model.Id == 0)
+            {
+                int eventId = await _eventService.GetLastUserEventId(model.Book!.Id);
                 await _eventService.CreateEvent(model);
+                await _eventService.AddGroupsEventRelation(eventId, model.checkedGroups);
+                return RedirectToAction($"GetBookEvent", new { Id = eventId, bookId = model.Book!.Id });
+            }
             else
+            {
                 await _eventService.EditEvent(model);
-            return RedirectToAction($"GetBookEvents",
-              new
-              {
-                  bookId = model.Book!.Id,
-                  userId = model.Book!.User!.Id
-              });
+                if (model.checkedGroups == null)
+                    model.checkedGroups = new int[0];
+                await _eventService.EditGroupsEventRelation(model.Id, model.checkedGroups, model.Book!.Id);
+                return RedirectToAction($"GetBookEvent", new { Id = model.Id, bookId = model.Book!.Id });
+            }
         }
         public async Task<IActionResult> Delete(int id)
         {

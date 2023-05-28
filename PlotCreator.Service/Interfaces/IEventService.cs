@@ -19,5 +19,13 @@ namespace PlotCreator.Service.Interfaces
         Task<IBaseResponse<IEnumerable<EventViewModel>>> GetBookEvents(int bookId);
         Task<IBaseResponse<EventViewModel>> GetEvent(int EventId);
         Task<IBaseResponse<EventViewModel>> GetEmptyViewModel(int bookId);
+
+        //
+        Task<int> GetLastUserEventId(int bookId);
+
+        //Операции с группами
+        Task<bool> AddGroupsEventRelation(int eventId, int[] groupIds);
+        Task<bool> DeleteGroupsEventRelation(int eventId, int[] groupIds);
+        Task<bool> EditGroupsEventRelation(int eventId, int[] groupIds, int bookId);
     }
 }

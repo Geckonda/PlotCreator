@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PlotCreator.DAL.Interfaces;
 using PlotCreator.Domain.Entity;
+using PlotCreator.Domain.Entity.Multiple_Tables;
 using PlotCreator.Domain.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,29 @@ namespace PlotCreator.DAL.Repositories
 
         public async Task Delete(Book entity)
         {
+            _db.Groups_Characters.RemoveRange(
+                _db.Groups_Characters
+                    .Where(x => _db.Groups
+                    .Where(x => x.BookId == entity.Id)
+                    .Select(x => x.Id).Contains(x.GroupId))
+                );
+            _db.Groups_Events.RemoveRange(
+                 _db.Groups_Events
+                     .Where(x => _db.Groups
+                     .Where(x => x.BookId == entity.Id)
+                     .Select(x => x.Id).Contains(x.GroupId))
+                 );
+            _db.Books_Ideas.RemoveRange(
+                _db.Books_Ideas
+                    .Where(x => x.BookId == entity.Id)
+                );
+
+            
+
+            _db.Groups.RemoveRange(
+                _db.Groups
+                .Where(x => x.BookId == entity.Id));
+
             _db.Books.Remove(entity);
 
 			_db.Books_Characters.RemoveRange(

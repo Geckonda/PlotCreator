@@ -11,11 +11,11 @@ namespace PlotCreator.Service.Interfaces
 {
     public interface IGroupService
     {
-        Task<IBaseResponse<IEnumerable<Group>>> GetBookGroups(int bookId);
+        Task<IBaseResponse<IEnumerable<Group>>> GetBookGroupsByParent(int bookId, string parent);
         Task<IBaseResponse<IEnumerable<GroupViewModel>>> GetAllGroupsByParent(int bookId, string parent);
-        Task<IBaseResponse<GroupViewModel>> CreateCharacterGroup(GroupViewModel model);
-        Task<IBaseResponse<bool>> DeleteCharacterGroup(int id);
-        Task<IBaseResponse<GroupViewModel>> EditCharacterGroup(GroupViewModel model);
+        Task<IBaseResponse<GroupViewModel>> CreateGroup(GroupViewModel model);
+        Task<IBaseResponse<bool>> DeleteGroup(int id);
+        Task<IBaseResponse<GroupViewModel>> EditGroup(GroupViewModel model);
 
     }
 }

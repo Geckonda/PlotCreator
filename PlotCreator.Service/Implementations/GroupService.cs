@@ -22,7 +22,7 @@ namespace PlotCreator.Service.Implementations
             _groupRepository = groupRepository;
         }
 
-        public async Task<IBaseResponse<GroupViewModel>> CreateCharacterGroup(GroupViewModel model)
+        public async Task<IBaseResponse<GroupViewModel>> CreateGroup(GroupViewModel model)
         {
             var baseResponse = new BaseResponse<GroupViewModel>();
             try
@@ -48,7 +48,7 @@ namespace PlotCreator.Service.Implementations
             }
         }
 
-        public async Task<IBaseResponse<bool>> DeleteCharacterGroup(int id)
+        public async Task<IBaseResponse<bool>> DeleteGroup(int id)
         {
             var baseResponse = new BaseResponse<bool>();
             try
@@ -68,7 +68,7 @@ namespace PlotCreator.Service.Implementations
             }
         }
 
-        public async Task<IBaseResponse<GroupViewModel>> EditCharacterGroup(GroupViewModel model)
+        public async Task<IBaseResponse<GroupViewModel>> EditGroup(GroupViewModel model)
         {
             var baseResponse = new BaseResponse<GroupViewModel>();
             try
@@ -129,12 +129,12 @@ namespace PlotCreator.Service.Implementations
             }
         }
 
-        public async Task<IBaseResponse<IEnumerable<Group>>> GetBookGroups(int bookId)
+        public async Task<IBaseResponse<IEnumerable<Group>>> GetBookGroupsByParent(int bookId,string parent)
         {
             var baseResponse = new BaseResponse<IEnumerable<Group>>();
             try
             {
-                var groups = await _groupRepository.GetAllByBookId(bookId);
+                var groups = await _groupRepository.GetAllGroupsByParent(bookId, parent);
                 baseResponse.Data = groups;
                 baseResponse.StatusCode = StatusCode.Ok;
                 return baseResponse;

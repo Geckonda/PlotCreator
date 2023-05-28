@@ -1,6 +1,7 @@
 ﻿using PlotCreator.DAL.Interfaces;
 using PlotCreator.DAL.Repositories;
 using PlotCreator.Domain.Entity;
+using PlotCreator.Domain.Entity.Multiple_Tables;
 using PlotCreator.Domain.Enum;
 using PlotCreator.Domain.Response.Implementations;
 using PlotCreator.Domain.Response.Interfaces;
@@ -10,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,6 +23,32 @@ namespace PlotCreator.Service.Implementations
         public EventService(IEventRepository eventRepository)
         {
             _eventRepository = eventRepository;
+        }
+
+        public async Task<bool> AddGroupsEventRelation(int eventId, int[] groupIds)
+        {
+            try
+            {
+                if (groupIds == null)
+                    return false;
+
+                List<Group_Event> mediators = new();
+                for (int i = 0; i < groupIds.Length; i++)
+                {
+                    var mediator = new Group_Event()
+                    {
+                        EventId = eventId,
+                        GroupId = groupIds[i],
+                    };
+                    mediators.Add(mediator);
+                }
+                await _eventRepository.AddGroupsToEntity(mediators);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public async Task<IBaseResponse<EventViewModel>> CreateEvent(EventViewModel model)
@@ -81,6 +109,29 @@ namespace PlotCreator.Service.Implementations
             }
         }
 
+        public async Task<bool> DeleteGroupsEventRelation(int eventId, int[] groupIds)
+        {
+            try
+            {
+                List<Group_Event> mediators = new();
+                for (int i = 0; i < groupIds.Length; i++)
+                {
+                    var mediator = new Group_Event()
+                    {
+                        EventId = eventId,
+                        GroupId = groupIds[i],
+                    };
+                    mediators.Add(mediator);
+                }
+                await _eventRepository.DeleteGroupsFromEntity(mediators);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
         public async Task<IBaseResponse<EventViewModel>> EditEvent(EventViewModel model)
         {
             var baseResponse = new BaseResponse<EventViewModel>();
@@ -118,6 +169,29 @@ namespace PlotCreator.Service.Implementations
                     Description = $"[EventService | EditEvent]: {ex.Message}",
                     StatusCode = StatusCode.InternalServerError,
                 };
+            }
+        }
+
+        public async Task<bool> EditGroupsEventRelation(int eventId, int[] groupIds, int bookId)
+        {
+            try
+            {
+                List<Group_Event> mediators = new();
+                for (int i = 0; i < groupIds.Length; i++)
+                {
+                    var mediator = new Group_Event()
+                    {
+                        EventId = eventId,
+                        GroupId = groupIds[i],
+                    };
+                    mediators.Add(mediator);
+                }
+                await _eventRepository.EditGroupsEntityRelation(mediators, eventId, bookId);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
             }
         }
 
@@ -203,11 +277,13 @@ namespace PlotCreator.Service.Implementations
             try
             {
                 var book = await _eventRepository.GetBook(bookId);
-                var emptyModel = new EventViewModel()
+                var emptyModel = await _eventRepository.GetEmptyViewModel(bookId);
+                var model = new EventViewModel()
                 {
                     Book = book,
+                    Groups = emptyModel.Groups,
                 };
-                baseResponse.Data = emptyModel;
+                baseResponse.Data = model;
                 baseResponse.StatusCode = StatusCode.Ok;
                 return baseResponse;
             }
@@ -245,6 +321,8 @@ namespace PlotCreator.Service.Implementations
                     IsHidden = Event.IsHidden,
                     Icon = Event.Icon,
                     Colour = Event.Colour,
+                    OwnGroups = Event.Groups_Events,
+
                 };
                 baseResponse.Data = data;
                 baseResponse.StatusCode = StatusCode.Ok;
@@ -257,6 +335,18 @@ namespace PlotCreator.Service.Implementations
                     Description = $"[EventService | GetEvent]: {ex.Message}",
                     StatusCode = StatusCode.InternalServerError,
                 };
+            }
+        }
+
+        public async Task<int> GetLastUserEventId(int bookId)
+        {
+            try
+            {
+                return await _eventRepository.GetLastUserEventId(bookId);
+            }
+            catch (Exception)
+            {
+                return -666;
             }
         }
 

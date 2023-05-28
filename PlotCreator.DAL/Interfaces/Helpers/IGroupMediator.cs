@@ -23,6 +23,6 @@ namespace PlotCreator.DAL.Interfaces.Helpers
 		Task<IQueryable<T>> GetAllEntityGroupsByBookId(int bookId);
 		Task AddGroupsToEntity(IEnumerable<T> groups);
 		Task DeleteGroupsFromEntity(IEnumerable<T> groups);
-		Task EditGroupsEntityRelation(IEnumerable<T> groups, int characterId, int bookId);
+		Task EditGroupsEntityRelation(IEnumerable<T> groups, int entityId, int bookId);
 	}
 }

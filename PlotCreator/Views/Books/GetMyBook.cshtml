@@ -37,7 +37,8 @@
                 <div class="d-flex flex-wrap justify-content-around">
                     <a class="btn btn-success mb-2" asp-controller="Ideas" asp-action="GetBookIdeas" asp-route-bookId=@Model.Id>Идеи</a>
                     <a class="btn btn-success mb-2" asp-controller="Characters" asp-action="GetBookCharacters" asp-route-bookId=@Model.Id>Персонажи</a>
-                    <a class="btn btn-success mb-2" asp-controller="Groups" asp-action="GetCharactersGroups" asp-route-bookId=@Model.Id>Группы</a>
+                    <a class="btn btn-success mb-2" asp-controller="Groups" asp-action="GetCharactersGroups" asp-route-bookId=@Model.Id>Группы персонажей</a>
+                    <a class="btn btn-success mb-2" asp-controller="Groups" asp-action="GetEventsGroups" asp-route-bookId=@Model.Id>Группы cобытий</a>
                     <a class="btn btn-success mb-2" asp-controller="Episodes" asp-action="GetBookepisodes" asp-route-bookId=@Model.Id asp-route-userId=@Model.UserId>Эпизоды</a>
                     <a class="btn btn-success mb-2" asp-controller="Events" asp-action="GetBookEvents" asp-route-bookId=@Model.Id asp-route-userId=@Model.UserId>События</a>
                 </div>

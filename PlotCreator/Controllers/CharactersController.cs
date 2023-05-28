@@ -37,9 +37,9 @@ namespace PlotCreator.Controllers
 				model.Picture = await imageHelper.SaveImage(model.PictureImage);
 			}
 		}
-		private async Task<List<Group>> GetGroups(int bookId)
+		private async Task<List<Group>> GetGroups(int bookId, string parent)
 		{
-			var response = await _groupService.GetBookGroups(bookId);
+			var response = await _groupService.GetBookGroupsByParent(bookId, parent);
             if (response.StatusCode == Domain.Enum.StatusCode.Ok)
                 return response.Data.ToList();
             return null;
@@ -109,13 +109,13 @@ namespace PlotCreator.Controllers
 			{
 				response = await _characterService.GetEmptyViewModel(bookId);
                 if (bookId != 0)
-                    response.Data.Groups = await GetGroups(bookId);
+                    response.Data.Groups = await GetGroups(bookId, "Character");
                 response.Data.UserId = userId;
 				return View(response.Data);
 			}
 			response = await _characterService.GetCharacter(id);
             if (bookId != 0)
-                response.Data.Groups = await GetGroups(bookId);
+                response.Data.Groups = await GetGroups(bookId, "Character");
             if (response.StatusCode == Domain.Enum.StatusCode.Ok)
 				return View(response.Data);
 

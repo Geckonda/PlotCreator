@@ -29,13 +29,10 @@ namespace PlotCreator.Domain.ViewModels
         public string? Colour { get; set; }
 
 
-        //  |  |  |  |  |
-        //  v  v  v  v  v
+        //Группы
+        public List<Group>? Groups { get; set; }
 
-        public List<Episode_Event> Episodes_Events { get; set; } = new();
-
-        public List<Event_Character> Events_Characters { get; set; } = new();
-
-        public List<Group_Event> Groups_Events { get; set; } = new();
+        public List<Group_Event>? OwnGroups { get; set; }
+        public int[]? checkedGroups { get; set; }
     }
 }

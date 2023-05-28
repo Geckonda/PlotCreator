@@ -8,6 +8,8 @@
 
     var currentGroup = new PlotCreator.Domain.ViewModels.GroupViewModel();
     currentGroup.Book = new();
+
+    var parent = "Character";
 }
 
 @section Styles{
@@ -26,7 +28,7 @@
     <div class="input-group serch-container">
         <input type="text" class="form-control" id="search-bar" placeholder="Название группы">
         <button class="btn btn-success" type="button" id="search-btn">Поиск</button>
-        <button class="btn btn-danger type="button" id="reset-btn">Сброс</button>
+        <button class="btn btn-danger" type="button" id="reset-btn">Сброс</button>
     </div>
 </div>
 
@@ -55,7 +57,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" id="updateButton" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modelUpdate">Редактировать</button>
-                <a class="btn btn-danger" id="deleteButton" asp-action="Delete" asp-route-bookId="@ViewData["bookId"]">Удалить</a>
+                <a class="btn btn-danger" id="deleteButton" asp-action="Delete" asp-route-bookId="@ViewData["bookId"]" asp-route-parent="@parent">Удалить</a>
             </div>
         </div>
     </div>
@@ -73,7 +75,7 @@
           </div>
         <form asp-action="Save">
             <input asp-for="@newGroup.Book.Id" type="text" value="@ViewData["bookId"]" hidden />
-            <input asp-for="@newGroup.Parent" type="text" value="Character" hidden />
+            <input asp-for="@newGroup.Parent" type="text" value="@parent" hidden />
               <div class="mb-3">
                 <label for="Name" class="col-form-label">Название:</label>
                 <input type="text" class="form-control" asp-for="@newGroup.Name" required>
@@ -103,7 +105,7 @@
         <form asp-action="Edit" method="post">
             <input asp-for="@currentGroup.Id" type="text" id="editFormIdField" hidden />
             <input asp-for="@currentGroup.Book.Id" type="text" value="@ViewData["bookId"]" hidden />
-            <input asp-for="@currentGroup.Parent" type="text" value="Character" hidden />
+            <input asp-for="@currentGroup.Parent" type="text" value="@parent" hidden />
               <div class="mb-3">
                 <label for="Name" class="col-form-label">Название:</label>
                 <input type="text" class="form-control" asp-for="@currentGroup.Name" id="editFormNameField" required>
