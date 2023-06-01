@@ -24,14 +24,15 @@ namespace PlotCreator.Domain.Entity
         [Required]
         public DateTime Data_Creation { get; set; }
 
-        [Column(TypeName = "Text")]
+        [Column(TypeName = "NText")]
         public string? Content { get; set; }
 
-        //Навигационные свойства для зависимых таблиц 
-        //  |  |  |  |  |
-        //  v  v  v  v  v
+		//Навигационные свойства для зависимых таблиц 
+		//  |  |  |  |  |
+		//  v  v  v  v  v
+		public List<Book>? Books { get; set; } = new();
 
-        [DeleteBehavior(DeleteBehavior.NoAction)]
+		[DeleteBehavior(DeleteBehavior.NoAction)]
         public List<Book_Idea> Books_Ideas { get; set; } = new();
     }
 }

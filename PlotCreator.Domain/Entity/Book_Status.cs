@@ -9,11 +9,12 @@ namespace PlotCreator.Domain.Entity
     public class Book_Status
     {
         public int Id { get; set; }
-        public string? Status { get; set; }
+		public string? Name { get; set; }
+		public string? Description { get; set; }
 
-        //Навигационные свойства для зависимых таблиц 
-        //  |  |  |  |  |
-        //  v  v  v  v  v
-        public List<Book> Books { get; set; } = new();
+		//Навигационные свойства для зависимых таблиц 
+		//  |  |  |  |  |
+		//  v  v  v  v  v
+		public List<Book> Books { get; set; } = new();
     }
 }

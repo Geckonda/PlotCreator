@@ -18,8 +18,8 @@ namespace PlotCreator.Domain.Entity
         public int UserId { get; set; } // Вторичный ключ
         public User? User { get; set; } // Навигационное свойство
 
-        public int Access_ModificatorId { get; set; } // Вторичный ключ
-        public Access_Modificator? Access_Modificator { get; set; } // Навигационное свойство
+        public int ModificatorId { get; set; } // Вторичный ключ
+        public Access_Modificator? Modificator { get; set; } // Навигационное свойство
 
         [Required]
         public string? Title { get; set; }
@@ -30,21 +30,27 @@ namespace PlotCreator.Domain.Entity
         public int GenreId { get; set; } // Вторичный ключ
         public Genre? Genre { get; set; } // Навигационное свойство
 
-        public int Book_StatusId { get; set; } // Вторичный ключ
-        public Book_Status? Book_Status { get; set; } // Навигационное свойство
+        public int StatusId { get; set; } // Вторичный ключ
+        public Book_Status? Status { get; set; } // Навигационное свойство
 
 
 
-        [Column(TypeName = "Text")]
+        [Column(TypeName = "NText")]
         public string? Description { get; set; }
 
         public string? Book_cover { get; set; }
 
-        //Навигационные свойства для зависимых таблиц 
-        //  |  |  |  |  |
-        //  v  v  v  v  v
+		//Навигационные свойства для зависимых таблиц 
+		//  |  |  |  |  |
+		//  v  v  v  v  v
+		public List<Idea>? Ideas { get; set; } = new();
+		public List<Character>? Characters { get; set; } = new();
+		public List<Episode>? Episodes { get; set; } = new();
+		public List<Event>? Events { get; set; } = new();
+		public List<Group>? Groups { get; set; } = new();
 
-        [DeleteBehavior(DeleteBehavior.NoAction)]
+
+		[DeleteBehavior(DeleteBehavior.NoAction)]
         public List<Book_Idea> Books_Ideas { get; set; } = new();
 
         [DeleteBehavior(DeleteBehavior.NoAction)]

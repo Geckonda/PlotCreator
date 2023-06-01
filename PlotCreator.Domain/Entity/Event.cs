@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PlotCreator.Domain.Entity.Multiple_Tables;
+using System.ComponentModel.DataAnnotations;
 
 namespace PlotCreator.Domain.Entity
 {
@@ -16,10 +17,10 @@ namespace PlotCreator.Domain.Entity
 
         public int BookId { get; set; } // Вторичный ключ
         public Book? Book { get; set; } // Навигационное свойство
+		[Required]
+		public string? Title { get; set; }
 
-        public string? Title { get; set; }
-
-        [Column(TypeName = "Text")]
+        [Column(TypeName = "NText")]
         public string? Description { get; set; }
         public DateTime Beginning { get; set; }
         public DateTime Ending { get; set; }

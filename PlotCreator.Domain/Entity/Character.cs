@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PlotCreator.Domain.Entity.Multiple_Tables;
+using System.ComponentModel.DataAnnotations;
 
 namespace PlotCreator.Domain.Entity
 {
@@ -17,40 +18,41 @@ namespace PlotCreator.Domain.Entity
         public int UserId { get; set; } // Вторичный ключ
         public User? User { get; set; } // Навигационное свойство
 
-        public string? Name { get; set; }
-        public DateTime? Birthday { get; set; }
+		[Required]
+		public string? Name { get; set; }
+
+		[Column(TypeName = "Date")]
+		public DateTime Birthday { get; set; }
         public string? Gender { get; set; }
         public int Height { get; set; }
         public int Weight { get; set; }
 
-        [Column(TypeName = "Text")]
+        [Column(TypeName = "NText")]
         public string? Personality { get; set; }
 
-        [Column(TypeName = "Text")]
+        [Column(TypeName = "NText")]
         public string? Appearance { get; set; }
 
-        [Column(TypeName = "Text")]
-        public string? goals { get; set; }
+        [Column(TypeName = "NText")]
+        public string? Goals { get; set; }
 
-        [Column(TypeName = "Text")]
-        public string? motivation { get; set; }
+        [Column(TypeName = "NText")]
+        public string? Motivation { get; set; }
 
-        [Column(TypeName = "Text")]
+        [Column(TypeName = "NText")]
         public string? History { get; set; }
 
 
         public int WorldviewId { get; set; } // Вторичный ключ
         public Worldview? Worldview { get; set; } // Навигационное свойство
 
-        ////Файловая шняга
-        //[NotMapped]
-        //public File? Picture { get; set; } 
         public string? Picture { get; set; }
-        public DateTime? Deathday { get; set; }
+        public DateTime Deathday { get; set; }
 
-        //Навигационные свойства для зависимых таблиц 
-        //  |  |  |  |  |
-        //  v  v  v  v  v
+		//Навигационные свойства для зависимых таблиц 
+		//  |  |  |  |  |
+		//  v  v  v  v  v
+		public List<Book>? Books { get; set; }
 
         [DeleteBehavior(DeleteBehavior.NoAction)]
         public List<Book_Character> Books_Characters { get; set; } = new();

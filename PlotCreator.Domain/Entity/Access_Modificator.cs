@@ -9,7 +9,8 @@ namespace PlotCreator.Domain.Entity
     public class Access_Modificator
     {
         public int Id { get; set; }
-        public string? Modificator { get; set; }
+        public string? Name { get; set; }
+        public string? Description { get; set; }
 
         //Навигационные свойства для зависимых таблиц 
         //  |  |  |  |  |
