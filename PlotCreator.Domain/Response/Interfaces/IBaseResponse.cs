@@ -13,5 +13,6 @@ namespace PlotCreator.Domain.Response.Interfaces
         public StatusCode StatusCode { get; set; }
 
         public string Description { get; set; }
+        public string ErrorForUser { get; set; }
     }
 }
