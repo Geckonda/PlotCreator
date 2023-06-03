@@ -10,8 +10,9 @@ namespace PlotCreator.Domain.ViewModels.Account
     public class LoginViewModel
     {
         [Required(ErrorMessage = "Введите логин")]
-        [MaxLength(20, ErrorMessage = "Логин должен иметь длину меньше 20 символов")]
-        [MinLength(3, ErrorMessage = "Логин должен иметь длину больше 3 символов")]
+        [MaxLength(20, ErrorMessage = "Логин должен иметь длину не больше 20 символов")]
+        [MinLength(3, ErrorMessage = "Логин должен иметь длину не меньше 3 символов")]
+        [Display(Name = "Логин")]
         public string Login { get; set; }
 
         [Required(ErrorMessage = "Введите пароль")]

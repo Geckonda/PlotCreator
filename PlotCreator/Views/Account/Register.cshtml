@@ -15,7 +15,7 @@
                     <div class="card-body">
                         <form method="post" asp-controller="Account" asp-action="Register">
                             <div class="row mb-3">
-                                <label for="Nickname" class="col-md-4 col-form-label text-md-end">Никнейм</label>
+                                <label asp-for="Nickname" class="col-md-4 col-form-label text-md-end"></label>
                                 <div class="col-md-6">
                                     <input asp-for="Nickname" type="text" class="form-control" name="Nickname" required autocomplete="Nickname" autofocus>
                                     <span asp-validation-for="Nickname" class="text-danger"></span>
@@ -23,7 +23,7 @@
                             </div>
 
                             <div class="row mb-3">
-                                <label for="Login" class="col-md-4 col-form-label text-md-end">Логин</label>
+                                <label asp-for="Login" class="col-md-4 col-form-label text-md-end"></label>
                                 <div class="col-md-6">
                                     <input asp-for="Login" type="text" class="form-control" name="Login" required autocomplete="Login" autofocus>
                                     <span asp-validation-for="Login" class="text-danger"></span>
@@ -31,7 +31,7 @@
                             </div>
 
                             <div class="row mb-3">
-                                <label for="Email" class="col-md-4 col-form-label text-md-end">Электронная почта</label>
+                                <label asp-for="Email" class="col-md-4 col-form-label text-md-end"></label>
                                 <div class="col-md-6">
                                     <input asp-for="Email" type="email" class="form-control" name="Email" required autocomplete="Email" autofocus>
                                     <span asp-validation-for="Email" class="text-danger"></span>
@@ -39,7 +39,7 @@
                             </div>
 
                             <div class="row mb-3">
-                                <label for="Password" class="col-md-4 col-form-label text-md-end">Пароль</label>
+                                <label asp-for="Password" class=" col-md-4 col-form-label text-md-end"></label>
                                 <div class="col-md-6">
                                     <input asp-for="Password" type="password" class="form-control" name="Password" required autocomplete="Password" autofocus>
                                     <span asp-validation-for="Password" class="text-danger"></span>
@@ -47,9 +47,9 @@
                             </div>
 
                             <div class="row mb-3">
-                                <label for="PasswordConfirm" class="col-md-4 col-form-label text-md-end">Подтвердите пароль</label>
+                                <label asp-for="PasswordConfirm" class="col-md-4 col-form-label text-md-end"></label>
                                 <div class="col-md-6">
-                                    <input asp-for="PasswordConfirm" type="password" name="PasswordConfirm" class="form-control">
+                                    <input asp-for="PasswordConfirm" type="password" name="PasswordConfirm" required class="form-control">
                                     <span asp-validation-for="PasswordConfirm" class="text-danger"></span>
                                 </div>
                             </div>
@@ -64,7 +64,13 @@
                                     </div>
                                 </div>
                             </div>
-
+                            
+                            @if (ViewBag.Error != null)
+                            {
+                                <div class="w-100 d-flex justify-content-center mb-3">
+                                    <span class="text-danger">@ViewBag.Error</span>
+                                </div>
+                            }
                             <div class="row mb-0">
                                 <div class="col-md-6 offset-md-4">
                                     <button type="submit" class="btn btn-dark" id="registerBTN" disabled>

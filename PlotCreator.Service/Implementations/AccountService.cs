@@ -38,7 +38,7 @@ namespace PlotCreator.Service.Implementations
                 {
                     return new BaseResponse<ClaimsIdentity>()
                     {
-                        Description = "Пользователь не найден",
+                        Description = "Логин или пароль указаны неверно",
                     };
                 }
 
@@ -46,7 +46,7 @@ namespace PlotCreator.Service.Implementations
                 {
                     return new BaseResponse<ClaimsIdentity>()
                     {
-                        Description = "Пароли не совпадают",
+                        Description = "Логин или пароль указаны неверно",
                     };
                 }
                 var result = Authenticate(user);
@@ -72,16 +72,24 @@ namespace PlotCreator.Service.Implementations
         {
             try
             {
-                var user = await _userRepository.GetAll().FirstOrDefaultAsync(x => x.Login == model.Login);
-                if (user != null)
+                var user = await _userRepository.GetAll().FirstOrDefaultAsync(x => x.Login == model.Login || x.Email == model.Email);
+                if(user != null)
                 {
-                    return new BaseResponse<ClaimsIdentity>()
+                    if (user.Login == model.Login)
                     {
-                        Description = "Такой пользователь уже зарегистрирован",
-                    };
+                        return new BaseResponse<ClaimsIdentity>()
+                        {
+                            Description = "Пользователь с таким логином уже зарегистрирован",
+                        };
+                    }
+                    if (user.Email == model.Email)
+                    {
+                        return new BaseResponse<ClaimsIdentity>()
+                        {
+                            Description = "Пользователь с такой электронной почтой уже зарегистрирован",
+                        };
+                    }
                 }
-
-
                 user = new User()
                 {
                     roleId = Convert.ToInt32(UserRole.User),
@@ -117,8 +125,10 @@ namespace PlotCreator.Service.Implementations
             var role = CheckUserRole(user.roleId);
             var claims = new List<Claim>
             {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, user.Login),
+                new Claim(ClaimsIdentity.DefaultNameClaimType, user.Login!),
                 new Claim(ClaimsIdentity.DefaultRoleClaimType, role),
+                new Claim("userId", user.Id.ToString() ),
+                new Claim("login", user.Login!.ToString() ),
             };
             return new ClaimsIdentity(claims, "ApplicationCookie",
                 ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);

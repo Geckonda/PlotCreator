@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using PlotCreator.Domain.Response.Interfaces;
+using PlotCreator.Domain.Response.Implementations;
 
 namespace PlotCreator.Controllers
 {
@@ -39,6 +41,7 @@ namespace PlotCreator.Controllers
 
                     return RedirectToAction("index", "Home");
                 }
+                ViewBag.Error = response.Description;
             }
             return View(model);
         }
@@ -55,9 +58,10 @@ namespace PlotCreator.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
+            BaseResponse<ClaimsIdentity> response;
             if (ModelState.IsValid)
             {
-                var response = await _accountService.Login(model);
+                response = await _accountService.Login(model);
                 if(response.StatusCode == Domain.Enum.StatusCode.Ok)
                 {
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
@@ -65,6 +69,7 @@ namespace PlotCreator.Controllers
 
                     return RedirectToAction("Index", "Home");
                 }
+                ViewBag.Error = response.Description;
             }
             return View(model);
         }

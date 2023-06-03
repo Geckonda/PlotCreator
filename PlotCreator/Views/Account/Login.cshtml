@@ -14,9 +14,10 @@
                         <form autocomplete="on" method="post" asp-controller="Account" asp-action="Login">
 
                             <div class="row mb-3">
-                                <label for="Login" class="col-md-4 col-form-label text-md-end">Логин</label>
+                                <label asp-for="Login" class="col-md-4 col-form-label text-md-end"></label>
                                 <div class="col-md-6">
                                     <input asp-for="Login" type="text" class="form-control" name="Login" required autocomplete="Login" autofocus>
+                                    <span asp-validation-for="Login" class="text-danger"></span>
                                 </div>
                             </div>
 
@@ -24,9 +25,15 @@
                                 <label for="Password" class="col-md-4 col-form-label text-md-end">Пароль</label>
                                 <div class="col-md-6">
                                     <input asp-for="Password" type="password" class="form-control" name="Password" required autocomplete="Password" autofocus>
+                                    <span asp-validation-for="Password" class="text-danger"></span>
                                 </div>
                             </div>
-
+                            @if (ViewBag.Error != null)
+                            {
+                                <div class="w-100 d-flex justify-content-center mb-3">
+                                    <span class="text-danger">@ViewBag.Error</span>
+                                </div>
+                            }
                             <div class="row mb-0">
                                 <div class="col-md-6 offset-md-4">
                                     <button type="submit" class="btn btn-dark">
