@@ -34,7 +34,14 @@ namespace PlotCreator.DAL.Repositories
             return _db.Users;
         }
 
-        public async Task<User> Update(User entity)
+		public User GetOne(int id)
+		{
+			return _db.Users
+                .Where(user => user.Id == id)
+                .First();
+		}
+
+		public async Task<User> Update(User entity)
         {
             _db.Users.Update(entity);
             await _db.SaveChangesAsync();

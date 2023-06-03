@@ -11,6 +11,7 @@ namespace PlotCreator.DAL.Interfaces
         Task Add(T entity);
         Task Delete(T entity);
         Task<T> Update(T entity);
+        T GetOne(int id);
         IQueryable<T> GetAll();
     }
 }
