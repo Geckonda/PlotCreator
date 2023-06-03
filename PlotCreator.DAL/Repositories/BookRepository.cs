@@ -32,7 +32,14 @@ namespace PlotCreator.DAL.Repositories
             return _db.Books;
         }
 
-        public async Task<Book> Update(Book entity)
+		public Book GetOne(int id)
+		{
+            return _db.Books
+                .Where(book => book.Id == id)
+                .First();
+		}
+
+		public async Task<Book> Update(Book entity)
         {
             _db.Books.Update(entity);
             await _db.SaveChangesAsync();
