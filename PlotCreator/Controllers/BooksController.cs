@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PlotCreator.Service.Interfaces;
 
 namespace PlotCreator.Controllers
 {
+    [Authorize]
 	public class BooksController : Controller
 	{
         private readonly IBookService _bookService;
@@ -12,10 +14,35 @@ namespace PlotCreator.Controllers
             _bookService = bookService;
             _webHostEnvironment = webHostEnvironment;
         }
-        public IActionResult MyBooks()
-		{
-			return View();
-		}
+        public async Task<bool> UserIsOwner(int contentId)
+        {
+            var userContentIdOwner = await _bookService.GetUserId(contentId);
+            var userIdRequestOwner = Convert.ToInt32(User.FindFirst("userId")!.Value);
+            if (userContentIdOwner == userIdRequestOwner)
+                return true;
+            return false;
+        }
+
+        public bool CheckUser(int userId)
+        {
+            var userIdRequestOwner = Convert.ToInt32(User.FindFirst("userId")!.Value);
+            if (userId == userIdRequestOwner)
+                return true;
+            return false;
+        }
+
+        [HttpGet]
+        [ActionName("MyBooks")]
+        public async Task<IActionResult> GetMyBooks(int userId)
+        {
+            if (!CheckUser(userId))
+                return View("404");
+
+            var response = await _bookService.GetBooks(userId);
+            if (response.StatusCode == Domain.Enum.StatusCode.Ok)
+                return View("GetMyBooks", response.Data.ToList());
+            return RedirectToAction("Error");
+        }
 
         [HttpGet]
         [ActionName("MyBook")]

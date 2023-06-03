@@ -36,5 +36,8 @@ namespace PlotCreator.Domain.ViewModels
         public List<Idea>? Ideas { get; set; }
         public List<Character>? Characters { get; set; }
         public List<Episode>? Episodes { get; set; }
+        public List<Event>? Events { get; set; }
+        public List<Group>? CharactersGroups { get; set; }
+        public List<Group>? EventsGroups { get; set; }
     }
 }

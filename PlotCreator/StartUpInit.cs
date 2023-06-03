@@ -11,7 +11,7 @@ namespace PlotCreator
         public static void InitialiseRepositories(this IServiceCollection services)
         {
             services.AddScoped<IBaseRepository<User>, UserRepository>();
-            services.AddScoped<IBaseRepository<Book>, BookRepository>();
+            services.AddScoped<IBookRepository, BookRepository>();
         }
 
         public static void InitialiseServices(this IServiceCollection services)
