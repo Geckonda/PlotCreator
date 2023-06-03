@@ -1,4 +1,5 @@
-﻿using PlotCreator.DAL.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using PlotCreator.DAL.Interfaces;
 using PlotCreator.Domain.Entity;
 using System;
 using System.Collections.Generic;
@@ -35,6 +36,10 @@ namespace PlotCreator.DAL.Repositories
 		public Book GetOne(int id)
 		{
             return _db.Books
+                .Include(book => book.Books_Characters)
+                    .ThenInclude(b_ch => b_ch.Character)
+                .Include(book => book.Books_Ideas)
+                    .ThenInclude(b_idea => b_idea.Idea)
                 .Where(book => book.Id == id)
                 .First();
 		}

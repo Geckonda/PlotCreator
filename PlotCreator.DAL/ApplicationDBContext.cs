@@ -51,8 +51,8 @@ namespace PlotCreator.DAL
             modelBuilder.Entity<Book>().Navigation(book => book.Status).AutoInclude();
             modelBuilder.Entity<Book>().Navigation(book => book.Episodes).AutoInclude();
             modelBuilder.Entity<Book>().Navigation(book => book.Events).AutoInclude();
-            modelBuilder.Entity<Book>().Navigation(book => book.Books_Characters).AutoInclude();
-            modelBuilder.Entity<Book>().Navigation(book => book.Books_Ideas).AutoInclude();
+            //modelBuilder.Entity<Book>().Navigation(book => book.Books_Characters).AutoInclude();
+            //modelBuilder.Entity<Book>().Navigation(book => book.Books_Ideas).AutoInclude();
             modelBuilder.Entity<Book>().Navigation(book => book.Groups).AutoInclude();
             //---------------
             //Персонаж

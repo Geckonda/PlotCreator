@@ -52,7 +52,6 @@ namespace PlotCreator.Domain.Entity
 		//Навигационные свойства для зависимых таблиц 
 		//  |  |  |  |  |
 		//  v  v  v  v  v
-		public List<Book>? Books { get; set; }
 
         [DeleteBehavior(DeleteBehavior.NoAction)]
         public List<Book_Character> Books_Characters { get; set; } = new();

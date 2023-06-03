@@ -22,36 +22,6 @@ namespace PlotCreator.DAL.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("BookCharacter", b =>
-                {
-                    b.Property<int>("BooksId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CharactersId")
-                        .HasColumnType("int");
-
-                    b.HasKey("BooksId", "CharactersId");
-
-                    b.HasIndex("CharactersId");
-
-                    b.ToTable("BookCharacter");
-                });
-
-            modelBuilder.Entity("BookIdea", b =>
-                {
-                    b.Property<int>("BooksId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IdeasId")
-                        .HasColumnType("int");
-
-                    b.HasKey("BooksId", "IdeasId");
-
-                    b.HasIndex("IdeasId");
-
-                    b.ToTable("BookIdea");
-                });
-
             modelBuilder.Entity("PlotCreator.Domain.Entity.Access_Modificator", b =>
                 {
                     b.Property<int>("Id")
@@ -600,36 +570,6 @@ namespace PlotCreator.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Worldview");
-                });
-
-            modelBuilder.Entity("BookCharacter", b =>
-                {
-                    b.HasOne("PlotCreator.Domain.Entity.Book", null)
-                        .WithMany()
-                        .HasForeignKey("BooksId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PlotCreator.Domain.Entity.Character", null)
-                        .WithMany()
-                        .HasForeignKey("CharactersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("BookIdea", b =>
-                {
-                    b.HasOne("PlotCreator.Domain.Entity.Book", null)
-                        .WithMany()
-                        .HasForeignKey("BooksId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PlotCreator.Domain.Entity.Idea", null)
-                        .WithMany()
-                        .HasForeignKey("IdeasId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("PlotCreator.Domain.Entity.Book", b =>

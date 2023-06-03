@@ -324,28 +324,6 @@ namespace PlotCreator.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "BookCharacter",
-                columns: table => new
-                {
-                    BooksId = table.Column<int>(type: "int", nullable: false),
-                    CharactersId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_BookCharacter", x => new { x.BooksId, x.CharactersId });
-                    table.ForeignKey(
-                        name: "FK_BookCharacter_Books_BooksId",
-                        column: x => x.BooksId,
-                        principalTable: "Books",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_BookCharacter_Characters_CharactersId",
-                        column: x => x.CharactersId,
-                        principalTable: "Characters",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Book-Idea",
                 columns: table => new
                 {
@@ -365,28 +343,6 @@ namespace PlotCreator.DAL.Migrations
                     table.ForeignKey(
                         name: "FK_Book-Idea_Ideas_IdeaId",
                         column: x => x.IdeaId,
-                        principalTable: "Ideas",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "BookIdea",
-                columns: table => new
-                {
-                    BooksId = table.Column<int>(type: "int", nullable: false),
-                    IdeasId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_BookIdea", x => new { x.BooksId, x.IdeasId });
-                    table.ForeignKey(
-                        name: "FK_BookIdea_Books_BooksId",
-                        column: x => x.BooksId,
-                        principalTable: "Books",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_BookIdea_Ideas_IdeasId",
-                        column: x => x.IdeasId,
                         principalTable: "Ideas",
                         principalColumn: "Id");
                 });
@@ -532,16 +488,6 @@ namespace PlotCreator.DAL.Migrations
                 column: "IdeaId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BookCharacter_CharactersId",
-                table: "BookCharacter",
-                column: "CharactersId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_BookIdea_IdeasId",
-                table: "BookIdea",
-                column: "IdeasId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Books_GenreId",
                 table: "Books",
                 column: "GenreId");
@@ -672,12 +618,6 @@ namespace PlotCreator.DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "Book-Idea");
-
-            migrationBuilder.DropTable(
-                name: "BookCharacter");
-
-            migrationBuilder.DropTable(
-                name: "BookIdea");
 
             migrationBuilder.DropTable(
                 name: "Episode-Character");

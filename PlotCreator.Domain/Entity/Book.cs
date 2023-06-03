@@ -43,8 +43,6 @@ namespace PlotCreator.Domain.Entity
 		//Навигационные свойства для зависимых таблиц 
 		//  |  |  |  |  |
 		//  v  v  v  v  v
-		public List<Idea>? Ideas { get; set; } = new();
-		public List<Character>? Characters { get; set; } = new();
 		public List<Episode>? Episodes { get; set; } = new();
 		public List<Event>? Events { get; set; } = new();
 		public List<Group>? Groups { get; set; } = new();
