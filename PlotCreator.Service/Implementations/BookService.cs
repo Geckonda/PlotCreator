@@ -255,7 +255,7 @@ namespace PlotCreator.Service.Implementations
         /// <returns></returns>
         private static BookViewModel GetModelFromBook(Book book, BookLists? lists)
         {
-            return  new BookViewModel()
+            return new BookViewModel()
             {
                 Id = book.Id,
                 User = book.User,
@@ -266,7 +266,12 @@ namespace PlotCreator.Service.Implementations
                 Status = book.Status,
                 Description = book.Description,
                 Book_cover = book.Book_cover,
-                //Characters//Ideas
+                Characters = book.Books_Characters
+                                 .Select(b_ch => b_ch.Character!)
+                                 .ToList(),
+                Ideas = book.Books_Ideas
+                            .Select(b_idea => b_idea.Idea!)
+                            .ToList(),
                 Episodes = book.Episodes,
                 Events = book.Events,
                 ModificatorList = lists?.ModificatorList,
