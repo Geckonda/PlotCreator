@@ -1,0 +1,35 @@
+﻿@model PlotCreator.Domain.ViewModels.IdeaViewModel
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+@section Styles{
+    <link rel="stylesheet" href="~/css/text.css" asp-append-version="true" />
+}
+<div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
+    <div>
+        @if(ViewData["bookId"] == null)
+        {
+            <a class="btn btn-success fs-5" asp-controller="Ideas" asp-action="MyIdeas" asp-route-userId=@Model.User!.Id>&#8592;</a>
+        }
+        else
+        {
+            <a class="btn btn-success fs-5" asp-controller="Ideas" asp-action="GetBookIdeas" asp-route-bookId=@ViewData["bookId"]>&#8592;</a>
+        }
+    </div>
+    <div>
+        <a class="btn btn-success" asp-controller="Ideas" asp-action="Save" asp-route-id="@Model.Id" asp-route-userId="@Model.User!.Id">Изменить</a>
+        <a class="btn btn-danger" asp-controller="Ideas" asp-action="Delete" asp-route-id="@Model.Id" asp-route-bookId="@ViewData["bookId"]" style="margin-left:10px;">Удалить</a>
+    </div>
+       </div>
+<div style="padding: 10px;"></div>
+    <div class="cont-cont">
+    <h2 class="heading">@Model.Topic</h2>
+    <hr class="dropdown-divider w-100 mb-3">
+    <p id="response-text-block" class="d-none">@Model.Content</p>
+    <div id="main-text-block"></div>
+ </div>
+@section Scripts{
+        <script src="~/js/textConstructor.js"></script>
+ }

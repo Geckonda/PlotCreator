@@ -12,12 +12,14 @@ namespace PlotCreator
         {
             services.AddScoped<IBaseRepository<User>, UserRepository>();
             services.AddScoped<IBookRepository, BookRepository>();
+            services.AddScoped<IIdeaRepository, IdeaRepository>();
         }
 
         public static void InitialiseServices(this IServiceCollection services)
         {
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IBookService, BookService>();
+            services.AddScoped<IIdeaService, IdeaService>();
         }
     }
 }

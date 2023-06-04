@@ -1,0 +1,23 @@
+﻿@model List<PlotCreator.Domain.ViewModels.IdeaViewModel>
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+<h1>Мои идеи</h1>
+<div style="padding: 10px;"></div>
+<a class="btn btn-success" asp-area="" asp-action="Save" asp-route-id="0" asp-route-userId=@User.FindFirst("userId")!.Value>Добавить идею</a>
+<hr class="dropdown-divider w-100 mb-3">
+<div class="cont-cont">
+	@if (!Model.Any())
+	{
+		<h2 class="text-info">Идей не найдено!</h2>
+	}
+    @foreach (var idea in Model)
+    {
+        <a class="SceneContainer" asp-controller="Ideas" asp-action="MyIdea" asp-route-id="@idea.Id">
+            <div class="listPointer"></div>
+            <h4>@idea.Topic</h4>
+        </a>
+    }
+</div>
