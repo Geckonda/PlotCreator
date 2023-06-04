@@ -51,37 +51,23 @@ namespace PlotCreator.DAL
             modelBuilder.Entity<Book>().Navigation(book => book.Status).AutoInclude();
             modelBuilder.Entity<Book>().Navigation(book => book.Episodes).AutoInclude();
             modelBuilder.Entity<Book>().Navigation(book => book.Events).AutoInclude();
-            //modelBuilder.Entity<Book>().Navigation(book => book.Books_Characters).AutoInclude();
-            //modelBuilder.Entity<Book>().Navigation(book => book.Books_Ideas).AutoInclude();
             modelBuilder.Entity<Book>().Navigation(book => book.Groups).AutoInclude();
             //---------------
             //Персонаж
             modelBuilder.Entity<Character>().Navigation(ch => ch.User).AutoInclude();
-            modelBuilder.Entity<Character>().Navigation(ch => ch.Books_Characters).AutoInclude();
             modelBuilder.Entity<Character>().Navigation(ch => ch.Worldview).AutoInclude();
-            modelBuilder.Entity<Character>().Navigation(ch => ch.Episodes_Characters).AutoInclude();
-            modelBuilder.Entity<Character>().Navigation(ch => ch.Events_Characters).AutoInclude();
-            modelBuilder.Entity<Character>().Navigation(ch => ch.Groups_Characters).AutoInclude();
             //----------------
             //Идеи
             modelBuilder.Entity<Idea>().Navigation(idea => idea.User).AutoInclude();
-            modelBuilder.Entity<Idea>().Navigation(idea => idea.Books_Ideas).AutoInclude();
 			//----------------
 			//Эпизоды
 			modelBuilder.Entity<Episode>().Navigation(episode => episode.Book).AutoInclude();
-			modelBuilder.Entity<Episode>().Navigation(episode => episode.Episodes_Characters).AutoInclude();
-			modelBuilder.Entity<Episode>().Navigation(episode => episode.Episodes_Events).AutoInclude();
 			//----------------
 			//События
 			modelBuilder.Entity<Event>().Navigation(e => e.Book).AutoInclude();
-			modelBuilder.Entity<Event>().Navigation(e => e.Events_Characters).AutoInclude();
-			modelBuilder.Entity<Event>().Navigation(e => e.Episodes_Events).AutoInclude();
-			modelBuilder.Entity<Event>().Navigation(e => e.Groups_Events).AutoInclude();
 			//----------------
 			//Группы
 			modelBuilder.Entity<Group>().Navigation(group => group.Book).AutoInclude();
-			modelBuilder.Entity<Group>().Navigation(group => group.Groups_Characters).AutoInclude();
-			modelBuilder.Entity<Group>().Navigation(group => group.Groups_Events).AutoInclude();
 		}
 	}
 }
