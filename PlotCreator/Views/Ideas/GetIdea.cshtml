@@ -27,6 +27,10 @@
     <div class="cont-cont">
     <h2 class="heading">@Model.Topic</h2>
     <hr class="dropdown-divider w-100 mb-3">
+    @if (Model.Content == null)
+    {
+        <p class="text-center">Пусто</p>
+    }
     <p id="response-text-block" class="d-none">@Model.Content</p>
     <div id="main-text-block"></div>
  </div>

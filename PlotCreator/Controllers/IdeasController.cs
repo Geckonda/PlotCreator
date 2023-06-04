@@ -57,7 +57,7 @@ namespace PlotCreator.Controllers
         [HttpGet]
         public async Task<IActionResult> GetBookIdeas(int bookId)
         {
-            if (!UserIsBookOwner(bookId).Result)//Invalid?
+            if (!UserIsBookOwner(bookId).Result)
                 return View("404");
 
             ViewData["bookId"] = bookId;
