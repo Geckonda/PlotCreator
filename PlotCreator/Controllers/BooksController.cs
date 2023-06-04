@@ -41,7 +41,7 @@ namespace PlotCreator.Controllers
         [ActionName("MyBook")]
         public async Task<IActionResult> GetMyBook(int id)
         {
-            if (!UserIsOwner(id).Result)
+            if (!UserIsBookOwner(id).Result)
                 return View("404");
 
             var response = await _bookService.GetBook(id);
@@ -51,7 +51,7 @@ namespace PlotCreator.Controllers
         }
         public async Task<IActionResult> Delete(int id)
         {
-            if (!UserIsOwner(id).Result)
+            if (!UserIsBookOwner(id).Result)
                 return View("404");
 
             var book = await _bookService.GetBook(id);
@@ -110,7 +110,7 @@ namespace PlotCreator.Controllers
         /// </summary>
         /// <param name="contentId"></param>
         /// <returns></returns>
-        public async Task<bool> UserIsOwner(int contentId)
+        public async Task<bool> UserIsBookOwner(int contentId)
         {
             var userContentIdOwner = await _bookService.GetUserId(contentId);
             var userIdRequestOwner = Convert.ToInt32(User.FindFirst("userId")!.Value);
