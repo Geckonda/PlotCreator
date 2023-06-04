@@ -5,6 +5,12 @@
     Layout = "_Layout";
 }
 
+<div class="w-100 d-flex justify-content-between position-absolute top-0 start-0">
+	<a class="btn btn-success fs-5" aria-current="page" asp-controller="Books" asp-action="MyBooks"
+	   asp-route-userId="@User.FindFirst("userId").Value">&#8592;</a>
+
+</div>
+<div class="mb-5"></div>
 <h1>Идеи книги «@ViewData["bookTitle"]»</h1>
 <div style="padding: 10px;"></div>
 <div class="dropdown">

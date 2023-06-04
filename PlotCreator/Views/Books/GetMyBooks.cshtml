@@ -7,7 +7,7 @@
 
 <h1>Мои книги</h1>
 <div style="padding: 10px;"></div>
-<a class="btn btn-success" asp-area="" asp-action="Save" asp-route-id="0" asp-route-userId="@User.FindFirst("userId").Value">Добавить книгу</a>
+<a class="btn btn-success" asp-area="" asp-action="Save" asp-route-id="0" asp-route-userId="@User.FindFirst("userId")!.Value">Добавить книгу</a>
 <hr class="dropdown-divider w-100 mb-3">
 <div class="container d-flex justify-content-around flex-wrap">
 	@if (!Model.Any())
@@ -28,8 +28,8 @@
 				}
 				<div class="m-2 p-2 border border-dark rounded position-absolute top-0 start-0 fs-6 fw-bolder body-frame">@book.Rating!.Name</div>
 				<div class="position-absolute bottom-0 start-50 translate-middle-x d-flex flex-column align-items-center " style="width:80%;">
-					<h5 class="card-title" style="color:var(--extra-light);padding-top:5px;">@book.Title</h5>
-					<p class="card-text col-10 text-truncate" style="color:var(--extra-light); text-align:center;">@book.Genre.Name</p>
+					<h5 class="card-title p-1" style="color:var(--extra-light);padding-top:5px; text-align:center;">@book.Title</h5>
+					<p class="card-text col-10 text-truncate" style="color:var(--extra-light); text-align:center;">@book.Genre?.Name</p>
 					<div class="w-100 h-100  position-absolute rounded-3 body-frame-invert" style=" z-index:-1;"></div>
 				</div>
 			</div>
