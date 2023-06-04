@@ -172,6 +172,29 @@ namespace PlotCreator.Service.Implementations
             }
         }
 
+        public async Task<IBaseResponse<BookViewModel>> GetLastUserBook(int userId)
+        {
+            var baseResponse = new BaseResponse<BookViewModel>();
+            try
+            {
+                var id = await _bookRepository.GetLastUserEntityId(userId);
+                var book = _bookRepository.GetOne(id);
+                var model = GetModelFromBook(book, null);
+                baseResponse.Data = model;
+                baseResponse.StatusCode = StatusCode.Ok;
+                return baseResponse;
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse<BookViewModel>()
+                {
+                    Description = $"[BookService | GetLastUserBook]: {ex.Message}",
+                    StatusCode = StatusCode.InternalServerError,
+                    ErrorForUser = "Последняя книга не найдена",
+                };
+            }
+        }
+
         public async Task<IBaseResponse<BookViewModel>> GetViewModel()
         {
             var baseResponse = new BaseResponse<BookViewModel>();
@@ -195,9 +218,35 @@ namespace PlotCreator.Service.Implementations
                 {
                     Description = $"[BookService | GetViewModel]: {ex.Message}",
                     StatusCode = StatusCode.InternalServerError,
+                    ErrorForUser = "Внутренняя ошибка",
                 };
             }
         }
+
+        public async Task<User> GetUser(int bookId)
+        {
+            try
+            {
+                return await _bookRepository.GetUser(bookId);
+            }
+            catch (Exception)
+            {
+                return null!;
+            }
+        }
+        public async Task<int> GetUserId(int bookId)
+        {
+            try
+            {
+                return await _bookRepository.GetUserId(bookId);
+            }
+            catch (Exception)
+            {
+
+                return (int)StatusCode.NotFound;
+            }
+        }
+
         /// <summary>
         /// Конвертирует объект <see cref="Book" /> в объект <see cref="BookViewModel"/>
         /// </summary>
@@ -227,17 +276,5 @@ namespace PlotCreator.Service.Implementations
             };
         }
 
-        public async Task<int> GetUserId(int bookId)
-        {
-            try
-            {
-                return await _bookRepository.GetUserId(bookId);
-            }
-            catch (Exception)
-            {
-
-                return (int)StatusCode.NotFound;
-            }
-        }
     }
 }

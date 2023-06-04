@@ -15,6 +15,8 @@ namespace PlotCreator.Service.Interfaces
         Task<IBaseResponse<IEnumerable<BookViewModel>>> GetBooks(int userId);
         Task<IBaseResponse<BookViewModel>> GetViewModel();
         Task<IBaseResponse<BookViewModel>> GetBook(int id);
+        Task<User> GetUser(int bookId);
+        Task<IBaseResponse<BookViewModel>> GetLastUserBook(int userId);
         Task<IBaseResponse<BookViewModel>> CreateBook(BookViewModel model);
         Task<IBaseResponse<BookViewModel>> EditBook (BookViewModel model);
         Task<IBaseResponse<bool>> DeleteBook (int id);

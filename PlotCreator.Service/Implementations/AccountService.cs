@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PlotCreator.DAL.Interfaces;
+using PlotCreator.DAL.Repositories;
 using PlotCreator.Domain.Entity;
 using PlotCreator.Domain.Enum;
 using PlotCreator.Domain.Helpers;
@@ -11,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,6 +29,18 @@ namespace PlotCreator.Service.Implementations
         {
             _userRepository = userRepository;
             _logger = logger;
+        }
+
+        public async Task<User> GetUser(int id)
+        {
+            try
+            {
+                return _userRepository.GetOne(id);
+            }
+            catch (Exception)
+            {
+                return null!;
+            }
         }
 
         public async Task<BaseResponse<ClaimsIdentity>> Login(LoginViewModel model)

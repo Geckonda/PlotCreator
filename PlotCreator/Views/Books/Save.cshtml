@@ -1,0 +1,129 @@
+﻿@model PlotCreator.Domain.ViewModels.BookViewModel
+
+@{
+    var textTitle = Model?.Id == 0 ? "Добавление книги" : "Редактирование книги";
+    ViewBag.Title = textTitle;
+    Layout = "_Layout";
+}
+
+<div style="padding: 10px;"></div>
+<div class="col-md-12 d-flex justify-content-center">
+    <div class="card-body">
+        <div class="card card-outline-secondary ">
+            <div class="card-body  body-frame">
+            <h3 class="mb-0 text-center ParagraphHome">@textTitle</h3>
+                <form asp-action="Save" enctype="multipart/form-data">
+                    <input asp-for="Id" type="text" value="@Model?.Id" hidden />
+                    <input asp-for="User!.Id" type="text" value="@Model?.User!.Id" hidden />
+                    <input asp-for="Book_cover" type="text" value="@Model?.Book_cover" hidden />
+                    <div asp-validation-summary="All" style="font-size:23px; font-family:Impact, serif" class="text-danger text-center"></div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Title">Название</label>
+                        <input asp-for="Title" class="form-control" type="text" value="@Model?.Title" required>
+                        <span asp-validation-for="@Model!.Description" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label>Модификатор доступа:</label>
+                        <select class="form-select" asp-for="Modificator!.Id">
+                            @if(Model!.Id != 0)
+                            {
+                                <option value="@Model.Modificator!.Id">@Model.Modificator!.Name</option>
+                                @foreach (var modificator in Model!.ModificatorList!
+                                   .Where(x => x.Id != Model.Modificator!.Id))
+                                   {
+                                        <option value="@modificator.Id">@modificator.Name</option>
+                                   }
+                            }
+                            else
+                            {
+                                @foreach (var modificator in Model!.ModificatorList!)
+                                {
+                                    <option value="@modificator.Id">@modificator.Name</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                     <div class="form-group mb-3">
+                        <label>Жанр:</label>
+                        <select class="form-select" asp-for="Genre!.Id">
+                            @if (Model!.Id != 0)
+                            {
+                                <option value="@Model.Genre!.Id">@Model.Genre!.Name</option>
+                                @foreach (var genre in Model!.GenreList!
+                                    .Where(x => x.Id != Model.Genre!.Id))
+                                    {
+                                            <option value="@genre.Id">@genre.Name</option>
+                                    }
+                            }
+                            else
+                            {
+                                @foreach (var genre in Model!.GenreList!)
+                                {
+                                        <option value="@genre.Id">@genre.Name</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label>Возрастной рейтинг:</label>
+                        <select class="form-select" asp-for="Rating!.Id">
+                            @if (Model!.Id != 0)
+                            {
+                                <option value="@Model.Rating!.Id">@Model.Rating!.Name</option>
+                                 @foreach (var rating in Model!.RatingList!
+                                    .Where(x => x.Id != Model.Rating!.Id))
+                                    {
+                                        <option value="@rating.Id">@rating.Name</option>
+                                    }
+                            }
+                            else
+                            {
+                                @foreach (var rating in Model!.RatingList!)
+                                {
+                                    <option value="@rating.Id">@rating.Name</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label>Статус произведения:</label>
+                        <select class="form-select" asp-for="Status!.Id">
+                            @if (Model!.Id != 0)
+                            {
+                                <option value="@Model.Status!.Id">@Model.Status!.Name</option>
+                                @foreach (var status in Model!.StatusList!
+                                    .Where(x => x.Id != Model.Status!.Id))
+                                    {
+                                        <option value="@status.Id">@status.Name</option>
+                                }
+                            }
+                            else
+                            {
+                                @foreach (var status in Model!.StatusList!)
+                                {
+                                    <option value="@status.Id">@status.Name</option>
+                                }
+                            }
+                            
+                        </select>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="@Model!.Description">Краткое описание:</label>
+                        <span asp-validation-for="@Model.Description" class="text-danger"></span>
+                        <textarea asp-for="@Model!.Description" class="form-control" rows="15" required>@Model?.Description</textarea>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="@Model!.Book_cover" class="col-form-label">Обложка книги (необязательно)</label>
+                        <div class="col-sm-15">
+                            <input asp-for="@Model!.Book_coverImage" type="file" class="form-control" name="Book_coverImage" value="@Model?.Book_cover" accept="image/*">
+                        </div>
+                    </div>
+                    <div class="w-100 d-flex justify-content-center">
+                        <button class="btn btn-success" type="submit">Сохранить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

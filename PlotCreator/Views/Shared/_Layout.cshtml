@@ -1,79 +1,83 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - PlotCreator</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/PlotCreator.styles.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/stylce.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+
+    @*Шрифты*@
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&display=swap" rel="stylesheet">
     @RenderSection("Styles", false)
 </head>
 <body>
     <div class="wrapper">
         <header>
-            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div class="container-fluid">
+            <nav class="navbar navbar-expand-lg navbar-dark">
+                <div class="container-fluid">
 
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">PlotCreator</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        @if (User.Identity.IsAuthenticated)
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" asp-controller="Ideas" asp-action="MyIdeas">Мои идеи</a>
-                            </li>
-                            <li class="nav-item">
-                                 <a class="nav-link active" aria-current="page" asp-controller="Books" asp-action="MyBooks">Мои книги</a>
-                            </li>
-                        }
-                    </ul>
-                    <div class="d-flex" >
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">PlotCreator</a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Личный кабинет
-                                </a>
-                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                        @if (!User.Identity.IsAuthenticated)
-                                        {
-                                            <li><a class="dropdown-item" asp-controller="Account" asp-action="Login">Авторизация</a></li>
-                                            <li><a class="dropdown-item" asp-controller="Account" asp-action="Register">Регистрация</a></li>
-                                        }
-
-                                        @*<li><hr class="dropdown-divider"></li>*@
-
-                                        @if (User.Identity.IsAuthenticated)
-                                        {
-                                            @if(User.IsInRole("Admin")){
-                                            <li><a class="dropdown-item" href="#">Админ панель</a></li>
-                                            }
-
-                                            <li>
-                                            <form method="post" asp-controller="Account" asp-action="Logout">
-                                                <input class="dropdown-item" type="submit" value="Выход" />
-                                            </form>
-                                            </li>
-                                        }
-                                </ul>
-                            </li>
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link active" aria-current="page" asp-controller="Ideas" asp-action="MyIdeas"
+                                   asp-route-id="@User.FindFirst("userId").Value">Мои идеи</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link active" aria-current="page" asp-controller="Books" asp-action="MyBooks"
+                                   asp-route-userId="@User.FindFirst("userId").Value">Мои книги</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link active" aria-current="page" asp-controller="Characters" asp-action="GetAllCharacters"
+                                   asp-route-userId="@User.FindFirst("userId").Value">Мои персонажи</a>
+                                </li>
+                            }
                         </ul>
+                        <div class="d-flex">
+                            @if (!User.Identity.IsAuthenticated)
+                            {
+                                <a class="nav-link active" asp-controller="Account" asp-action="Login">Авторизация</a>
+                                <a class="nav-link active" asp-controller="Account" asp-action="Register">Регистрация</a>
+                            }
+
+                            @*<li><hr class="dropdown-divider"></li>*@
+
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <a class="nav-link active" href="#">Админ панель</a>
+                                }
+                                <a class="nav-link active">@User.FindFirst("login").Value</a>
+                                <form method="post" asp-controller="Account" asp-action="Logout">
+                                    <input class="nav-link active" type="submit" value="Выход" />
+                                </form>
+                            }
+                        </div>
                     </div>
                 </div>
-            </div>
-        </nav>
+            </nav>
         </header>
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
 
         <footer class="border-top footer text-muted">
-            <div>
-                &copy; 2023 - PlotCreator - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <div class="d-flex flex-column align-items-center">
+                &copy; 2023 - PlotCreator @* @if (User.Identity.IsAuthenticated)
+                {
+                <div>@User.FindFirst("userId");</div>
+                <div>@User.FindFirst("login").Value;</div>
+                }*@
             </div>
         </footer>
     </div>

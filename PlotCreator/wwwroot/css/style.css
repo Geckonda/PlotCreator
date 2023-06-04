@@ -1,0 +1,235 @@
+﻿/*Обнуление*/
+* {
+    padding: 0;
+    margin: 0;
+    border: 0;
+    margin-bottom: 0;
+}
+
+*, *:before, *:after {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    font-family: 'Comfortaa';
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin-bottom: 0;
+    font-family: 'Comfortaa', cursive;
+    font-weight: 700;
+    color: var(--extra-dark);
+}
+p {
+    margin-bottom: 0;
+}
+/*Конец обнуления*/
+:root {
+    --extra-dark: #3A1800;
+    --middle-dark:#3D1E07;
+    --main-dark: #5e2e0d;
+    --main-light: #F7AB76;
+    --extra-light: #F7E3D4;
+}
+/* Присваивание основных цветов */
+.text-extra-dark{
+    color: var(--extra-dark);
+}
+.navbar{
+    background-color: var(--extra-dark);
+    color: var(--extra-light);
+    box-shadow: inset  0px -5px 30px var(--main-dark);
+}
+a, a:hover, p, div,.text-info {
+    color: var(--main-dark);
+}
+.btn-success, .btn-success:focus, .btn-check:focus{
+    background-color: var(--main-dark);
+    border-color: var(--middle-dark);
+    box-shadow: inset 0px 20px 25px var(--extra-dark);
+}
+.btn-success:hover{
+    background-color: var(--extra-dark);
+    box-shadow: inset 0px 20px 25px var(--main-dark);
+}
+.btn-danger{
+    box-shadow: inset 0px 20px 25px var(--extra-dark);
+}
+
+input, input:hover, input:focus, input:active, select, option,textarea, textarea:active{
+    background-color: var(--extra-light);
+    box-shadow: inset 0px 0px 10px var(--main-dark);
+    color: var(--extra-dark);
+    outline: none!important;
+} 
+.form-check-input:checked{
+    background-color: var(--middle-dark);
+    border-color: var(--extra-dark);
+}
+.form-control{
+    color: var(--extra-dark);
+}
+:active, :hover, :focus {
+    outline: 0;
+    outline-offset: 0;
+}
+.dropdown .show{
+    background-color: var(--extra-light);
+    color: var(--extra-dark);
+}
+.nav-link, .nav-link input, .navbar-dark .navbar-nav .nav-link.active{
+    cursor: pointer;
+    color: var(--extra-light);
+    background-color: transparent;
+    box-shadow: none;
+}
+.nav-link:hover, .nav-link .active:hover,.navbar-dark .navbar-nav .nav-link.active:hover{
+    color: var(--main-light);
+    background-color: transparent;
+    box-shadow: none;
+}
+.accordion-button, .accordion-button:not(.collapsed){
+    background-color: var(--extra-dark);
+    box-shadow: inset 0px 0px 10px var(--main-dark);
+    color: var(--extra-light);
+}
+.accordion-body{
+    background-color: var(--extra-light);
+    box-shadow: inset 0px 0px 10px var(--main-dark);
+}
+.accordion-button::after{
+    background-image: none;
+    border: 10px solid transparent;
+    border-top: 10px solid var(--main-light);
+}
+li:hover{
+    color: var(--main-light);
+}
+.text-info{
+    color: var(--extra-dark)!important;
+}
+/* ------------------------------- */
+html{
+    width: 100%;
+    height: 100%;
+}
+body{
+    width: 100%;
+    min-height: 100vh;
+    background-color: var(--extra-light);
+}
+header {
+    width: 100%;
+}
+
+.wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: inset 0px -10px 75px var(--main-dark);
+}
+
+main {
+    flex: 1 1 auto;
+    margin: 32px 0;
+    width:90%;
+}
+
+footer {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 12px;
+}
+
+/* Формы и ее элементы */
+
+.navbar{
+    padding: 8px 64px;
+}
+.card-body{
+    max-width: 700px;
+}
+.body-frame{
+    background-color: var(--extra-light);
+    box-shadow: inset 0px 0px 10px var(--main-dark);
+    color: var(--extra-dark);
+}
+.body-frame-invert{
+    background-color: var(--extra-dark);
+    box-shadow: inset 0px 0px 10px var(--main-dark);
+    color: var(--extra-light);
+}
+.body-frame-invert:hover{
+    color: var(--main-light);
+}
+
+
+/* Меди-запросы */
+@media(max-width: 768px){
+    .navbar{
+        padding: 8px 16px;
+    }
+}
+/* ------------------------------------- */
+
+
+
+/*Картинка для всех*/
+.book-cover {
+    width: 14rem;
+    height: 28rem;
+    object-fit: cover;
+}
+
+
+/*Контейнер для отцентровывания*/
+.centralWrapper{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/**/
+.SceneContainer {
+    padding: 5px 10px;
+    width: auto;
+    display: flex;
+    margin-bottom: 5px;
+    text-decoration: none;
+    align-items: center;
+    list-style: none;
+}
+.listPointer {
+    border: 10px solid transparent;
+    border-left: 10px solid var(--main-dark);
+}
+
+/*Поисковик с кнопкой "добавить"*/
+.panel-container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.serch-container{
+    width: 400px;
+}
+@media(max-width:876px){
+    .serch-container{
+        width: 300px;
+    }
+}
+@media(max-width:510px){
+    .serch-container{
+        margin-top: 10px;
+    }
+}
+.hide{
+    /* opacity: 1;
+    animation-name: a1;
+    animation-duration: 2s;
+    animation-fill-mode: forwards; */
+    display: none;
+}

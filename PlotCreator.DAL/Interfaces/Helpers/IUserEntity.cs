@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PlotCreator.Domain.Entity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,7 @@ namespace PlotCreator.DAL.Interfaces.Helpers
     {
         Task<IQueryable<T>> GetAllByUserId(int userId);
         Task<int> GetUserId(int entityId);
+        Task<User> GetUser(int entityId);
         /// <summary>
         /// Возвращает конкретную последнюю, добавленную пользователем сущность.
         /// </summary>

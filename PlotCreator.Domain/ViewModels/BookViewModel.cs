@@ -20,7 +20,6 @@ namespace PlotCreator.Domain.ViewModels
         public Access_Modificator? Modificator { get; set; }
         public List<Access_Modificator>? ModificatorList { get; set; }
 
-        [Required(ErrorMessage = "Обязательное поле")]
         public string? Title { get; set; }
         public Rating? Rating { get; set; }
         public List<Rating>? RatingList { get; set; }
@@ -29,7 +28,6 @@ namespace PlotCreator.Domain.ViewModels
         public Book_Status? Status { get; set; }
         public List<Book_Status>? StatusList { get; set; }
 
-        [Required(ErrorMessage = "Обязательное поле")]
         public string? Description { get; set; }
         public string? Book_cover { get; set; }
         public IFormFile? Book_coverImage { get; set; }

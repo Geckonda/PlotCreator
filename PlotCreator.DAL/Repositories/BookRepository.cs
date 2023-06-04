@@ -71,6 +71,13 @@ namespace PlotCreator.DAL.Repositories
                 .First();
 		}
 
+        public async Task<User> GetUser(int bookId)
+        {
+            return _db.Books
+                .Where(book => book.Id == bookId)
+                .Select(book => book.User!)
+                .First();
+        }
         public async Task<int> GetUserId(int bookId)
         {
             return _db.Books
@@ -85,5 +92,6 @@ namespace PlotCreator.DAL.Repositories
             await _db.SaveChangesAsync();
             return entity;
         }
+
     }
 }
