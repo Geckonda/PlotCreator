@@ -6,11 +6,11 @@
     margin-bottom: 0;
 }
 
-*, *:before, *:after {
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    font-family: 'Comfortaa';
-}
+    *, *:before, *:after {
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        font-family: 'Comfortaa';
+    }
 
 h1, h2, h3, h4, h5, h6 {
     margin-bottom: 0;
@@ -25,7 +25,7 @@ p {
 :root {
     --extra-dark: #3A1800;
     --middle-dark:#3D1E07;
-    --main-dark: #5e2e0d;
+    --main-dark: #aa734c;
     --main-light: #F7AB76;
     --extra-light: #F7E3D4;
 }

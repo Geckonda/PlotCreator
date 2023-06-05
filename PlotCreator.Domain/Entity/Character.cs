@@ -33,7 +33,10 @@ namespace PlotCreator.Domain.Entity
         [Column(TypeName = "NText")]
         public string? Appearance { get; set; }
 
-        [Column(TypeName = "NText")]
+		[Column(TypeName = "NText")]
+		public string? Conflict { get; set; }
+
+		[Column(TypeName = "NText")]
         public string? Goals { get; set; }
 
         [Column(TypeName = "NText")]

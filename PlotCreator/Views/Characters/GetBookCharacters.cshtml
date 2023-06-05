@@ -1,0 +1,60 @@
+﻿@model List<PlotCreator.Domain.ViewModels.CharacterViewModel>
+
+@{
+	ViewData["title"] = "Мои персонажи";
+}
+
+@section Styles{
+	<link rel="stylesheet" href="~/css/character/characterCards.css" asp-append-version="true" />
+}
+<div class="d-flex">
+	<a class="btn btn-success fs-5" asp-controller="Books" asp-action="MyBook"
+	   asp-route-id="@ViewData["bookId"]">&#8592;</a>
+	<h1>Персонажи</h1>
+</div>
+<div style="padding: 10px;"></div>
+<div class="dropdown">
+	<button class="btn btn-success dropdown-toggle mb-3" type="button" data-bs-toggle="dropdown" >
+		Добавить персонажа
+	</button>
+	<ul class="dropdown-menu">
+		<li><a class="dropdown-item" asp-controller="Characters" asp-action="Save" asp-route-id="0" asp-route-bookId="@ViewData["bookId"]" asp-route-userId="@User.FindFirst("userId")!.Value">Создать нового</a></li>
+		<li><a class="dropdown-item" asp-controller="Characters" asp-action="AddCharacterToBook" asp-route-userId="@User.FindFirst("userId")!.Value" asp-route-bookId=@ViewData["bookId"]>Добавить существующего</a></li>
+	</ul>
+	@if (Model.Any())
+	{
+		<a class="btn btn-danger  mb-3" asp-controller="Characters" asp-action="DeleteCharacterFromBook" asp-route-bookId="@ViewData["bookId"]" asp-route-userId="@User.FindFirst("userId")!.Value">Удалить персонажа</a>
+	}
+</div>
+<hr class="dropdown-divider w-100 mb-3">
+<div class="justify-content-center d-flex flex-wrap">
+	@if (!Model.Any())
+	{
+		<h2 class="text-info">Персонажей не найдено!</h2>
+	}
+	@foreach (var character in Model)
+	{
+		<div class="card rounded-3 m-2">
+			<a class="m-2" asp-controller="Characters" asp-action="GetCharacter" asp-route-id="@character.Id" asp-route-bookId="@ViewData["bookId"]">
+			
+					@if(character.Picture is null)
+					{
+						<img src="/images/default/default.png" class="character-card-image">
+					}
+					else
+					{
+						<img src="@character.Picture" class="character-card-image">
+					}
+					<div class="card-body d-flex justify-content-center">
+						<p>@character.Name</p>
+					</div>
+			
+			</a>
+		</div>
+	}
+</div>
+
+@section Scripts{
+
+	<script src="~/js/Characters/character.js"></script>
+}

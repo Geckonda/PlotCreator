@@ -13,6 +13,7 @@ namespace PlotCreator
             services.AddScoped<IBaseRepository<User>, UserRepository>();
             services.AddScoped<IBookRepository, BookRepository>();
             services.AddScoped<IIdeaRepository, IdeaRepository>();
+            services.AddScoped<ICharacterRepository, CharacterRepository>();
         }
 
         public static void InitialiseServices(this IServiceCollection services)
@@ -20,6 +21,7 @@ namespace PlotCreator
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IBookService, BookService>();
             services.AddScoped<IIdeaService, IdeaService>();
+            services.AddScoped<ICharacterService, CharacterService>();
         }
     }
 }

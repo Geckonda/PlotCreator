@@ -1,0 +1,17 @@
+.group-btn{
+    margin: 16px;
+}
+
+.hide{
+    /* opacity: 1;
+    animation-name: a1;
+    animation-duration: 2s;
+    animation-fill-mode: forwards; */
+    display: none;
+}
+
+@keyframes a1{
+    to{
+        opacity: 0;
+    }
+}

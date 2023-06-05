@@ -1,0 +1,46 @@
+﻿@model List<PlotCreator.Domain.ViewModels.CharacterViewModel>
+
+@{
+	ViewData["title"] = "Добавление персонажа к книге";
+}
+
+@section Styles{
+	<link rel="stylesheet" href="~/css/character/characterCards.css" asp-append-version="true" />
+}
+
+<h1>Доступные персонажи</h1>
+<hr class="dropdown-divider w-100 mb-3">
+<div>
+	@if (!Model.Any())
+	{
+		<h2 class="text-info">Персонажей не найдено!</h2>
+	}
+	else{
+	<div>
+		<form asp-action="AddCharacterToBook" class="d-flex flex-column align-items-center" enctype="multipart/form-data">
+			<div class="d-flex flex-wrap justify-content-center">
+				<input name="bookId" type="number" value=@ViewData["bookId"] hidden />
+				@foreach (var character in Model)
+				{
+					<label class="position-relative m-4 card-small rounded-3 m-2" style="cursor:pointer;">
+						<input class="form-check-input m-1 position-absolute top-0 end-0" type="checkbox" value="@character.Id" name="characterIds">
+							@if(character.Picture == null)
+							{
+								<img src="/images/default/default.png" class="character-card-small-image">
+							}
+							else
+							{
+								<img src="@character.Picture" class="character-card-small-image">
+								
+							}
+							<div class="position-absolute bottom-0 end-0 name-frame body-frame-invert">@character.Name</div>
+					</label>
+				}
+			</div>
+				<div class="w-100 d-flex justify-content-center">
+					<button class="btn btn-success" type="submit">Сохранить</button>
+				</div>
+		</form>
+	</div>
+	}
+</div>
