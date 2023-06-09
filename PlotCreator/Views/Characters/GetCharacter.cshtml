@@ -28,7 +28,7 @@
 		<div class="mb-3 " style="width: 250px;">
 			@if (Model.Picture is null)
 			{
-				<img src="/images/default/default.png" class="img-fluid border border-dark border-2 rounded-3 character-card-image">
+				<img src="/images/default/default.png" class="img-fluid border border-dark border-2 rounded-3 character-card-image w-100" style="height:250px;object-fit:cover">
 			}
 			else
 			{
@@ -55,10 +55,32 @@
         </div>
 			
 			</div>
-			<p class="card-text">Дата рождения: <strong class="text-extra-dark">@Model.Birthday.ToString("D")</strong></p>
+			@if (Model.Birthday.ToString("g") == "01.01.0001 0:00")
+			{
+				<p class="card-text">Дата рождения: <strong class="text-extra-dark">Неизвестно</strong></p>
+			}
+			else
+			{
+				<p class="card-text">Дата рождения: <strong class="text-extra-dark">@Model.Birthday.ToString("D")</strong></p>
+			}
 			<p class="card-text">Пол: <strong class="text-extra-dark">@Model.Gender</strong></p>
-			<p class="card-text">Рост: <strong class="text-extra-dark">@Model.Height см</strong></p>
-			<p class="card-text">Вес: <strong class="text-extra-dark">@Model.Weight кг</strong></p>
+			
+			@if (Model.Height == 0)
+			{
+				<p class="card-text">Рост: <strong class="text-extra-dark">Неизвестно</strong></p>
+			}
+			else
+			{
+				<p class="card-text">Рост: <strong class="text-extra-dark">@Model.Height см</strong></p>
+			}
+			@if (Model.Weight == 0)
+			{
+				<p class="card-text">Вес: <strong class="text-extra-dark">Неизвестно</strong></p>
+			}
+			else
+			{
+				<p class="card-text">Вес: <strong class="text-extra-dark">@Model.Weight кг</strong></p>
+			}
 			@*Мировоззрение*@
 			<p>
 				Мировоззрение:
