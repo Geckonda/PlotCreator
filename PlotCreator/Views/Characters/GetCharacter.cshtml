@@ -5,7 +5,12 @@
 	//Группы персонажа
 	var activeGroupsId = Model!.Groups!.Select(x => x.Id);
 	var groupsForAdd = Model!.GroupList!.Where(x => !activeGroupsId.Contains(x.Id));
-	var groupsForDelete = Model.Groups!.Where(x => x.BookId.ToString()! == ViewData["bookId"]!.ToString());
+
+	var groupsForDelete = Model.Groups!;
+	if (ViewData["bookId"] != null)
+	{
+		groupsForDelete = Model.Groups!.Where(x => x.BookId.ToString()! == ViewData["bookId"]!.ToString()).ToList();
+	}
 }
 @section Styles{
 	<link rel="stylesheet" href="~/css/text.css" asp-append-version="true" />
@@ -118,38 +123,47 @@
 					Группы
 				</a>
 				: @Model.Groups!.Count
-				@if(groupsForAdd.Count() > 0)
+				@if (ViewData["bookId"] != null)
 				{
-					<button class="btn btn-success smbtn" data-bs-toggle="modal" data-bs-target="#groupAddition">
-						&#10010;
-					</button>
-				}
-				@if(groupsForDelete?.Count() > 0)
-				{
-					<a class="btn btn-danger smbtn" data-bs-toggle="modal" data-bs-target="#removalGroup">
-						&#10006;
-					</a>
+					@if (groupsForAdd.Count() > 0)
+					{
+						<button class="btn btn-success smbtn" data-bs-toggle="modal" data-bs-target="#groupAddition">
+							&#10010;
+						</button>
+					}
+					@if (groupsForDelete?.Count() > 0)
+					{
+						<a class="btn btn-danger smbtn" data-bs-toggle="modal" data-bs-target="#removalGroup">
+							&#10006;
+						</a>
+					}
 				}
 			</p>
 			@*События персонажа*@
 				<p>
 					События: @Model.Events!.Count
+				@if (ViewData["bookId"] != null)
+				{
 					<a class="btn btn-success smbtn" >
 						&#10010;
 					</a>
 					<a class="btn btn-danger smbtn" >
 						&#10006;
 					</a>
+				}
 				</p>
 			@*Эпизоды персонажа*@
 				<p>
 					Эпизоды: @Model.Episodes!.Count
+				@if (ViewData["bookId"] != null)
+				{
 					<a class="btn btn-success smbtn" >
 						&#10010;
 					</a>
 					<a class="btn btn-danger smbtn" >
 						&#10006;
 					</a>
+				}
 				</p>
 		</div>
 	</div>
@@ -392,7 +406,9 @@
 					<h5 class="modal-title" id="nameGroupText">Описание группы</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
-				<p id="descriptionText"></p>
+				<div class="tab-list">
+					<p id="descriptionText"></p>
+				</div>
 			</div>
 		</div>
 	</div>
