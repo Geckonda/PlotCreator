@@ -425,13 +425,13 @@ namespace PlotCreator.Service.Implementations
 			}
 		}
 
-		public async Task<IBaseResponse<CharacterViewModel>> GetCharacter(int id)
+		public async Task<IBaseResponse<CharacterViewModel>> GetCharacter(int id, int? bookId)
 		{
 			var baseResponse = new BaseResponse<CharacterViewModel>();
 			try
 			{
 				var character =  _characterRepository.GetOne(id);
-				var lists = await _characterRepository.GetReferenceData();
+				var lists = await _characterRepository.GetReferenceData(bookId);
 				if (character == null)
 				{
 					baseResponse.Description = "Персонаж не найден";

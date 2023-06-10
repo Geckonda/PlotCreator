@@ -2,6 +2,10 @@
 
 @{
 	ViewData["title"] = Model.Name;
+	//Группы персонажа
+	var activeGroupsId = Model!.Groups!.Select(x => x.Id);
+	var groupsForAdd = Model!.GroupList!.Where(x => !activeGroupsId.Contains(x.Id));
+	var groupsForDelete = Model.Groups!.Where(x => x.BookId.ToString()! == ViewData["bookId"]!.ToString());
 }
 @section Styles{
 	<link rel="stylesheet" href="~/css/text.css" asp-append-version="true" />
@@ -88,71 +92,65 @@
 					 @Model.Worldview!.Name
 			  </a>
 			</p>
-			<div class="collapse" id="WorldviewInfo">
+			<div class="collapse mb-2" id="WorldviewInfo">
 				<div class="card card-body body-frame-invert" style="max-width: 450px;">
 				  @Model.Worldview!.Description
 				</div>
 			</div>
 			@*Книги персонажа*@
 			<p>
-				Книги:
 				<a class="text-extra-dark" data-bs-toggle="collapse" href="#BookInfo" role="button" aria-expanded="false">
-					@Model.Books!.Count
+					Книги
 				</a>
+				: @Model.Books!.Count
 			</p>
-			<div class="collapse" id="BookInfo">
+			<div class="collapse mb-2" id="BookInfo">
 				<div class="card body-frame-invert d-flex flex-wrap" style="max-width: 450px;">
-					@*@foreach (var group in Model.Groups)
+					@foreach (var book in Model.Books)
 					{
-						<button type="button" class="btn body-frame-invert group-btn" data-bs-toggle="modal" data-bs-target="#modelDescription" data-bs-description="@group.Description" data-bs-groupId="@group.Id" data-bs-name="@group.Name">@group.Name</button>
-					}*@
+						<a class="btn body-frame-invert group-btn" asp-controller="Books" asp-action="MyBook" asp-route-id="@book.Id">@book.Title</a>
+					}
 				</div>
 			</div>
 			@*Группы персонажа*@
 			<p>
-				Группы:
-				<a class="text-extra-dark" data-bs-toggle="collapse" href="#GroupInfo" role="button" aria-expanded="false" >
-					@Model.Groups!.Count
+				<a class="text-extra-dark" data-bs-toggle="modal" data-bs-target="#groupDescription" role="button" aria-expanded="false">
+					Группы
 				</a>
+				: @Model.Groups!.Count
+				@if(groupsForAdd.Count() > 0)
+				{
+					<button class="btn btn-success smbtn" data-bs-toggle="modal" data-bs-target="#groupAddition">
+						&#10010;
+					</button>
+				}
+				@if(groupsForDelete?.Count() > 0)
+				{
+					<a class="btn btn-danger smbtn" data-bs-toggle="modal" data-bs-target="#removalGroup">
+						&#10006;
+					</a>
+				}
 			</p>
-			<div class="collapse" id="GroupInfo">
-				<div class="card body-frame-invert d-flex flex-wrap" style="max-width: 450px;">
-					@foreach (var group in Model.Groups)
-					{
-						<button type="button" class="btn body-frame-invert group-btn" data-bs-toggle="modal" data-bs-target="#modelDescription" data-bs-description="@group.Description" data-bs-groupId="@group.Id" data-bs-name="@group.Name">@group.Name</button>
-					}
-				</div>
-			</div>
 			@*События персонажа*@
-			<p>
-				События:
-				<a class="text-extra-dark" data-bs-toggle="collapse" href="#EventInfo" role="button" aria-expanded="false">
-					@Model.Events!.Count
-				</a>
-			</p>
-			<div class="collapse" id="EventInfo">
-				<div class="card body-frame-invert d-flex flex-wrap" style="max-width: 450px;">
-					@*@foreach (var Event in Model.Events!)
-					{
-						<button type="button" class="btn body-frame-invert group-btn" data-bs-toggle="modal" data-bs-target="#modelDescription" data-bs-description="@Event.Description" data-bs-groupId="@Event.Id" data-bs-name="@Event.Title">@Event.Title</button>
-					}*@
-				</div>
-			</div>
+				<p>
+					События: @Model.Events!.Count
+					<a class="btn btn-success smbtn" >
+						&#10010;
+					</a>
+					<a class="btn btn-danger smbtn" >
+						&#10006;
+					</a>
+				</p>
 			@*Эпизоды персонажа*@
-			<p>
-				Эпизоды:
-				<a class="text-extra-dark" data-bs-toggle="collapse" href="#EpisodeInfo" role="button" aria-expanded="false">
-					@Model.Episodes!.Count
-				</a>
-			</p>
-			<div class="collapse" id="EpisodeInfo">
-				<div class="card body-frame-invert d-flex flex-wrap" style="max-width: 450px;">
-					@*@foreach (var Event in Model.Events!)
-					{
-					<button type="button" class="btn body-frame-invert group-btn" data-bs-toggle="modal" data-bs-target="#modelDescription" data-bs-description="@Event.Description" data-bs-groupId="@Event.Id" data-bs-name="@Event.Title">@Event.Title</button>
-					}*@
-				</div>
-			</div>
+				<p>
+					Эпизоды: @Model.Episodes!.Count
+					<a class="btn btn-success smbtn" >
+						&#10010;
+					</a>
+					<a class="btn btn-danger smbtn" >
+						&#10006;
+					</a>
+				</p>
 		</div>
 	</div>
 	<div class="container">
@@ -248,23 +246,160 @@
 
 </div>
 
-
-@*Модальное окно групп*@
-<div class="modal fade" id="modelDescription" tabindex="-1"  aria-hidden="true">
+@*----------------------------------------*@
+@*БЛОК МОДАЛЬНЫХ ОКОН ГРУПП*@
+@*Модальное окно добавления групп*@
+<div class="modal fade" id="groupAddition" tabindex="-1"  aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content body-frame">
             <div class="modal-body">
                 <div class="d-flex justify-content-between">
-					<h5 class="modal-title" id="nameGroupText">Описание группы</h5>
+					<h5 class="modal-title" id="nameGroupText">Добавление групп</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <p id="descriptionText"></p>
-            </div>
+				<div class="pt-3">
+
+					@if (groupsForAdd.Count() > 0)
+					{
+						<form asp-action="AddGroups" class="d-flex flex-column">
+							<input name="characterId" type="text" value="@Model?.Id" hidden />
+							<input name="bookId" type="text" value=@ViewData["bookId"] hidden />
+							<div class="d-flex justify-content-between align-items-center flex-wrap">
+								<div class="input-group serch-container w-100 mb-2">
+									<input type="text" class="form-control search-bar" id="search-bar" placeholder="Название группы">
+									<button class="btn btn-success search-btn" type="button" id="search-btn">Поиск</button>
+									<button class="btn btn-danger reset-btn" type="button" id="reset-btn">Сброс</button>
+								</div>
+							</div>
+							<div class="mb-3 d-flex flex-column tab-list">
+								@foreach (var group in groupsForAdd)
+								{
+									<div class="p-2">
+										<input class="form-check-input" type="checkbox" value="@group.Id" name="checkedGroups" id="@group.Id Group">
+										<label class="form-check-label group-character" for="@group.Id Group">
+											@group.Name
+										</label>
+									</div>
+								}
+							</div>
+							
+							<button class="btn btn-success" type="submit">Добавить</button>
+						</form>
+					}
+					else
+					{
+						<h6 class="modal-title">Групп не найдено</h6>
+					}
+				</div>
+			</div>
         </div>
     </div>
 </div>
 
+@*Модальное окно удаления групп*@
+<div class="modal fade" id="removalGroup" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content body-frame">
+			<div class="modal-body">
+				<div class="d-flex justify-content-between">
+					<h5 class="modal-title" id="nameGroupText">Удаление групп</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="pt-3">
+
+					@if (groupsForDelete?.Count() > 0)
+					{
+						<form asp-action="RemoveGroups" class="d-flex flex-column">
+							<input name="characterId" type="text" value="@Model?.Id" hidden />
+							<input name="bookId" type="text" value=@ViewData["bookId"] hidden />
+							<div class="d-flex justify-content-between align-items-center flex-wrap">
+								<div class="input-group serch-container w-100 mb-2">
+									<input type="text" class="form-control search-bar" placeholder="Название группы">
+									<button class="btn btn-success search-btn" type="button">Поиск</button>
+									<button class="btn btn-danger reset-btn" type="button">Сброс</button>
+								</div>
+							</div>
+							<div class="mb-3 d-flex flex-column tab-list">
+								@foreach (var group in groupsForDelete)
+								{
+									<div class="p-2">
+										<input class="form-check-input" type="checkbox" value="@group.Id" name="checkedGroups" id="@group.Id Group">
+										<label class="form-check-label group-character" for="@group.Id Group">
+											@group.Name
+										</label>
+									</div>
+								}
+							</div>
+							<button class="btn btn-success" type="submit">Удалить</button>
+						</form>
+					}
+					else
+					{
+						<h6 class="modal-title">Прикрепленных групп не найдено</h6>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@*Модальное окно групп*@
+<div class="modal fade" id="groupDescription" tabindex="-1"  aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content body-frame">
+            <div class="modal-body">
+                <div class="d-flex justify-content-between">
+					<h5 class="modal-title" id="nameGroupText">Описание групп персонажа</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+				<div class="pt-3">
+
+					@if (Model?.Groups.Count > 0)
+					{
+					<form asp-action="RemoveGroups" class="d-flex flex-column">
+						<input name="characterId" type="text" value="@Model?.Id" hidden />
+						<input name="bookId" type="text" value=@ViewData["bookId"] hidden />
+						<div class="d-flex justify-content-between align-items-center flex-wrap">
+							<div class="input-group serch-container w-100 mb-2">
+								<input type="text" class="form-control search-bar-dim" placeholder="Название группы">
+								<button class="btn btn-success search-btn-dim" type="button">Поиск</button>
+								<button class="btn btn-danger reset-btn-dim" type="button">Сброс</button>
+							</div>
+						</div>
+						<div class="mb-3 d-flex flex-column tab-list">
+							@foreach (var group in Model?.Groups!)
+							{
+								<button type="button" class="btn body-frame-invert group-btn " data-bs-toggle="modal" data-bs-target="#modelDescription" data-bs-description="@group.Description" data-bs-groupId="@group.Id" data-bs-name="@group.Name">@group.Name</button>
+							}
+						</div>
+					</form>
+					}
+					else
+					{
+					<h6 class="modal-title">Прикрепленных групп не найдено</h6>
+					}
+				</div>
+            </div>
+        </div>
+    </div>
+</div>
+@*Модальное описания групп*@
+<div class="modal fade" id="modelDescription" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content body-frame">
+			<div class="modal-body">
+				<div class="d-flex justify-content-between">
+					<h5 class="modal-title" id="nameGroupText">Описание группы</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<p id="descriptionText"></p>
+			</div>
+		</div>
+	</div>
+</div>
+
+
 @section Scripts{
 	<script src="~/js/textConstructor.js"></script>
-	<script src="~/js/Characters/modal.js"></script>
+	<script type="module" src="~/js/Characters/modal.js"></script>
  }

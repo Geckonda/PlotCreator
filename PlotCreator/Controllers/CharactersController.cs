@@ -32,7 +32,7 @@ namespace PlotCreator.Controllers
 				return View("404");
 
 			ViewData["bookId"] = bookId;
-			var response = await _characterService.GetCharacter(id);
+			var response = await _characterService.GetCharacter(id, bookId);
 			if (response.StatusCode == Domain.Enum.StatusCode.Ok)
 				return View(response.Data);
 			return RedirectToAction("Error");
@@ -76,7 +76,7 @@ namespace PlotCreator.Controllers
 				response.Data.User = await _accountService.GetUser(userId);
 				return View(response.Data);
 			}
-			response = await _characterService.GetCharacter(id);
+			response = await _characterService.GetCharacter(id, null);
 			if (response.StatusCode == Domain.Enum.StatusCode.Ok)
 				return View(response.Data);
 
@@ -118,7 +118,7 @@ namespace PlotCreator.Controllers
 		public async Task<IActionResult> Delete(int id)
 		{
 			var userId = await _characterService.GetUserId(id);
-			var characterResponse = await _characterService.GetCharacter(id);
+			var characterResponse = await _characterService.GetCharacter(id, null);
 			var response = await _characterService.DeleteCharacter(id);
 			await DeleteImage(characterResponse.Data.Picture!);
 			if (response.StatusCode == Domain.Enum.StatusCode.Ok)
@@ -165,6 +165,25 @@ namespace PlotCreator.Controllers
 			return RedirectToAction("Error");
 		}
 
+		[HttpPost]
+		public async Task<IActionResult> AddGroups(int characterId, int bookId, int[] checkedGroups)
+		{
+			var response = await _characterService.AddGroupsCharacterRelation(characterId, checkedGroups);
+			if(response)
+				return RedirectToRoute(new { controller = "Characters", action = "GetCharacter", id = characterId, bookId = bookId });
+			return RedirectToAction("Error");
+		}
+		[HttpPost]
+		public async Task<IActionResult> RemoveGroups(int characterId, int bookId, int[] checkedGroups)
+		{
+			var response = await _characterService.EditGroupsCharacterRelation(characterId, checkedGroups, bookId);
+			if (response)
+			{
+				ViewData["groupsMSG"] = "Группы успешно откреплены от персонажа";
+				return RedirectToRoute(new { controller = "Characters", action = "GetCharacter", id = characterId, bookId = bookId });
+			}
+			return RedirectToAction("Error");
+		}
 		//Служебные-приватные методы
 
 		/// <summary>

@@ -13,7 +13,7 @@ namespace PlotCreator.Service.Interfaces
 	{
 		Task<IBaseResponse<IEnumerable<CharacterViewModel>>> GetAllCharacters(int userId);
 		Task<IBaseResponse<IEnumerable<CharacterViewModel>>> GetBookCharacters(int bookId);
-		Task<IBaseResponse<CharacterViewModel>> GetCharacter(int id);
+		Task<IBaseResponse<CharacterViewModel>> GetCharacter(int id, int? bookId);
 		Task<IBaseResponse<CharacterViewModel>> GetEmptyViewModel(int bookId);
 		Task<IBaseResponse<CharacterViewModel>> CreateCharacter(CharacterViewModel model);
 		Task<IBaseResponse<CharacterViewModel>> EditCharacter(CharacterViewModel model);

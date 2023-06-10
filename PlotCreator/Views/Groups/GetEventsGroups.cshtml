@@ -1,0 +1,132 @@
+﻿@model List<PlotCreator.Domain.ViewModels.GroupViewModel>
+
+@{
+    ViewBag.Title = "Группы";
+    Layout = "_Layout";
+    var newGroup = new PlotCreator.Domain.ViewModels.GroupViewModel();
+    newGroup.Book = new();
+
+    var currentGroup = new PlotCreator.Domain.ViewModels.GroupViewModel();
+    currentGroup.Book = new();
+
+    var parent = "Event";
+}
+
+@section Styles{
+    <link rel="stylesheet" href="~/css/groups/groups.css" asp-append-version="true" />
+}
+
+@if (ViewData["bookId"] != null)
+{
+    <a class="" asp-controller="Books" asp-action="MyBook" asp-route-id=@ViewData["bookId"]>Вернуться к книге</a>
+}
+
+<h1 style="margin-top: 3rem;">Группы событий</h1>
+<div style="padding: 10px;"></div>
+<div class="d-flex justify-content-between align-items-center flex-wrap">
+    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#saveForm">Добавить группу</button>
+    <div class="input-group serch-container">
+        <input type="text" class="form-control" id="search-bar" placeholder="Название группы">
+        <button class="btn btn-success" type="button" id="search-btn">Поиск</button>
+        <button class="btn btn-danger" type="button" id="reset-btn">Сброс</button>
+    </div>
+</div>
+
+<hr class="dropdown-divider w-100 mb-3">
+@if (!Model.Any())
+{
+    <h2 class="text-info">Групп не найдено!</h2>
+}
+<div class="cont-cont">
+    @foreach (var group in Model)
+    {
+        <button type="button" class="btn body-frame-invert group-btn" data-bs-toggle="modal" data-bs-target="#modelDescription" data-bs-description="@group.Description" data-bs-groupId="@group.Id" data-bs-name="@group.Name">@group.Name</button>
+    }
+</div>
+
+@*Описание групп*@
+<div class="modal fade" id="modelDescription" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content body-frame">
+            <div class="modal-body">
+                <div class="d-flex justify-content-between">
+                    <h5 class="modal-title" id="exampleModalLabel">Описание группы</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <p id="descriptionText"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="updateButton" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modelUpdate">Редактировать</button>
+                <a class="btn btn-danger" id="deleteButton" asp-action="Delete" asp-route-bookId="@ViewData["bookId"]" asp-route-parent="@parent">Удалить</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@*Создание группы*@
+<div class="modal fade" id="saveForm" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body body-frame">
+                <div class="d-flex justify-content-between">
+                    <h5 class="modal-title">Добавление группы</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form asp-action="Save">
+                    <input asp-for="@newGroup.Book.Id" type="text" value="@ViewData["bookId"]" hidden />
+                    <input asp-for="@newGroup.Parent" type="text" value="@parent" hidden />
+                    <div class="mb-3">
+                        <label for="Name" class="col-form-label">Название:</label>
+                        <input type="text" class="form-control" asp-for="@newGroup.Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="Description" class="col-form-label">Описание:</label>
+                        <textarea class="form-control" asp-for="@newGroup.Description" rows="5" required></textarea>
+                    </div>
+                    <div class="modal-footer d-flex justify-content-center">
+                        <button type="submit" class="btn btn-success">Сохранить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Обновление группы*@
+<div class="modal fade" id="modelUpdate" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body body-frame">
+                <div class="d-flex justify-content-between">
+                    <h5 class="modal-title">Обновление группы</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form asp-action="Edit" method="post">
+                    <input asp-for="@currentGroup.Id" type="text" id="editFormIdField" hidden />
+                    <input asp-for="@currentGroup.Book.Id" type="text" value="@ViewData["bookId"]" hidden />
+                    <input asp-for="@currentGroup.Parent" type="text" value="@parent" hidden />
+                    <div class="mb-3">
+                        <label for="Name" class="col-form-label">Название:</label>
+                        <input type="text" class="form-control" asp-for="@currentGroup.Name" id="editFormNameField" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="Description" class="col-form-label">Описание:</label>
+                        <textarea class="form-control" asp-for="@currentGroup.Description" id="editFormDescriptionField" rows="5" required></textarea>
+                    </div>
+                    <div class="modal-footer d-flex justify-content-center">
+                        <button type="submit" class="btn btn-success">Сохранить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts{
+
+    <script src="~/js/Groups/modal.js"></script>
+    <script type="module" src="~/js/Groups/groups.js"></script>
+}

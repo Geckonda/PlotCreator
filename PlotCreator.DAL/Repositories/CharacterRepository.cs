@@ -139,13 +139,13 @@ namespace PlotCreator.DAL.Repositories
 										.Where(x => x.CharacterId == characterId)
 										.Include(x => x.Group)
 										.Where(x => x.Group!.BookId == bookId)
-										.Where(x => !groups.Select(x => x.GroupId).Contains(x.GroupId))
+										.Where(x => groups.Select(x => x.GroupId).Contains(x.GroupId))
 										.ToList();
 
 			if (groupsForDelete.Count > 0)
 				await DeleteGroupsFromEntity(groupsForDelete);
 
-			var existedGroups = _db.Groups_Characters
+			/*var existedGroups = _db.Groups_Characters
 										.Where(x => x.CharacterId == characterId)
 										.Include(x => x.Group)
 										.Where(x => x.Group!.BookId == bookId)
@@ -154,7 +154,7 @@ namespace PlotCreator.DAL.Repositories
 				await AddGroupsToEntity(groups
 					.Where(x => !existedGroups
 					.Select(x => x.GroupId)
-					.Contains(x.GroupId)));
+					.Contains(x.GroupId)));*/
 		}
 
 		public IQueryable<Character> GetAll()
@@ -281,7 +281,7 @@ namespace PlotCreator.DAL.Repositories
 				.First();
 		}
 
-		public async Task<CharacterLists> GetReferenceData(int? bookId = 0)
+		public async Task<CharacterLists> GetReferenceData(int? bookId)
 		{
 			return new CharacterLists()
 			{
