@@ -67,6 +67,9 @@ namespace PlotCreator.DAL.Repositories
                     .ThenInclude(b_ch => b_ch.Character)
                 .Include(book => book.Books_Ideas)
                     .ThenInclude(b_idea => b_idea.Idea)
+                .Include(book => book.Episodes)
+                .Include(book => book.Events)
+                .Include(book => book.Groups)
                 .Where(book => book.Id == id)
                 .First();
 		}
