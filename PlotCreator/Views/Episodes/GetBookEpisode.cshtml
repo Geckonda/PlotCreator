@@ -1,0 +1,197 @@
+﻿@model PlotCreator.Domain.ViewModels.EpisodeViewModel
+
+@{
+    ViewBag.Title = Model.Heading;
+    Layout = "_Layout";
+
+    //Персонажи эпизода
+    var activeCharactersid = Model!.Characters!.Select(x => x.Id);
+    var charactersForAdd = Model!.CharacterList!.Where(x => !activeCharactersid.Contains(x.Id));
+
+    var charactersForDelete = Model.Characters!;
+}
+@section Styles{
+    <link rel="stylesheet" href="~/css/text.css" asp-append-version="true" />
+}
+<div class="d-flex  align-items-center">
+    <a class="btn btn-success fs-5" asp-controller="Episodes" asp-action="GetBookEpisodes" asp-route-bookId="@Model.Book!.Id" asp-route-userId="@User.FindFirst("userId").Value">&#8592;</a>
+    <div class="d-flex" style="margin-left:10px;">
+
+        <h1>Эпизод</h1>
+        
+        <div class="w-auto d-flex align-items-center" style="margin-left:10px;">
+
+            <div class="dropdown">
+                <button class="" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <svg class="text-extra-dark" xmlns="http://www.w3.org/2000/svg" width="32" height="32" style="background-color:var(--extra-light);" fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
+                        <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z" />
+                        <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z" />
+                    </svg>
+                </button>
+                <ul class="dropdown-menu p-0">
+                    <li>
+                        <a class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#attachedCharacters" role="button" aria-expanded="false">
+                            Персонажи: @Model.Characters!.Count
+                        </a>
+                    </li>
+                    <li>
+                        <a class="btn btn-success w-100" asp-controller="Episodes" asp-action="Save" asp-route-id="@Model.Id" asp-route-bookId="@Model.Book!.Id">Изменить</a>
+                    </li>
+                    <li>
+                        <a class="btn btn-danger w-100" asp-controller="Episodes" asp-action="Delete" asp-route-id="@Model.Id">Удалить</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div style="padding: 10px;"></div>
+<div class="cont-cont">
+    <h2 class="heading">@Model.Heading</h2>
+    <p id="response-text-block" class="d-none">@Model.Content</p>
+    <hr class="dropdown-divider w-100 mb-3">
+    <div id="main-text-block"></div>
+</div>
+
+@*Модальное окно прикрепленных персонажей*@
+<div class="modal fade" id="attachedCharacters" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content body-frame">
+            <div class="modal-body">
+                <div class="d-flex justify-content-between">
+                    <h5 class="modal-title" id="nameGroupText">Закрепленные персонажи эпизода</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div>
+                    <div class="d-flex">
+                        Персонажи
+                        @if (charactersForAdd.Count() > 0)
+					    {
+						    <button class="btn btn-success smbtn" data-bs-toggle="modal" data-bs-target="#characterAddition">
+							    &#10010;
+						    </button>
+					    }
+					    @if (charactersForDelete?.Count() > 0)
+					    {
+						    <a class="btn btn-danger smbtn" data-bs-toggle="modal" data-bs-target="#removalCharacter">
+							    &#10006;
+						    </a>
+					    }
+                    </div>
+                </div>
+                <div class="mb-3 d-flex flex-column tab-list">
+                    @if(Model?.Characters!.Count > 0)
+                    {
+                        @foreach (var character in Model?.Characters!)
+					    {
+						    <a class="btn btn-success" asp-controller="Characters" asp-action="GetCharacter" asp-route-id="@character.Id" asp-route-bookId="@ViewData["bookId"]">@character.Name</a>
+					    }
+                    }
+                    else
+                    {
+                        <h6 class="modal-title">Прикрпеленных персонажей не найдено</h6>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*Прикрепление персонажей*@
+<div class="modal fade" id="characterAddition" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content body-frame">
+            <div class="modal-body">
+                <div class="d-flex justify-content-between">
+                    <h5 class="modal-title" id="nameGroupText">Добавление персонажа</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="pt-3">
+
+                    @if (charactersForAdd.Count() > 0)
+                    {
+                        <form asp-action="AddCharacters" class="d-flex flex-column">
+                            <input name="episodeId" type="text" value="@Model?.Id" hidden />
+                            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                <div class="input-group serch-container w-100 mb-2">
+                                    <input type="text" class="form-control search-bar" id="search-bar" placeholder="Имя персонажа">
+                                    <button class="btn btn-success search-btn" type="button" id="search-btn">Поиск</button>
+                                    <button class="btn btn-danger reset-btn" type="button" id="reset-btn">Сброс</button>
+                                </div>
+                            </div>
+                            <div class="mb-3 d-flex flex-column tab-list">
+                                @foreach (var character in charactersForAdd)
+                                {
+                                    <div class="p-2">
+                                        <input class="form-check-input" type="checkbox" value="@character.Id" name="checkedCharacters" id="@character.Id Character">
+                                        <label class="form-check-label group-character" for="@character.Id Character">
+                                            @character.Name
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+
+                            <button class="btn btn-success" type="submit">Прикрепить</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <h6 class="modal-title">Персонажей не найдено</h6>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*Открепление персонажей*@
+<div class="modal fade" id="removalCharacter" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content body-frame">
+            <div class="modal-body">
+                <div class="d-flex justify-content-between">
+                    <h5 class="modal-title" id="nameGroupText">Добавление персонажа</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="pt-3">
+                    @if (charactersForDelete!.Count() > 0)
+                    {
+                        <form asp-action="RemoveCharacters" class="d-flex flex-column">
+                            <input name="episodeId" type="text" value="@Model?.Id" hidden />
+                            <input name="bookId" type="text" value=@Model!.Book!.Id hidden />
+                            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                <div class="input-group serch-container w-100 mb-2">
+                                    <input type="text" class="form-control search-bar" id="search-bar" placeholder="Имя персонажа">
+                                    <button class="btn btn-success search-btn" type="button" id="search-btn">Поиск</button>
+                                    <button class="btn btn-danger reset-btn" type="button" id="reset-btn">Сброс</button>
+                                </div>
+                            </div>
+                            <div class="mb-3 d-flex flex-column tab-list">
+                                @foreach (var character in charactersForDelete!)
+                                {
+                                    <div class="p-2">
+                                        <input class="form-check-input" type="checkbox" value="@character.Id" name="checkedCharacters" id="@character.Id Character">
+                                        <label class="form-check-label group-character" for="@character.Id Character">
+                                            @character.Name
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+
+                            <button class="btn btn-success" type="submit">Открепить</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <h6 class="modal-title">Персонажей не найдено</h6>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+ @section Scripts{
+    <script src="~/js/textConstructor.js"></script>
+    <script type="module" src="~/js/Episodes/modal.js"></script>
+ }

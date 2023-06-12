@@ -1,0 +1,23 @@
+﻿@model List<PlotCreator.Domain.ViewModels.EpisodeViewModel>
+
+@{
+    ViewBag.Title = "Мои эпизоды";
+    Layout = "_Layout";
+}
+<h1>Эпизоды</h1>
+<div style="padding: 10px;"></div>
+<a class="btn btn-success" asp-area="" asp-action="Save" asp-route-id="0" asp-route-bookId=@ViewData["BookId"]>Добавить эпизод</a>
+<hr class="dropdown-divider w-100 mb-3">
+@if (!Model.Any())
+{
+    <h2 class="text-info">Эпизодов не найдено!</h2>
+}
+<div class="cont-cont">
+    @foreach (var episode in Model)
+    {
+        <a class="SceneContainer" asp-controller="Episodes" asp-action="GetBookEpisode" asp-route-id="@episode.Id">
+            <div class="listPointer"></div>
+            <h4>@episode.Heading</h4>
+        </a>
+    }
+</div>

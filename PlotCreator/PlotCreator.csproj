@@ -20,4 +20,10 @@
 	  <ProjectReference Include="..\PlotCreator.Domain\PlotCreator.Domain.csproj" />
 	  <ProjectReference Include="..\PlotCreator.Service\PlotCreator.Service.csproj" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="wwwroot\js\Новая папка1\" />
+	  <Folder Include="wwwroot\js\Новая папка2\" />
+	  <Folder Include="wwwroot\js\Новая папка\" />
+	</ItemGroup>
 </Project>
