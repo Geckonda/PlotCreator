@@ -47,8 +47,12 @@ namespace PlotCreator.DAL.Repositories
 					.ThenInclude(x => x.Event);
 		}
 
+        public Task<IQueryable<Group>> GetAllByUserId(int userId)
+        {
+            throw new NotImplementedException();
+        }
 
-		public async Task<IQueryable<Group>> GetAllGroupsByParent(int bookId, string parent)
+        public async Task<IQueryable<Group>> GetAllGroupsByParent(int bookId, string parent)
 		{
 			return _db.Groups
 			   .Where(x => x.BookId == bookId)
@@ -72,8 +76,12 @@ namespace PlotCreator.DAL.Repositories
 				.First();
 		}
 
+        public Task<int> GetLastUserEntityId(int userId)
+        {
+            throw new NotImplementedException();
+        }
 
-		public Group GetOne(int id)
+        public Group GetOne(int id)
 		{
 			return _db.Groups
 						.Where(x => x.Id == id)
@@ -84,8 +92,23 @@ namespace PlotCreator.DAL.Repositories
 						.First();
 		}
 
+        public async Task<User> GetUser(int groupId)
+        {
+            return _db.Groups
+                .Where(group => group.Id == groupId)
+                .Select(group => group.Book!.User!)
+                .First();
+        }
 
-		public async Task<Group> Update(Group entity)
+        public async Task<int> GetUserId(int groupId)
+        {
+            return _db.Groups
+                .Where(group => group.Id == groupId)
+                .Select(group => group.Book!.User!.Id)
+                .First();
+        }
+
+        public async Task<Group> Update(Group entity)
 		{
 			_db.Update(entity);
 			await _db.SaveChangesAsync();

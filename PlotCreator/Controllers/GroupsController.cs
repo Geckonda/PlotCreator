@@ -1,20 +1,28 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PlotCreator.Domain.ViewModels;
+using PlotCreator.Service.Implementations;
 using PlotCreator.Service.Interfaces;
 
 namespace PlotCreator.Controllers
 {
+    [Authorize]
     public class GroupsController : Controller
     {
 		private readonly IGroupService _groupService;
-		public GroupsController(IGroupService groupService)
+		private readonly IBookService _bookService;
+		public GroupsController(IGroupService groupService, IBookService bookService)
 		{
 			_groupService = groupService;
+			_bookService = bookService;
 		}
 		[HttpGet]
 		public async Task<IActionResult> GetCharactersGroups(int bookId)
 		{
-			var response = await _groupService.GetAllGroupsByParent(bookId, "Character");
+            if (!UserIsBookOwner(bookId).Result)
+                return View("404");
+
+            var response = await _groupService.GetAllGroupsByParent(bookId, "Character");
 			ViewData["bookId"] = bookId;
 			if (response.StatusCode == Domain.Enum.StatusCode.Ok)
 				return View(response.Data);
@@ -23,7 +31,10 @@ namespace PlotCreator.Controllers
 		[HttpGet]
 		public async Task<IActionResult> GetEventsGroups(int bookId)
 		{
-			var response = await _groupService.GetAllGroupsByParent(bookId, "Event");
+            if (!UserIsBookOwner(bookId).Result)
+                return View("404");
+
+            var response = await _groupService.GetAllGroupsByParent(bookId, "Event");
 			ViewData["bookId"] = bookId;
 			if (response.StatusCode == Domain.Enum.StatusCode.Ok)
 				return View(response.Data);
@@ -46,7 +57,10 @@ namespace PlotCreator.Controllers
 		[HttpGet]
 		public async Task<IActionResult> Delete(int id, int bookId, string parent)
 		{
-			var response = await _groupService.DeleteGroup(id);
+            if (!UserIsBookOwner(bookId).Result)
+                return View("404");
+
+            var response = await _groupService.DeleteGroup(id);
 			if (response.StatusCode == Domain.Enum.StatusCode.Ok)
 			{
 				if (parent == "Event")
@@ -69,5 +83,36 @@ namespace PlotCreator.Controllers
 			}
 			return RedirectToAction("Error");
 		}
-	}
+        //Служебные-приватные методы
+
+        /// <summary>
+        /// Проверяет, является ли владелец запроса владельцем Идеи
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <returns></returns>
+        public async Task<bool> UserIsGroupOwner(int groupId)
+		{
+            var userContentIdOwner = await _groupService.GetUserId(groupId);
+            var userIdRequestOwner = Convert.ToInt32(User.FindFirst("userId")!.Value);
+            if (userContentIdOwner == userIdRequestOwner)
+                return true;
+            return false;
+        }
+
+        public bool CheckUser(int userId)
+        {
+            var userIdRequestOwner = Convert.ToInt32(User.FindFirst("userId")!.Value);
+            if (userId == userIdRequestOwner)
+                return true;
+            return false;
+        }
+        public async Task<bool> UserIsBookOwner(int contentId)
+		{
+            var userContentIdOwner = await _bookService.GetUserId(contentId);
+            var userIdRequestOwner = Convert.ToInt32(User.FindFirst("userId")!.Value);
+            if (userContentIdOwner == userIdRequestOwner)
+                return true;
+            return false;
+        }
+    }
 }

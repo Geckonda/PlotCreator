@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PlotCreator.Domain.Helpers;
 using PlotCreator.Domain.Response.Interfaces;
 using PlotCreator.Domain.ViewModels;
@@ -7,6 +8,7 @@ using PlotCreator.Service.Interfaces;
 
 namespace PlotCreator.Controllers
 {
+    [Authorize]
     public class CharactersController : Controller
     {
 		private readonly ICharacterService _characterService;
@@ -28,7 +30,7 @@ namespace PlotCreator.Controllers
 		[HttpGet]
 		public async Task<IActionResult> GetCharacter(int id, int? bookId)
 		{
-			if (!UserIsIdeaOwner(id).Result)
+			if (!UserIsCharacterOwner(id).Result)
 				return View("404");
 
 			ViewData["bookId"] = bookId;
@@ -129,7 +131,10 @@ namespace PlotCreator.Controllers
 		[HttpGet]
 		public async Task<IActionResult> AddCharacterToBook(int userId, int bookId)
 		{
-			var response = await _characterService.GetCharactersExcludeBook(userId, bookId);
+            if (!CheckUser(userId))
+                return View("404");
+
+            var response = await _characterService.GetCharactersExcludeBook(userId, bookId);
 
 			ViewData["bookId"] = bookId;
 			if (response.StatusCode == Domain.Enum.StatusCode.Ok)
@@ -147,8 +152,11 @@ namespace PlotCreator.Controllers
 
 		[HttpGet]
 		public async Task<IActionResult> DeleteCharacterFromBook(int userId, int bookId)
-		{
-			var response = await _characterService.GetBookCharacters(bookId);
+        {
+            if (!CheckUser(userId))
+                return View("404");
+
+            var response = await _characterService.GetBookCharacters(bookId);
 
 			ViewData["bookId"] = bookId;
 			if (response.StatusCode == Domain.Enum.StatusCode.Ok)
@@ -184,14 +192,14 @@ namespace PlotCreator.Controllers
 			}
 			return RedirectToAction("Error");
 		}
-		//Служебные-приватные методы
+        //Служебные-приватные методы
 
-		/// <summary>
-		/// Проверяет, является ли владелец запроса владельцем Идеи
-		/// </summary>
-		/// <param name="ideaId"></param>
-		/// <returns></returns>
-		public async Task<bool> UserIsIdeaOwner(int characterId)
+        /// <summary>
+        /// Проверяет, является ли владелец запроса владельцем Идеи
+        /// </summary>
+        /// <param name="characterId"></param>
+        /// <returns></returns>
+        public async Task<bool> UserIsCharacterOwner(int characterId)
 		{
 			var userContentIdOwner = await _characterService.GetUserId(characterId);
 			var userIdRequestOwner = Convert.ToInt32(User.FindFirst("userId")!.Value);

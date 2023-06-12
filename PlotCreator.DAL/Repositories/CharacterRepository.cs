@@ -91,10 +91,10 @@ namespace PlotCreator.DAL.Repositories
 											.Where(x => x.CharacterId == characterId)
 											.Include(x => x.Episode)
 											.Where(x => x.Episode!.BookId == bookId)
-											.Where(x => !episodes.Select(x => x.EpisodeId).Contains(x.EpisodeId))
+											.Where(x => episodes.Select(x => x.EpisodeId).Contains(x.EpisodeId))
 											.ToList();
 
-			if(episodesForDelete.Count > 0)
+			/*if(episodesForDelete.Count > 0)
 				await DeleteEpisodesFromEntity(episodesForDelete);
 
 			var existedEpisodes = _db.Episodes_Characters
@@ -106,7 +106,7 @@ namespace PlotCreator.DAL.Repositories
 				await AddEpisodesToEntity(episodes
 					.Where(x => !existedEpisodes
 					.Select(x => x.EpisodeId)
-					.Contains(x.EpisodeId)));
+					.Contains(x.EpisodeId)));*/
 		}
 
 		public async Task EditEventsEntityRelation(IEnumerable<Event_Character> events, int characterId, int bookId)
@@ -115,13 +115,13 @@ namespace PlotCreator.DAL.Repositories
 										.Where(x => x.CharacterId == characterId)
 										.Include(x => x.Event)
 										.Where(x => x.Event!.BookId == bookId)
-										.Where(x => !events.Select(x => x.EventId).Contains(x.EventId))
+										.Where(x => events.Select(x => x.EventId).Contains(x.EventId))
 										.ToList();
 
 			if(eventsForDelete.Count > 0)
 				await DeleteEventsFromEntity(eventsForDelete);
 
-			var  existedEvents = _db.Events_Characters
+            /*var  existedEvents = _db.Events_Characters
 										.Where(x => x.CharacterId == characterId)
 										.Include(x => x.Event)
 										.Where(x => x.Event!.BookId == bookId)
@@ -130,10 +130,10 @@ namespace PlotCreator.DAL.Repositories
 				await AddEventsToEntity(events
 					.Where(x => !existedEvents
 					.Select(x => x.EventId)
-					.Contains(x.EventId)));
-		}
+					.Contains(x.EventId)));*/
+        }
 
-		public async Task EditGroupsEntityRelation(IEnumerable<Group_Character> groups, int characterId, int bookId)
+        public async Task EditGroupsEntityRelation(IEnumerable<Group_Character> groups, int characterId, int bookId)
 		{
 			var groupsForDelete = _db.Groups_Characters
 										.Where(x => x.CharacterId == characterId)

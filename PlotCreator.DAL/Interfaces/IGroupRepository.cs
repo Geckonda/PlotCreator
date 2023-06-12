@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PlotCreator.DAL.Interfaces
 {
-	public interface IGroupRepository: IBaseRepository<Group>, IBookEntity<Group>
+	public interface IGroupRepository: IBaseRepository<Group>, IBookEntity<Group>, IUserEntity<Group>
 	{
 		Task<IQueryable<Group>> GetAllGroupsByParent(int bookId, string parent);
 	}

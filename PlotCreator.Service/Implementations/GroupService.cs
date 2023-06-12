@@ -1,4 +1,5 @@
 ﻿using PlotCreator.DAL.Interfaces;
+using PlotCreator.DAL.Repositories;
 using PlotCreator.Domain.Entity;
 using PlotCreator.Domain.Enum;
 using PlotCreator.Domain.Response.Implementations;
@@ -127,8 +128,32 @@ namespace PlotCreator.Service.Implementations
 				};
 			}
 		}
-		//
-		private GroupViewModel GetModelFromGroup(Group group)
+
+        public async Task<int> GetUserId(int groupId)
+		{
+			try
+			{
+                return await _groupRepository.GetUserId(groupId);
+            }
+            catch (Exception)
+            {
+                return (int)StatusCode.NotFound * -1;
+            }
+        }
+
+        public async Task<User> GetUser(int groupId)
+        {
+            try
+            {
+                return await _groupRepository.GetUser(groupId);
+            }
+            catch (Exception)
+            {
+                return null!;
+            }
+        }
+        //
+        private GroupViewModel GetModelFromGroup(Group group)
 		{
 			return new GroupViewModel()
 			{
@@ -153,5 +178,7 @@ namespace PlotCreator.Service.Implementations
 			group.Parent = model.Parent;
 			return group;
 		}
-	}
+
+       
+    }
 }

@@ -1,4 +1,5 @@
 ﻿using PlotCreator.Domain.Entity;
+using PlotCreator.Domain.Helpers.Interfaces;
 using PlotCreator.Domain.Response.Interfaces;
 using PlotCreator.Domain.ViewModels;
 using System;
@@ -9,8 +10,8 @@ using System.Threading.Tasks;
 
 namespace PlotCreator.Service.Interfaces
 {
-	public interface IGroupService
-	{
+	public interface IGroupService: IUserInfo
+    {
 		Task<IBaseResponse<IEnumerable<Group>>> GetBookGroupsByParent(int bookId, string parent);
 		Task<IBaseResponse<IEnumerable<GroupViewModel>>> GetAllGroupsByParent(int bookId, string parent);
 		Task<IBaseResponse<GroupViewModel>> CreateGroup(GroupViewModel model);
