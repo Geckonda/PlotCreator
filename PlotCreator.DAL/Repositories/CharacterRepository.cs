@@ -173,7 +173,9 @@ namespace PlotCreator.DAL.Repositories
 		public async Task<IQueryable<Character>> GetAllByUserId(int userId)
 		{
 			return _db.Characters
-				.Where(x => x.UserId == userId);
+				.Where(x => x.UserId == userId)
+				.Include(x => x.Groups_Characters)
+					.ThenInclude(x => x.Group);
 		}
 
 		public async Task<IQueryable<Group_Character>> GetAllEntityGroupsByBookId(int bookId)
