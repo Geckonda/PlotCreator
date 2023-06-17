@@ -1,0 +1,28 @@
+﻿@model List<PlotCreator.Domain.ViewModels.EventViewModel>
+
+@{
+    ViewBag.Title = "События";
+    Layout = "_Layout";
+}
+
+ <div class="d-flex mb-3">
+    <a class="btn btn-success fs-5" asp-controller="Books" asp-action="MyBook" asp-route-bookId=@ViewData["BookId"]>&#8592;</a>
+    <h1>События</h1>
+</div>
+<div style="padding: 10px;"></div>
+    <a class="btn btn-success" asp-area="" asp-action="Save" asp-route-id="0" asp-route-bookId=@ViewData["BookId"]>Добавить событие</a>
+
+<hr class="dropdown-divider w-100 mb-3">
+@if (!Model.Any())
+{
+    <h2 class="text-info">Событий не найдено!</h2>
+}
+<div class="cont-cont">
+    @foreach (var Event in Model.OrderBy(x => x.Beginning))
+    {
+        <a class="SceneContainer" asp-controller="Events" asp-action="GetBookEvent" asp-route-id="@Event.Id">
+            <div class="listPointer" style="border-left: 10px solid @Event.Colour;"></div>
+            <h4 style="color: @Event.Colour">@Event.Title</h4>
+        </a>
+    }
+</div>

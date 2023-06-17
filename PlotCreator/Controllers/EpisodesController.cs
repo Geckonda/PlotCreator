@@ -131,9 +131,9 @@ namespace PlotCreator.Controllers
 
 		//Служебные-приватные методы
 
-		public async Task<bool> UserIsEpisodeOwner(int characterId)
+		public async Task<bool> UserIsEpisodeOwner(int episodeId)
 		{
-			var userContentIdOwner = await _episodeService.GetUserId(characterId);
+			var userContentIdOwner = await _episodeService.GetUserId(episodeId);
 			var userIdRequestOwner = Convert.ToInt32(User.FindFirst("userId")!.Value);
 			if (userContentIdOwner == userIdRequestOwner)
 				return true;

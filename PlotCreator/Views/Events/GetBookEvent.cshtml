@@ -1,0 +1,540 @@
+﻿@model PlotCreator.Domain.ViewModels.EventViewModel
+
+@{
+    ViewBag.Title = Model.Title;
+    Layout = "_Layout";
+
+
+    //Персонажи События
+    var activeCharactersid = Model!.Characters!.Select(x => x.Id);
+    var charactersForAdd = Model!.CharacterList!.Where(x => !activeCharactersid.Contains(x.Id));
+
+    var charactersForDelete = Model.Characters!;
+    //-----------------
+    //Группы события
+    var activeGroupsId = Model!.Groups!.Select(x => x.Id);
+    var groupsForAdd = Model!.GroupList!.Where(x => !activeGroupsId.Contains(x.Id));
+
+    var groupsForDelete = Model.Groups!;
+    //-----------------
+    //Эпизоды события
+    var activeEpisodesId = Model!.Episodes!.Select(x => x.Id);
+    var episodesForAdd = Model!.EpisodeList!.Where(x => !activeEpisodesId.Contains(x.Id));
+
+    var episodesForDelete = Model!.Episodes!;
+    //-----------------
+}
+
+@section Styles{
+    <link rel="stylesheet" href="~/css/text.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/character/characterProfile.css" asp-append-version="true" />
+}
+<div class="d-flex  align-items-center">
+    <a class="btn btn-success fs-5" asp-controller="Events" asp-action="GetBookEvents" asp-route-bookId="@Model.Book!.Id" asp-route-userId="@User.FindFirst("userId").Value">&#8592;</a>
+    <div class="d-flex" style="margin-left:10px;">
+
+        <h1>Событие</h1>
+
+        <div class="w-auto d-flex align-items-center" style="margin-left:10px;">
+
+            <div class="dropdown">
+                <button class="" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <svg class="text-extra-dark" xmlns="http://www.w3.org/2000/svg" width="32" height="32" style="background-color:var(--extra-light);" fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
+                        <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z" />
+                        <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z" />
+                    </svg>
+                </button>
+                <ul class="dropdown-menu p-0">
+                    
+                    <li>
+                        <a class="btn btn-success w-100" asp-controller="Events" asp-action="Save" asp-route-id="@Model.Id" asp-route-bookId="@Model.Book!.Id">Изменить</a>
+                    </li>
+                    <li>
+                        <a class="btn btn-danger w-100" asp-controller="Events" asp-action="Delete" asp-route-id="@Model.Id">Удалить</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div style="padding: 10px;"></div>
+    <div class="d-flex">
+        <h2>@Model.Title </h2>
+        @*<div class="circle" style="background-color:@Model.Colour"></div>*@
+    </div >
+    <hr class="dropdown-divider w-100 mb-3">
+    <div class="">
+        <p class="fs-5">Начало: <strong class="text-extra-dark">@Model.Beginning.ToString("F")</strong></p>
+        <p class="fs-5">Конец: <strong class="text-extra-dark">@Model.Ending.ToString("F")</strong></p>
+        @if (Model.ChekhovsGun)
+        {
+            <p class="fs-5"><strong class="text-danger">Чеховское ружье</strong></p>
+        }
+        @if (Model.IsHidden)
+        {
+            <p class="fs-5"><strong class="text-extra-dark">Событие для автора</strong></p>
+        }
+    </div>
+    <div class="d-flex flex-wrap" style="max-width:500px">
+        <a class="btn btn-success m-2" data-bs-toggle="modal" data-bs-target="#attachedCharacters" role="button" aria-expanded="false">
+            Персонажи: @Model.Characters!.Count
+        </a>
+        <a class="btn btn-success m-2" data-bs-toggle="modal" data-bs-target="#attachedEpisodes" role="button" aria-expanded="false">
+            Эпизоды: @Model.Episodes!.Count
+        </a>
+        <a class="btn btn-success m-2" data-bs-toggle="modal" data-bs-target="#attachedGroups" role="button" aria-expanded="false">
+            Группы: @Model.Groups!.Count
+        </a>
+    </div>
+    <hr class="dropdown-divider w-100 mb-3">
+<div class="cont-cont">
+    <p id="response-text-block" class="d-none">@Model.Description</p>
+    <div id="main-text-block"></div>
+</div>
+
+@*Модальное окно прикрепленных персонажей*@
+<div class="modal fade" id="attachedCharacters" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content body-frame">
+            <div class="modal-body">
+                <div class="d-flex justify-content-between mb-3">
+                    <h5 class="modal-title" id="nameGroupText">Закрепленные персонажи</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <div class="input-group serch-container w-100 mb-2">
+                        <input type="text" class="form-control search-bar-dim" placeholder="Имя персонажа">
+                        <button class="btn btn-success search-btn-dim" type="button">Поиск</button>
+                        <button class="btn btn-danger reset-btn-dim" type="button">Сброс</button>
+                    </div>
+                </div>
+                <div>
+                    <p class="d-flex mb-3">
+                        Персонажи
+                        @if (charactersForAdd.Count() > 0)
+                        {
+                            <button class="btn btn-success smbtn" data-bs-toggle="modal" data-bs-target="#characterAddition">
+                                &#10010;
+                            </button>
+                        }
+                        @if (charactersForDelete?.Count() > 0)
+                        {
+                            <a class="btn btn-danger smbtn" data-bs-toggle="modal" data-bs-target="#removalCharacter">
+                                &#10006;
+                            </a>
+                        }
+                    </p>
+                </div>
+                <div class="mb-3 d-flex flex-column tab-list">
+                    @if (Model?.Characters!.Count > 0)
+                    {
+                        @foreach (var character in Model?.Characters!)
+                        {
+                            <a class="btn btn-success group-btn" asp-controller="Characters" asp-action="GetCharacter" asp-route-id="@character.Id" asp-route-bookId="@ViewData["bookId"]">@character.Name</a>
+                        }
+                    }
+                    else
+                    {
+                        <h6 class="modal-title">Прикрпеленных персонажей не найдено</h6>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*Прикрепление персонажей*@
+<div class="modal fade" id="characterAddition" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content body-frame">
+            <div class="modal-body">
+                <div class="d-flex justify-content-between">
+                    <h5 class="modal-title" id="nameGroupText">Прикрепление персонажей</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="pt-3">
+
+                    @if (charactersForAdd.Count() > 0)
+                    {
+                        <form asp-action="AddCharacters" class="d-flex flex-column">
+                            <input name="eventId" type="text" value="@Model?.Id" hidden />
+                            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                <div class="input-group serch-container w-100 mb-2">
+                                    <input type="text" class="form-control search-bar" id="search-bar" placeholder="Имя персонажа">
+                                    <button class="btn btn-success search-btn" type="button" id="search-btn">Поиск</button>
+                                    <button class="btn btn-danger reset-btn" type="button" id="reset-btn">Сброс</button>
+                                </div>
+                            </div>
+                            <div class="mb-3 d-flex flex-column tab-list">
+                                @foreach (var character in charactersForAdd)
+                                {
+                                    <div class="p-2">
+                                        <input class="form-check-input" type="checkbox" value="@character.Id" name="checkedCharacters" id="@character.Id Character">
+                                        <label class="form-check-label group-character" for="@character.Id Character">
+                                            @character.Name
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+
+                            <button class="btn btn-success" type="submit">Прикрепить</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <h6 class="modal-title">Персонажей не найдено</h6>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*Открепление персонажей*@
+<div class="modal fade" id="removalCharacter" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content body-frame">
+            <div class="modal-body">
+                <div class="d-flex justify-content-between">
+                    <h5 class="modal-title" id="nameGroupText">Открепление персонажей</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="pt-3">
+                    @if (charactersForDelete!.Count() > 0)
+                    {
+                        <form asp-action="RemoveCharacters" class="d-flex flex-column">
+                            <input name="eventId" type="text" value="@Model?.Id" hidden />
+                            <input name="bookId" type="text" value=@Model!.Book!.Id hidden />
+                            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                <div class="input-group serch-container w-100 mb-2">
+                                    <input type="text" class="form-control search-bar" id="search-bar" placeholder="Имя персонажа">
+                                    <button class="btn btn-success search-btn" type="button" id="search-btn">Поиск</button>
+                                    <button class="btn btn-danger reset-btn" type="button" id="reset-btn">Сброс</button>
+                                </div>
+                            </div>
+                            <div class="mb-3 d-flex flex-column tab-list">
+                                @foreach (var character in charactersForDelete!)
+                                {
+                                    <div class="p-2">
+                                        <input class="form-check-input" type="checkbox" value="@character.Id" name="checkedCharacters" id="@character.Id Character">
+                                        <label class="form-check-label group-character" for="@character.Id Character">
+                                            @character.Name
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+
+                            <button class="btn btn-success" type="submit">Открепить</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <h6 class="modal-title">Персонажей не найдено</h6>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Модальное окно прикрепленных эпизодов*@
+<div class="modal fade" id="attachedEpisodes" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content body-frame">
+            <div class="modal-body">
+                <div class="d-flex justify-content-between mb-3">
+                    <h5 class="modal-title" id="nameGroupText">Прикрепление эпизодов</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <div class="input-group serch-container w-100 mb-2">
+                        <input type="text" class="form-control search-bar-dim" placeholder="Заголовок эпизода">
+                        <button class="btn btn-success search-btn-dim" type="button">Поиск</button>
+                        <button class="btn btn-danger reset-btn-dim" type="button">Сброс</button>
+                    </div>
+                </div>
+                <div class="d-flex mb-3">
+                    Эпизоды
+                    @if (episodesForAdd.Count() > 0)
+                    {
+                        <button class="btn btn-success smbtn" data-bs-toggle="modal" data-bs-target="#episodeAddition">
+                            &#10010;
+                        </button>
+                    }
+                    @if (episodesForDelete?.Count() > 0)
+                    {
+                        <a class="btn btn-danger smbtn" data-bs-toggle="modal" data-bs-target="#removalEpisodes">
+                            &#10006;
+                        </a>
+                    }
+                </div>
+                <div class="mb-3 d-flex flex-column tab-list">
+                    @if (Model?.Episodes!.Count > 0)
+                    {
+                        @foreach (var episode in Model?.Episodes!)
+                        {
+                            <a class="btn btn-success group-btn" asp-controller="Episodes" asp-action="GetBookEpisode" asp-route-id="@episode.Id">@episode.Heading</a>
+                        }
+                    }
+                    else
+                    {
+                        <h6 class="modal-title">Прикрпеленных эпизодов не найдено</h6>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*Прикрепление эпизодов*@
+<div class="modal fade" id="episodeAddition" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content body-frame">
+            <div class="modal-body">
+                <div class="d-flex justify-content-between">
+                    <h5 class="modal-title" id="nameGroupText">Прикрепление эпизода</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="pt-3">
+
+                    @if (episodesForAdd.Count() > 0)
+                    {
+                        <form asp-action="AddEpisodes" class="d-flex flex-column">
+                            <input name="eventId" type="text" value="@Model?.Id" hidden />
+                            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                <div class="input-group serch-container w-100 mb-2">
+                                    <input type="text" class="form-control search-bar" id="search-bar" placeholder="Заголовок эпизода">
+                                    <button class="btn btn-success search-btn" type="button" id="search-btn">Поиск</button>
+                                    <button class="btn btn-danger reset-btn" type="button" id="reset-btn">Сброс</button>
+                                </div>
+                            </div>
+                            <div class="mb-3 d-flex flex-column tab-list">
+                                @foreach (var episode in episodesForAdd)
+                                {
+                                    <div class="p-2">
+                                        <input class="form-check-input" type="checkbox" value="@episode.Id" name="checkedEpisodes" id="@episode.Id Episode">
+                                        <label class="form-check-label group-character" for="@episode.Id Episode">
+                                            @episode.Heading
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+
+                            <button class="btn btn-success" type="submit">Прикрепить</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <h6 class="modal-title">Эпизодов не найдено</h6>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*Открепление эпизодов*@
+<div class="modal fade" id="removalEpisodes" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content body-frame">
+            <div class="modal-body">
+                <div class="d-flex justify-content-between">
+                    <h5 class="modal-title" id="nameGroupText">Открепление эпизода</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="pt-3">
+                    @if (episodesForDelete!.Count() > 0)
+                    {
+                        <form asp-action="RemoveEpisodes" class="d-flex flex-column">
+                            <input name="eventId" type="text" value="@Model?.Id" hidden />
+                            <input name="bookId" type="text" value=@Model!.Book!.Id hidden />
+                            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                <div class="input-group serch-container w-100 mb-2">
+                                    <input type="text" class="form-control search-bar" id="search-bar" placeholder="Заголовок эпизода">
+                                    <button class="btn btn-success search-btn" type="button" id="search-btn">Поиск</button>
+                                    <button class="btn btn-danger reset-btn" type="button" id="reset-btn">Сброс</button>
+                                </div>
+                            </div>
+                            <div class="mb-3 d-flex flex-column tab-list">
+                                @foreach (var episodes in episodesForDelete!)
+                                {
+                                    <div class="p-2">
+                                        <input class="form-check-input" type="checkbox" value="@episodes.Id" name="checkedEpisodes" id="@episodes.Id Episodes">
+                                        <label class="form-check-label group-character" for="@episodes.Id Episodes">
+                                            @episodes.Heading
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+
+                            <button class="btn btn-success" type="submit">Открепить</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <h6 class="modal-title">Эпизодов не найдено</h6>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Модальное окно прикрепленных групп*@
+<div class="modal fade" id="attachedGroups" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content body-frame">
+            <div class="modal-body">
+                <div class="d-flex justify-content-between mb-3">
+                    <h5 class="modal-title" id="nameGroupText">Прикрепление групп</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <div class="input-group serch-container w-100 mb-2">
+                        <input type="text" class="form-control search-bar-dim" placeholder="Название группы">
+                        <button class="btn btn-success search-btn-dim" type="button">Поиск</button>
+                        <button class="btn btn-danger reset-btn-dim" type="button">Сброс</button>
+                    </div>
+                </div>
+                <div class="d-flex mb-3">
+                    Группы
+                    @if (groupsForAdd.Count() > 0)
+                    {
+                        <button class="btn btn-success smbtn" data-bs-toggle="modal" data-bs-target="#groupAddition">
+                            &#10010;
+                        </button>
+                    }
+                    @if (groupsForDelete?.Count() > 0)
+                    {
+                        <a class="btn btn-danger smbtn" data-bs-toggle="modal" data-bs-target="#removalGroups">
+                            &#10006;
+                        </a>
+                    }
+                </div>
+                <div class="mb-3 d-flex flex-column tab-list">
+                    @if (Model?.Groups!.Count > 0)
+                    {
+                        @foreach (var group in Model?.Groups!)
+                        {
+                            <button type="button" class="btn body-frame-invert group-btn " data-bs-toggle="modal" data-bs-target="#modelDescription" data-bs-description="@group.Description" data-bs-groupId="@group.Id" data-bs-name="@group.Name">@group.Name</button>
+                        }
+                    }
+                    else
+                    {
+                        <h6 class="modal-title">Прикрепленных групп не найдено</h6>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*Модальное описания групп*@
+<div class="modal fade" id="modelDescription" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content body-frame">
+            <div class="modal-body">
+                <div class="d-flex justify-content-between">
+                    <h5 class="modal-title" id="nameGroupText">Описание группы</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="tab-list">
+                    <p id="descriptionText"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*Прикрепление групп*@
+<div class="modal fade" id="groupAddition" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content body-frame">
+            <div class="modal-body">
+                <div class="d-flex justify-content-between">
+                    <h5 class="modal-title" id="nameGroupText">Прикрепление группы</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="pt-3">
+
+                    @if (groupsForAdd.Count() > 0)
+                    {
+                        <form asp-action="AddGroups" class="d-flex flex-column">
+                            <input name="eventId" type="text" value="@Model?.Id" hidden />
+                            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                <div class="input-group serch-container w-100 mb-2">
+                                    <input type="text" class="form-control search-bar" id="search-bar" placeholder="Название группы">
+                                    <button class="btn btn-success search-btn" type="button" id="search-btn">Поиск</button>
+                                    <button class="btn btn-danger reset-btn" type="button" id="reset-btn">Сброс</button>
+                                </div>
+                            </div>
+                            <div class="mb-3 d-flex flex-column tab-list">
+                                @foreach (var group in groupsForAdd)
+                                {
+                                    <div class="p-2">
+                                        <input class="form-check-input" type="checkbox" value="@group.Id" name="checkedGroups" id="@group.Id Group">
+                                        <label class="form-check-label group-character" for="@group.Id Group">
+                                            @group.Name
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+
+                            <button class="btn btn-success" type="submit">Прикрепить</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <h6 class="modal-title">Групп не найдено</h6>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*Открепление групп*@
+<div class="modal fade" id="removalGroups" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content body-frame">
+            <div class="modal-body">
+                <div class="d-flex justify-content-between">
+                    <h5 class="modal-title" id="nameGroupText">Открепление группы</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="pt-3">
+                    @if (groupsForDelete!.Count() > 0)
+                    {
+                        <form asp-action="RemoveGroups" class="d-flex flex-column">
+                            <input name="eventId" type="text" value="@Model?.Id" hidden />
+                            <input name="bookId" type="text" value=@Model!.Book!.Id hidden />
+                            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                <div class="input-group serch-container w-100 mb-2">
+                                    <input type="text" class="form-control search-bar" id="search-bar" placeholder="Название группы">
+                                    <button class="btn btn-success search-btn" type="button" id="search-btn">Поиск</button>
+                                    <button class="btn btn-danger reset-btn" type="button" id="reset-btn">Сброс</button>
+                                </div>
+                            </div>
+                            <div class="mb-3 d-flex flex-column tab-list">
+                                @foreach (var groups in groupsForDelete!)
+                                {
+                                    <div class="p-2">
+                                        <input class="form-check-input" type="checkbox" value="@groups.Id" name="checkedGroups" id="@groups.Id Groups">
+                                        <label class="form-check-label group-character" for="@groups.Id Groups">
+                                            @groups.Name
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+
+                            <button class="btn btn-success" type="submit">Открепить</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <h6 class="modal-title">Групп не найдено</h6>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/js/textConstructor.js"></script>
+    <script type="module" src="~/js/Events/modal.js"></script>
+    <script type="module" src="~/js/Characters/modal.js"></script>
+ }

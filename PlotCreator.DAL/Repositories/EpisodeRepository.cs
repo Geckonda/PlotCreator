@@ -77,7 +77,7 @@ namespace PlotCreator.DAL.Repositories
 										.Where(x => x.EpisodeId == episodeId)
 										.Include(x => x.Event)
 										.Where(x => x.Event!.BookId == bookId)
-										.Where(x => !events.Select(x => x.EventId).Contains(x.EventId))
+										.Where(x => events.Select(x => x.EventId).Contains(x.EventId))
 										.ToList();
 
 			if (eventsForDelete.Count > 0)

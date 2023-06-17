@@ -233,3 +233,7 @@ footer {
     animation-fill-mode: forwards; */
     display: none;
 }
+.tab-list{
+    max-height:400px;
+    overflow:auto;
+}
