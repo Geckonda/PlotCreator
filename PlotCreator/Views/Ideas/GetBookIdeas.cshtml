@@ -13,13 +13,12 @@
 </div>
 <div style="padding: 10px;"></div>
 <div class="dropdown">
-	<button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown">
+	<button class="btn btn-success dropdown-toggle " type="button" data-bs-toggle="dropdown">
 		Добавить идею
 	</button>
 	<ul class="dropdown-menu">
 		<li><a class="dropdown-item" asp-controller="Ideas" asp-action="Save" asp-route-id="0" asp-route-bookId="@ViewData["bookId"]" asp-route-userId="@User.FindFirst("userId")!.Value">Создать новую</a></li>
 		<li><a class="dropdown-item" asp-controller="Ideas" asp-action="AddIdeasToBook" asp-route-userId="@User.FindFirst("userId")!.Value" asp-route-bookId=@ViewData["bookId"]>Добавить Существующую</a></li>
-		@*<li><button class="dropdown-item" type="button" id="GetCharacters">Получить всех персонажей</button></li>*@
 	</ul>
 	@if (Model.Any())
 	{

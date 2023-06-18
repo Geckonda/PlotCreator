@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PlotCreator.Domain.Filters;
 using PlotCreator.Domain.Helpers;
 using PlotCreator.Domain.Response.Interfaces;
 using PlotCreator.Domain.ViewModels;
@@ -15,16 +16,19 @@ namespace PlotCreator.Controllers
 		private readonly IBookService _bookService;
 		private readonly IAccountService _accountService;
 		private readonly IWebHostEnvironment _webHostEnvironment;
+		private readonly IFilterService _filterService;
 
 		public CharactersController(ICharacterService characterService,
 			IBookService bookService,
 			IAccountService accountService,
-			IWebHostEnvironment webHostEnvironment)
+			IWebHostEnvironment webHostEnvironment,
+			IFilterService filterService)
 		{
 			_characterService = characterService;
 			_bookService = bookService;
 			_accountService = accountService;
 			_webHostEnvironment = webHostEnvironment;
+			_filterService = filterService;
 		}
 
 		[HttpGet]
@@ -99,7 +103,6 @@ namespace PlotCreator.Controllers
 				{
 					int characterId = await _characterService.GetLastUserCharacterId(model.User!.Id);
 					await _characterService.AddCharactersToBook(bookId, new int[] { characterId });
-					//await _characterService.AddGroupsCharacterRelation(characterId, model.checkedGroups);
 					return RedirectToRoute(new { controller = "Characters", action = "GetBookCharacters", bookId = bookId });
 				}
 				return RedirectToRoute(new { controller = "Characters", action = "GetAllCharacters", userId = model.User!.Id });
@@ -109,9 +112,6 @@ namespace PlotCreator.Controllers
 				await _characterService.EditCharacter(model);
 				if (bookId != 0)
 				{
-					/*if (model.checkedGroups == null)
-						model.checkedGroups = new int[0];
-					await _characterService.EditGroupsCharacterRelation(model.Id, model.checkedGroups, bookId);*/
 					return RedirectToRoute(new { controller = "Characters", action = "GetCharacter", model.Id, bookId = bookId });
 				}
 				return RedirectToRoute(new { controller = "Characters", action = "GetCharacter", model.Id });
@@ -189,6 +189,25 @@ namespace PlotCreator.Controllers
 			{
 				ViewData["groupsMSG"] = "Группы успешно откреплены от персонажа";
 				return RedirectToRoute(new { controller = "Characters", action = "GetCharacter", id = characterId, bookId = bookId });
+			}
+			return RedirectToAction("Error");
+		}
+
+		public async Task<IActionResult> FilterCharacters(CharacterFilter characterFilter , int[] checkedWorldviews, int[] checkedGroups, string[] checkedGenders)
+		{
+			characterFilter.Worldviews!.CheckedObjects = checkedWorldviews;
+			characterFilter.Groups!.CheckedObjects = checkedGroups;
+			characterFilter.Gender = checkedGenders;
+			var response = await _filterService.FilterAllUserCharacters(characterFilter);
+
+			if (response.StatusCode == Domain.Enum.StatusCode.Ok)
+			{
+				if(characterFilter.BookId > 0)
+				{
+					ViewData["bookId"] = characterFilter.BookId;
+					return View("GetBookCharacters", response.Data);
+				}
+				return View("GetAllCharacters", response.Data);
 			}
 			return RedirectToAction("Error");
 		}

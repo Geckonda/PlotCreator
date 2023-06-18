@@ -124,7 +124,9 @@ namespace PlotCreator.DAL.Repositories
 		{
 			return _db.Events
 				.Where(x => x.BookId == bookId)
-				.Include(x => x.Book);
+				.Include(x => x.Book)
+				.Include(x => x.Groups_Events)
+					.ThenInclude(x => x.Group);
 		}
 
 		public async Task<IQueryable<Event>> GetAllByUserId(int userId)

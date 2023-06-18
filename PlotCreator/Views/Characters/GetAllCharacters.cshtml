@@ -1,4 +1,5 @@
 ﻿@using PlotCreator.Domain.Entity;
+@using PlotCreator.Domain.Filters;
 @model List<PlotCreator.Domain.ViewModels.CharacterViewModel>
 
 @{
@@ -16,7 +17,11 @@
 	var uniqueGroups = groups.GroupBy(x => x.Id)
 							.Select(x => x.FirstOrDefault()!)
 							.ToList();
+
+	//Filter
+	CharacterFilter characterFilter = new();
 }
+
 @section Styles{
 	<link rel="stylesheet" href="~/css/character/characterCards.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/filters.css" asp-append-version="true" />
@@ -27,7 +32,7 @@
 <div style="width: 100%;padding:2px 4px; border-radius: 4px;">
 	<div class="w-100 d-flex justify-content-between align-items-start flex-wrap">
 		<div>
-			<a class="btn btn-success mb-3" style="text-decoration:none;color:white;" asp-area="" asp-action="Save" asp-route-id="0" asp-route-bookId="0" asp-route-userId="@User.FindFirst("userId")!.Value">Добавить Персонажа</a>
+			<a class="btn btn-success mb-3" style="text-decoration:none;color:white;" asp-area="" asp-action="Save" asp-route-id="0" asp-route-bookId="0" asp-route-userId="@User.FindFirst("userId")!.Value">Добавить персонажа</a>
 	
 			<a class="btn btn-success mb-3" data-bs-toggle="offcanvas" href="#offcanvasFilters" role="button" aria-controls="offcanvasFilters">
 			  Фильтры
@@ -69,113 +74,117 @@
 </div>
 
 @*Фильтры*@
-<div class="offcanvas offcanvas-start body-frame-invert" tabindex="-1" id="offcanvasFilters">
+<div class="offcanvas offcanvas-start body-frame-invert" tabindex="-1" id="offcanvasFilters" style="overflow:auto;">
 	<div class="offcanvas-header">
 		<h2 style="color: var(--main-dark); text-align:center">Фильтрация</h2>
 		<button type="button" class="close-filter-button" data-bs-dismiss="offcanvas">&#10006;</button>
 	</div>
-	<div class="offcanvas-body d-flex flex-column ">
-		<div class="filter_Field_Container">
-			<p>По дате</p>
-			<div class="d-flex justify-content-between">
-				<div>
-					От
-					<input class="filter-date" type="date" />
-				</div>
-				<div>
-					До
-					<input class="filter-date" type="date" />
-				</div>
-			</div>
-		</div>
-		<div class="filter_Field_Container">
-			<p>По полу</p>
-			<div class="d-flex justify-content-between">
-				<div>
-					<input class="form-check-input" type="checkbox" value="Мужской" name="" id="Мужской">
-					<label class="form-check-label" for="Мужской">
-						Мужской
-					</label>
-				</div>
-				<div>
-					<input class="form-check-input" type="checkbox" value="Женский" name="" id="Женский">
-					<label class="form-check-label" for="Женский">
-						Женский
-					</label>
-				</div>
-			</div>
-		</div>
-		<div class="filter_Field_Container">
-			<p>По росту</p>
-			<div class="d-flex justify-content-between">
-				<div class="d-flex">
-					<label class="form-check-label" for="РостОт">
+	<form asp-action="FilterCharacters" method="post">
+		<input asp-for="@characterFilter!.UserId" type="text" value="@User.FindFirst("userId")!.Value" hidden />
+		<div class="offcanvas-body d-flex flex-column ">
+			<div class="filter_Field_Container">
+				<p>По дате</p>
+				<div class="d-flex justify-content-between">
+					<div>
 						От
-					</label>
-					<input class="form-control filter-number" type="number" name="" id="РостОт" style="width:75px">
-				</div>
-				<div class="d-flex">
-					<label class="form-check-label" for="РостДо">
+						<input asp-for="@characterFilter.Date!.From" class="filter-date" type="date" />
+					</div>
+					<div>
 						До
-					</label>
-					<input class="form-control filter-number" type="number" name="" id="РостДо" style="width:75px">
+						<input asp-for="@characterFilter.Date!.To" class="filter-date" type="date" />
+					</div>
 				</div>
 			</div>
-		</div>
-		<div class="filter_Field_Container">
-			<p>По весу</p>
-			<div class="d-flex justify-content-between">
-				<div class="d-flex">
-					<label class="form-check-label" for="ВесОт">
-						От
-					</label>
-					<input class="form-control filter-number" type="number" name="" id="ВесОт" style="width:75px">
-				</div>
-				<div class="d-flex">
-					<label class="form-check-label" for="ВесДо">
-						До
-					</label>
-					<input class="form-control filter-number" type="number" name="" id="ВесДо" style="width:75px">
+			<div class="filter_Field_Container">
+				<p>По полу</p>
+				<div class="d-flex justify-content-between">
+					<div>
+						<input class="form-check-input" type="checkbox" value="Мужской" name="checkedGenders" id="Мужской">
+						<label class="form-check-label" for="Мужской">
+							Мужской
+						</label>
+					</div>
+					<div>
+						<input class="form-check-input" type="checkbox" value="Женский" name="checkedGenders" id="Женский">
+						<label class="form-check-label" for="Женский">
+							Женский
+						</label>
+					</div>
 				</div>
 			</div>
-		</div>
-		<div class="filter_Field_Container">
-			<p>По Мировоззрению</p>
-			<div class="d-flex flex-column" style="height:150px;overflow:auto;">
-				@if (Model.Any())
-				{
-					@foreach(var w in Model!.First()!.Worldviews!)
+			<div class="filter_Field_Container">
+				<p>По росту</p>
+				<div class="d-flex justify-content-between">
+					<div class="d-flex">
+						<label class="form-check-label" for="РостОт">
+							От
+						</label>
+						<input class="form-control filter-number" type="number" asp-for="@characterFilter.Height!.From" id="РостОт" style="width:75px">
+					</div>
+					<div class="d-flex">
+						<label class="form-check-label" for="РостДо">
+							До
+						</label>
+						<input class="form-control filter-number" type="number" asp-for="@characterFilter.Height!.To" id="РостДо" style="width:75px">
+					</div>
+				</div>
+			</div>
+			<div class="filter_Field_Container">
+				<p>По весу</p>
+				<div class="d-flex justify-content-between">
+					<div class="d-flex">
+						<label class="form-check-label" for="ВесОт">
+							От
+						</label>
+						<input class="form-control filter-number" type="number" asp-for="@characterFilter.Weight!.From" id="ВесОт" style="width:75px">
+					</div>
+					<div class="d-flex">
+						<label class="form-check-label" for="ВесДо">
+							До
+						</label>
+						<input class="form-control filter-number" type="number" asp-for="@characterFilter.Weight!.To" id="ВесДо" style="width:75px">
+					</div>
+				</div>
+			</div>
+			<div class="filter_Field_Container">
+				<p>По Мировоззрению</p>
+				<div class="d-flex flex-column" style="height:150px;overflow:auto;">
+					@if (Model.Any())
 					{
-						<div class="d-flex">
-							<input class="form-check-input" type="checkbox" value="@w.Id" name="" id="@w.Id worldview">
-							<label class="form-check-label" for="@w.Id worldview">
-								@w.Name
-							</label>
-						</div>
+						@foreach(var w in Model!.First()!.Worldviews!)
+						{
+							<div class="d-flex">
+								<input class="form-check-input" type="checkbox" value="@w.Id" name="checkedWorldviews" id="@w.Id worldview">
+								<label class="form-check-label" for="@w.Id worldview">
+									@w.Name
+								</label>
+							</div>
+						}
 					}
-				}
+				</div>
 			</div>
-		</div>
-		<div class="filter_Field_Container">
-			<p>По Группам</p>
-			<div class="d-flex flex-column" style="height:150px;overflow:auto;">
-				@if (Model.Any())
-				{
-					@foreach (var group in uniqueGroups)
+			<div class="filter_Field_Container">
+				<p>По Группам</p>
+				<div class="d-flex flex-column" style="height:150px;overflow:auto;">
+					@if (Model.Any())
 					{
-						<div class="d-flex">
-							<input class="form-check-input" type="checkbox" value="@group.Id" name="" id="@group.Id group">
-							<label class="form-check-label" for="@group.Id group">
-								@group.Name
-							</label>
-						</div>
+						@foreach (var group in uniqueGroups)
+						{
+							<div class="d-flex">
+								<input class="form-check-input" type="checkbox" value="@group.Id" name="checkedGroups" id="@group.Id group">
+								<label class="form-check-label" for="@group.Id group">
+									@group.Name
+								</label>
+							</div>
+						}
 					}
-				}
 				
+				</div>
 			</div>
+			<button type="submit" class="btn btn-success body-frame mb-1">Фильтровать</button>
+			<a class="btn btn-danger " asp-controller="Characters" asp-action="GetAllCharacters" asp-route-userId="@User.FindFirst("userId")!.Value">Сброс</a>
 		</div>
-		<button type="submit" class="btn btn-success body-frame">Фильтровать</button>
-	</div>
+	</form>
 </div>
 
 @section Scripts{

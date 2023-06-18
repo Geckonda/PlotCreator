@@ -93,20 +93,6 @@ namespace PlotCreator.DAL.Repositories
 											.Where(x => x.Episode!.BookId == bookId)
 											.Where(x => episodes.Select(x => x.EpisodeId).Contains(x.EpisodeId))
 											.ToList();
-
-			/*if(episodesForDelete.Count > 0)
-				await DeleteEpisodesFromEntity(episodesForDelete);
-
-			var existedEpisodes = _db.Episodes_Characters
-										.Where(x => x.CharacterId == characterId)
-										.Include(x => x.Episode)
-										.Where(x => x.Episode!.BookId == bookId)
-										.ToList();
-			if (episodes.Any())
-				await AddEpisodesToEntity(episodes
-					.Where(x => !existedEpisodes
-					.Select(x => x.EpisodeId)
-					.Contains(x.EpisodeId)));*/
 		}
 
 		public async Task EditEventsEntityRelation(IEnumerable<Event_Character> events, int characterId, int bookId)
@@ -120,17 +106,6 @@ namespace PlotCreator.DAL.Repositories
 
 			if(eventsForDelete.Count > 0)
 				await DeleteEventsFromEntity(eventsForDelete);
-
-            /*var  existedEvents = _db.Events_Characters
-										.Where(x => x.CharacterId == characterId)
-										.Include(x => x.Event)
-										.Where(x => x.Event!.BookId == bookId)
-										.ToList();
-			if (events.Any())
-				await AddEventsToEntity(events
-					.Where(x => !existedEvents
-					.Select(x => x.EventId)
-					.Contains(x.EventId)));*/
         }
 
         public async Task EditGroupsEntityRelation(IEnumerable<Group_Character> groups, int characterId, int bookId)
@@ -144,17 +119,6 @@ namespace PlotCreator.DAL.Repositories
 
 			if (groupsForDelete.Count > 0)
 				await DeleteGroupsFromEntity(groupsForDelete);
-
-			/*var existedGroups = _db.Groups_Characters
-										.Where(x => x.CharacterId == characterId)
-										.Include(x => x.Group)
-										.Where(x => x.Group!.BookId == bookId)
-										.ToList();
-			if (groups.Any())
-				await AddGroupsToEntity(groups
-					.Where(x => !existedGroups
-					.Select(x => x.GroupId)
-					.Contains(x.GroupId)));*/
 		}
 
 		public IQueryable<Character> GetAll()
@@ -165,8 +129,10 @@ namespace PlotCreator.DAL.Repositories
 		public async Task<IQueryable<Character>> GetAllByBookId(int bookId)
 		{
 			return _db.Books_Characters
-						.Include(x => x.Character)
 						.Where(x => x.BookId == bookId)
+						.Include(x => x.Character)
+						.ThenInclude(x => x.Groups_Characters)
+							.ThenInclude(x => x.Group)
 						.Select(x => x.Character!);
 		}
 

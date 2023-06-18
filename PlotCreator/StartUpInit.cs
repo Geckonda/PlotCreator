@@ -28,6 +28,7 @@ namespace PlotCreator
             services.AddScoped<IGroupService, GroupService>();
             services.AddScoped<IEpisodeService, EpisodeService>();
 			services.AddScoped<IEventService, EventService>();
+			services.AddScoped<IFilterService, FilterService>();
 		}
     }
 }

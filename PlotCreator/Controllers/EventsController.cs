@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Logging;
 using PlotCreator.Domain.Entity;
+using PlotCreator.Domain.Filters;
 using PlotCreator.Domain.ViewModels;
 using PlotCreator.Service.Implementations;
 using PlotCreator.Service.Interfaces;
+using System.Net;
 
 namespace PlotCreator.Controllers
 {
@@ -13,11 +16,14 @@ namespace PlotCreator.Controllers
     {
 		private readonly IEventService _eventService;
 		private readonly IBookService _bookService;
+		private readonly IFilterService _filterService;
 		public EventsController(IEventService eventService,
-			IBookService bookService)
+			IBookService bookService,
+			IFilterService filterService)
 		{
 			_eventService = eventService;
 			_bookService = bookService;
+			_filterService = filterService;
 		}
 		[HttpGet]
 		public async Task<IActionResult> GetBookEvents(int bookId, int userId)
@@ -149,9 +155,22 @@ namespace PlotCreator.Controllers
             }
             return RedirectToAction("Error");
         }
-        //Служебные-приватные методы
 
-        public async Task<bool> UserIsEventOwner(int characterId)
+		public async Task<IActionResult> FilterEvents(EventFilter eventFilter, int[] checkedGroups)
+		{
+			eventFilter.Groups!.CheckedObjects = checkedGroups;
+			var response = await _filterService.FilterAllUserEvents(eventFilter);
+
+			ViewData["bookId"] = eventFilter.BookId;
+			if (response.StatusCode == Domain.Enum.StatusCode.Ok)
+			{
+				return View("GetBookEvents", response.Data);
+			}
+			return RedirectToAction("Error");
+		}
+		//Служебные-приватные методы
+
+		public async Task<bool> UserIsEventOwner(int characterId)
 		{
 			var userContentIdOwner = await _eventService.GetUserId(characterId);
 			var userIdRequestOwner = Convert.ToInt32(User.FindFirst("userId")!.Value);
