@@ -69,16 +69,15 @@ namespace PlotCreator.Controllers
 				return View("404");
 
 			if (model.Id == 0)
-				await _episodeService.CreateEpisode(model);
+			{
+                await _episodeService.CreateEpisode(model);
+                var episodeId = _episodeService.GetLastUserEpisodeId(model.Book!.User!.Id!);
+                return RedirectToAction($"GetBookEpisode", new { id = episodeId.Result });
+            }
 			else
 				await _episodeService.EditEpisode(model);
-			var episodeId = _episodeService.GetLastUserEpisodeId(model.Book!.User!.Id!);
-			return RedirectToAction($"GetBookEpisode",
-			  new
-			  {
-                  id = episodeId.Result
-              });
-		}
+			return RedirectToAction($"GetBookEpisode", new { id = model.Id });
+        }
 		public async Task<IActionResult> Delete(int id)
 		{
 			if (!UserIsEpisodeOwner(id).Result)

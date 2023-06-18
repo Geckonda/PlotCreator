@@ -370,7 +370,6 @@
 
 					@if (Model?.Groups.Count > 0)
 					{
-					<form asp-action="RemoveGroups" class="d-flex flex-column">
 						<input name="characterId" type="text" value="@Model?.Id" hidden />
 						<input name="bookId" type="text" value=@ViewData["bookId"] hidden />
 						<div class="d-flex justify-content-between align-items-center flex-wrap">
@@ -386,7 +385,6 @@
 								<button type="button" class="btn body-frame-invert group-btn " data-bs-toggle="modal" data-bs-target="#modelDescription" data-bs-description="@group.Description" data-bs-groupId="@group.Id" data-bs-name="@group.Name">@group.Name</button>
 							}
 						</div>
-					</form>
 					}
 					else
 					{

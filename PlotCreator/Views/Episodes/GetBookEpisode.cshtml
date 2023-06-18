@@ -9,9 +9,17 @@
     var charactersForAdd = Model!.CharacterList!.Where(x => !activeCharactersid.Contains(x.Id));
 
     var charactersForDelete = Model.Characters!;
+    //-----------------
+    //События эпизода
+    var activeEventsId = Model!.Events!.Select(x => x.Id);
+    var eventsForAdd = Model!.EventList!.Where(x => !activeEventsId.Contains(x.Id));
+
+    var eventsForDelete = Model!.Events!;
+    //-----------------
 }
 @section Styles{
     <link rel="stylesheet" href="~/css/text.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/character/characterProfile.css" asp-append-version="true" />
 }
 <div class="d-flex  align-items-center">
     <a class="btn btn-success fs-5" asp-controller="Episodes" asp-action="GetBookEpisodes" asp-route-bookId="@Model.Book!.Id" asp-route-userId="@User.FindFirst("userId").Value">&#8592;</a>
@@ -30,11 +38,6 @@
                 </button>
                 <ul class="dropdown-menu p-0">
                     <li>
-                        <a class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#attachedCharacters" role="button" aria-expanded="false">
-                            Персонажи: @Model.Characters!.Count
-                        </a>
-                    </li>
-                    <li>
                         <a class="btn btn-success w-100" asp-controller="Episodes" asp-action="Save" asp-route-id="@Model.Id" asp-route-bookId="@Model.Book!.Id">Изменить</a>
                     </li>
                     <li>
@@ -47,10 +50,21 @@
 </div>
 
 
+
 <div style="padding: 10px;"></div>
 <div class="cont-cont">
-    <h2 class="heading">@Model.Heading</h2>
+    <h2 class="">@Model.Heading</h2>
+    <hr class="dropdown-divider w-100">
     <p id="response-text-block" class="d-none">@Model.Content</p>
+
+    <div class="d-flex flex-wrap" style="max-width:500px">
+        <a class="btn btn-success m-2" data-bs-toggle="modal" data-bs-target="#attachedCharacters" role="button" aria-expanded="false">
+            Персонажи: @Model.Characters!.Count
+        </a>
+        <a class="btn btn-success m-2" data-bs-toggle="modal" data-bs-target="#attachedEvents" role="button" aria-expanded="false">
+            Соыбтия: @Model.Events!.Count
+        </a>
+    </div>
     <hr class="dropdown-divider w-100 mb-3">
     <div id="main-text-block"></div>
 </div>
@@ -60,34 +74,41 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content body-frame">
             <div class="modal-body">
-                <div class="d-flex justify-content-between">
-                    <h5 class="modal-title" id="nameGroupText">Закрепленные персонажи эпизода</h5>
+                <div class="d-flex justify-content-between mb-3">
+                    <h5 class="modal-title" id="nameGroupText">Закрепленные персонажи</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div>
-                    <div class="d-flex">
-                        Персонажи
-                        @if (charactersForAdd.Count() > 0)
-					    {
-						    <button class="btn btn-success smbtn" data-bs-toggle="modal" data-bs-target="#characterAddition">
-							    &#10010;
-						    </button>
-					    }
-					    @if (charactersForDelete?.Count() > 0)
-					    {
-						    <a class="btn btn-danger smbtn" data-bs-toggle="modal" data-bs-target="#removalCharacter">
-							    &#10006;
-						    </a>
-					    }
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <div class="input-group serch-container w-100 mb-2">
+                        <input type="text" class="form-control search-bar-dim" placeholder="Имя персонажа">
+                        <button class="btn btn-success search-btn-dim" type="button">Поиск</button>
+                        <button class="btn btn-danger reset-btn-dim" type="button">Сброс</button>
                     </div>
                 </div>
+                <div>
+                    <p class="d-flex mb-3">
+                        Персонажи
+                        @if (charactersForAdd.Count() > 0)
+                        {
+                            <button class="btn btn-success smbtn" data-bs-toggle="modal" data-bs-target="#characterAddition">
+                                &#10010;
+                            </button>
+                        }
+                        @if (charactersForDelete?.Count() > 0)
+                        {
+                            <a class="btn btn-danger smbtn" data-bs-toggle="modal" data-bs-target="#removalCharacter">
+                                &#10006;
+                            </a>
+                        }
+                    </p>
+                </div>
                 <div class="mb-3 d-flex flex-column tab-list">
-                    @if(Model?.Characters!.Count > 0)
+                    @if (Model?.Characters!.Count > 0)
                     {
                         @foreach (var character in Model?.Characters!)
-					    {
-						    <a class="btn btn-success" asp-controller="Characters" asp-action="GetCharacter" asp-route-id="@character.Id" asp-route-bookId="@ViewData["bookId"]">@character.Name</a>
-					    }
+                        {
+                            <a class="btn btn-success group-btn" asp-controller="Characters" asp-action="GetCharacter" asp-route-id="@character.Id" asp-route-bookId="@ViewData["bookId"]">@character.Name</a>
+                        }
                     }
                     else
                     {
@@ -104,7 +125,7 @@
         <div class="modal-content body-frame">
             <div class="modal-body">
                 <div class="d-flex justify-content-between">
-                    <h5 class="modal-title" id="nameGroupText">Добавление персонажа</h5>
+                    <h5 class="modal-title" id="nameGroupText">Прикрепление персонажей</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="pt-3">
@@ -150,7 +171,7 @@
         <div class="modal-content body-frame">
             <div class="modal-body">
                 <div class="d-flex justify-content-between">
-                    <h5 class="modal-title" id="nameGroupText">Добавление персонажа</h5>
+                    <h5 class="modal-title" id="nameGroupText">Открепление персонажей</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="pt-3">
@@ -191,7 +212,152 @@
     </div>
 </div>
 
+
+@*Модальное окно прикрепленных событий*@
+<div class="modal fade" id="attachedEvents" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content body-frame">
+            <div class="modal-body">
+                <div class="d-flex justify-content-between mb-3">
+                    <h5 class="modal-title" id="nameGroupText">Закрепленные события</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <div class="input-group serch-container w-100 mb-2">
+                        <input type="text" class="form-control search-bar-dim" placeholder="Название события">
+                        <button class="btn btn-success search-btn-dim" type="button">Поиск</button>
+                        <button class="btn btn-danger reset-btn-dim" type="button">Сброс</button>
+                    </div>
+                </div>
+                <div>
+                    <p class="d-flex mb-3">
+                        События
+                        @if (eventsForAdd.Count() > 0)
+                        {
+                            <button class="btn btn-success smbtn" data-bs-toggle="modal" data-bs-target="#eventAddition">
+                                &#10010;
+                            </button>
+                        }
+                        @if (eventsForDelete?.Count() > 0)
+                        {
+                            <a class="btn btn-danger smbtn" data-bs-toggle="modal" data-bs-target="#removalEvent">
+                                &#10006;
+                            </a>
+                        }
+                    </p>
+                </div>
+                <div class="mb-3 d-flex flex-column tab-list">
+                    @if (Model?.Events!.Count > 0)
+                    {
+                        @foreach (var Event in Model!.Events!.OrderBy(x => x.Beginning!))
+                        {
+                            <a class="btn btn-success group-btn" asp-controller="Events" asp-action="GetBookEvent" asp-route-id="@Event.Id">@Event.Title</a>
+                        }
+                    }
+                    else
+                    {
+                        <h6 class="modal-title">Прикрпеленных событий не найдено</h6>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*Прикрепление персонажей*@
+<div class="modal fade" id="eventAddition" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content body-frame">
+            <div class="modal-body">
+                <div class="d-flex justify-content-between">
+                    <h5 class="modal-title" id="nameGroupText">Прикрепление событий</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="pt-3">
+
+                    @if (eventsForAdd.Count() > 0)
+                    {
+                        <form asp-action="AddEvents" class="d-flex flex-column">
+                            <input name="episodeId" type="text" value="@Model?.Id" hidden />
+                            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                <div class="input-group serch-container w-100 mb-2">
+                                    <input type="text" class="form-control search-bar" id="search-bar" placeholder="Название события">
+                                    <button class="btn btn-success search-btn" type="button" id="search-btn">Поиск</button>
+                                    <button class="btn btn-danger reset-btn" type="button" id="reset-btn">Сброс</button>
+                                </div>
+                            </div>
+                            <div class="mb-3 d-flex flex-column tab-list">
+                                @foreach (var Event in eventsForAdd)
+                                {
+                                    <div class="p-2">
+                                        <input class="form-check-input" type="checkbox" value="@Event.Id" name="checkedEvents" id="@Event.Id Event">
+                                        <label class="form-check-label group-character" for="@Event.Id Event">
+                                            @Event.Title
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+
+                            <button class="btn btn-success" type="submit">Прикрепить</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <h6 class="modal-title">Событий не найдено</h6>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*Открепление персонажей*@
+<div class="modal fade" id="removalEvent" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content body-frame">
+            <div class="modal-body">
+                <div class="d-flex justify-content-between">
+                    <h5 class="modal-title" id="nameGroupText">Открепление событий</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="pt-3">
+                    @if (eventsForDelete!.Count() > 0)
+                    {
+                        <form asp-action="RemoveCharacters" class="d-flex flex-column">
+                            <input name="episodeId" type="text" value="@Model?.Id" hidden />
+                            <input name="bookId" type="text" value=@Model!.Book!.Id hidden />
+                            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                <div class="input-group serch-container w-100 mb-2">
+                                    <input type="text" class="form-control search-bar" id="search-bar" placeholder="Название события">
+                                    <button class="btn btn-success search-btn" type="button" id="search-btn">Поиск</button>
+                                    <button class="btn btn-danger reset-btn" type="button" id="reset-btn">Сброс</button>
+                                </div>
+                            </div>
+                            <div class="mb-3 d-flex flex-column tab-list">
+                                @foreach (var Event in eventsForDelete!)
+                                {
+                                    <div class="p-2">
+                                        <input class="form-check-input" type="checkbox" value="@Event.Id" name="checkedCharacters" id="@Event.Id Event">
+                                        <label class="form-check-label group-character" for="@Event.Id Character">
+                                            @Event.Title
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+
+                            <button class="btn btn-success" type="submit">Открепить</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <h6 class="modal-title">Событий не найдено</h6>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
  @section Scripts{
     <script src="~/js/textConstructor.js"></script>
     <script type="module" src="~/js/Episodes/modal.js"></script>
+    <script type="module" src="~/js/Characters/modal.js"></script>
  }

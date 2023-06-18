@@ -16,12 +16,13 @@
 	<link rel="stylesheet" href="~/css/groups/groups.css" asp-append-version="true" />
 }
 
-@if (ViewData["bookId"]!= null)
-{
-	<a class="" asp-controller="Books" asp-action="MyBook" asp-route-id=@ViewData["bookId"]>Вернуться к книге</a>
-}
-
-<h1 style="margin-top: 3rem;">Группы</h1>
+<div class="d-flex align-itemts-center">
+    @if (ViewData["bookId"] != null)
+    {
+        <a class="btn btn-success fs-5" asp-controller="Books" asp-action="MyBook" asp-route-id=@ViewData["bookId"]>&#8592;</a>
+    }
+    <h1 style="margin-left:10px;">Группы персонажей</h1>
+</div>
 <div style="padding: 10px;"></div>
 <div class="d-flex justify-content-between align-items-center flex-wrap" >
     <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#saveForm">Добавить группу</button>

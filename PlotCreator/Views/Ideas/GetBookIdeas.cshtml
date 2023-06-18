@@ -5,13 +5,12 @@
     Layout = "_Layout";
 }
 
-<div class="w-100 d-flex justify-content-between position-absolute top-0 start-0">
-	<a class="btn btn-success fs-5" aria-current="page" asp-controller="Books" asp-action="MyBooks"
+<div class="d-flex align-items-center">
+	<a class="btn btn-success fs-5" aria-current="page" asp-controller="Books" asp-action="MyBook" asp-route-Id="@ViewData["bookId"]"
 	   asp-route-userId="@User.FindFirst("userId").Value">&#8592;</a>
-
+	   
+	<h1 style="margin-left:10px;">Идеи книги «@ViewData["bookTitle"]»</h1>
 </div>
-<div class="mb-5"></div>
-<h1>Идеи книги «@ViewData["bookTitle"]»</h1>
 <div style="padding: 10px;"></div>
 <div class="dropdown">
 	<button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown">

@@ -4,7 +4,10 @@
     ViewBag.Title = "Мои эпизоды";
     Layout = "_Layout";
 }
-<h1>Эпизоды</h1>
+<div class="d-flex align-items-center">
+    <a class="btn btn-success fs-5" asp-controller="Books" asp-action="MyBook" asp-route-id=@ViewData["BookId"]>&#8592;</a>
+    <h1 style="margin-left:10px;">Эпизоды</h1>
+</div>
 <div style="padding: 10px;"></div>
 <a class="btn btn-success" asp-area="" asp-action="Save" asp-route-id="0" asp-route-bookId=@ViewData["BookId"]>Добавить эпизод</a>
 <hr class="dropdown-divider w-100 mb-3">

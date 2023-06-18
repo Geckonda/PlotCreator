@@ -131,8 +131,10 @@ namespace PlotCreator.DAL.Repositories
 		public Task<int> GetLastUserEntityId(int userId)
 		{
 			return _db.Episodes
-				.Where(x => x.Book!.User!.Id == userId)
-				.Select(x => x.Id)
+                .Include(x => x.Book)
+                .Where(x => x.Book!.User!.Id == userId)
+                .OrderByDescending(x => x.Id)
+                .Select(x => x.Id)
 				.FirstAsync();
 		}
 

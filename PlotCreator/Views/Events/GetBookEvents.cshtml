@@ -5,11 +5,10 @@
     Layout = "_Layout";
 }
 
- <div class="d-flex mb-3">
-    <a class="btn btn-success fs-5" asp-controller="Books" asp-action="MyBook" asp-route-bookId=@ViewData["BookId"]>&#8592;</a>
-    <h1>События</h1>
+ <div class="d-flex align-items-center mb-3">
+    <a class="btn btn-success fs-5" asp-controller="Books" asp-action="MyBook" asp-route-id=@ViewData["BookId"]>&#8592;</a>
+    <h1 style="margin-left:10px;">События</h1>
 </div>
-<div style="padding: 10px;"></div>
     <a class="btn btn-success" asp-area="" asp-action="Save" asp-route-id="0" asp-route-bookId=@ViewData["BookId"]>Добавить событие</a>
 
 <hr class="dropdown-divider w-100 mb-3">
