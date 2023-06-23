@@ -18,7 +18,5 @@ namespace PlotCreator.Domain.Entity.Multiple_Tables
 
         public int IdeaId { get; set; } // Вторичный ключ
         public Idea? Idea { get; set; } // Навигационное свойство
-
-        public DateTime? DateCreation { get; set; }
     }
 }

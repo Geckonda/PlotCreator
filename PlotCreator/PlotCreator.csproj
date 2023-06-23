@@ -20,4 +20,5 @@
 	  <ProjectReference Include="..\PlotCreator.Domain\PlotCreator.Domain.csproj" />
 	  <ProjectReference Include="..\PlotCreator.Service\PlotCreator.Service.csproj" />
 	</ItemGroup>
+
 </Project>

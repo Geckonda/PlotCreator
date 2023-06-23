@@ -1,0 +1,44 @@
+﻿@model List<PlotCreator.Domain.ViewModels.IdeaViewModel>
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+<h1>Мои идеи</h1>
+<div style="padding: 10px;"></div>
+<div style="width: 100%;padding:2px 4px; border-radius: 4px;">
+	<div class="w-100 d-flex justify-content-between align-items-start flex-wrap">
+		<div>
+			<a class="btn btn-success mb-3" asp-area="" asp-action="Save" asp-route-id="0" asp-route-userId=@User.FindFirst("userId")!.Value>Добавить идею</a>
+	
+		</div>
+		<div class="input-group serch-container">
+			<button class="btn btn-success" type="button" id="reverse" style="margin-right:10px;">&#8595;</button>
+			<input type="text" class="form-control" id="search-bar" placeholder="Название идеи">
+			<button class="btn btn-success" type="button" id="search-btn">Поиск</button>
+			<button class="btn btn-danger" type="button" id="reset-btn">Сброс</button>
+		</div>
+	</div>
+</div>
+
+<hr class="dropdown-divider w-100 mb-3">
+<div class="cont-cont" id="block_container">
+	@if (!Model.Any())
+	{
+		<h2 class="text-info">Идей не найдено!</h2>
+	}
+    @foreach (var idea in Model)
+    {
+		<a class="SceneContainer ideaContainer" asp-controller="Ideas" asp-action="MyIdea" asp-route-id="@idea.Id">
+            <div class="listPointer"></div>
+			<h4 class="idea-name">@idea.Topic</h4>
+        </a>
+    }
+</div>
+
+<h4 class="hide" id="noIdea">Идей не найдено!</h4>
+
+@section Scripts{
+
+	<script type="module" src="~/js/Ideas/idea.js"></script>
+}

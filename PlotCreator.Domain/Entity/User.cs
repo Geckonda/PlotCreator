@@ -37,5 +37,6 @@ namespace PlotCreator.Domain.Entity
         //  v  v  v  v  v
         public List<Book> Books { get; set; } = new();
         public List<Idea> Ideas { get; set; } = new();
+        public List<Character> Characters { get; set; } = new();
     }
 }

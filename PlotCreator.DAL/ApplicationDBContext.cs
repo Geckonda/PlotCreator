@@ -30,18 +30,46 @@ namespace PlotCreator.DAL
         public DbSet<Event_Character> Events_Characters => Set<Event_Character>();
         public DbSet<Group_Character> Groups_Characters => Set<Group_Character>();
         public DbSet<Group_Event> Groups_Events => Set<Group_Event>();
+		public DbSet<Worldview> Worldview => Set<Worldview>();
 
-        public ApplicationDBContext()
+		public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options) : base(options)
         {
 
         }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=MigrationsTest;Trusted_Connection=True;");
-        }
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=MigrationsTest;Trusted_Connection=True;");
+        //}
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+			//Автоматическое включение свойств
+			//Книга
+			modelBuilder.Entity<Book>().Navigation(book => book.User).AutoInclude();
+            modelBuilder.Entity<Book>().Navigation(book => book.Modificator).AutoInclude();
+            modelBuilder.Entity<Book>().Navigation(book => book.Rating).AutoInclude();
+            modelBuilder.Entity<Book>().Navigation(book => book.Genre).AutoInclude();
+            modelBuilder.Entity<Book>().Navigation(book => book.Status).AutoInclude();
 
-        }
-    }
+
+            //modelBuilder.Entity<Book>().Navigation(book => book.Episodes).AutoInclude();
+            //modelBuilder.Entity<Book>().Navigation(book => book.Events).AutoInclude();
+            //modelBuilder.Entity<Book>().Navigation(book => book.Groups).AutoInclude();
+            //---------------
+            //Персонаж
+            modelBuilder.Entity<Character>().Navigation(ch => ch.User).AutoInclude();
+            modelBuilder.Entity<Character>().Navigation(ch => ch.Worldview).AutoInclude();
+            //----------------
+            //Идеи
+            modelBuilder.Entity<Idea>().Navigation(idea => idea.User).AutoInclude();
+			//----------------
+			//Эпизоды
+			modelBuilder.Entity<Episode>().Navigation(episode => episode.Book).AutoInclude();
+			//----------------
+			//События
+			modelBuilder.Entity<Event>().Navigation(e => e.Book).AutoInclude();
+			//----------------
+			//Группы
+			modelBuilder.Entity<Group>().Navigation(group => group.Book).AutoInclude();
+		}
+	}
 }

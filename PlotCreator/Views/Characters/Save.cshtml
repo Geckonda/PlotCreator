@@ -1,0 +1,183 @@
+﻿@model PlotCreator.Domain.ViewModels.CharacterViewModel
+
+@{
+    var textTitle = Model?.Id == 0 ? "Добавление персонажа" : "Редактирование персонажа";
+    ViewBag.Title = textTitle;
+    Layout = "_Layout";
+
+    var defaultDateRu = "01.01.0001";
+    var defaultDateEng = "1/1/0001";
+}
+
+<div style="padding: 10px;"></div>
+<div class="col-md-12 d-flex justify-content-center">
+    <div class="card-body">
+        <div class="card card-outline-secondary" style="background-color: white">
+            <div class="card-body body-frame">
+                <h3 class="mb-0 text-center ParagraphHome">@textTitle</h3>
+                <form asp-action="Save" enctype="multipart/form-data">
+                    <input asp-for="Id" type="text" value="@Model?.Id" hidden />
+                    <input asp-for="User!.Id" type="text" value="@Model?.User!.Id" hidden />
+                    <input asp-for="Picture" type="text" value="@Model?.Picture" hidden />
+                    <input name="bookId" type="number" value="@ViewData["bookId"]" hidden />
+                    <div asp-validation-summary="All" style="font-size:23px; font-family:Impact, serif" class="text-danger text-center"></div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Name">Имя</label>
+                        <input asp-for="Name" class="form-control" type="text" value="@Model?.Name" required>
+                        <span asp-validation-for="@Model!.Name" class="text-danger"></span>
+                    </div>
+
+                    @if (Model.Birthday.ToString("d") == defaultDateRu || Model.Birthday.ToString("d") == defaultDateEng)
+                    {
+                        <div class="mb-3">
+                            <label for="birthday_box">Добавить дату рождения</label>
+                            <input class="form-check-input" type="checkbox" id="birthday_box" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="mb-3">
+                            <label for="birthday_box">Добавить дату рождения</label>
+                            <input class="form-check-input" type="checkbox" id="birthday_box" checked />
+                        </div>
+                    }
+                    <div class="form-group mb-3  hide" id="birthday_block">
+                        <label asp-for="Birthday">Дата рождения</label>
+                        <input asp-for="Birthday" class="form-control" id="birthday_input" type="date" value="@Model!.Birthday.ToString("yyyy-MM-dd")">
+                        <span asp-validation-for="@Model.Birthday" class="text-danger"></span>
+                    </div>
+                    @if (Model.Deathday.ToString("d") == defaultDateRu || Model.Deathday.ToString("d") == defaultDateEng)
+                    {
+                        <div class="mb-3">
+                            <label for="deathday_box">Добавить дату смерти</label>
+                            <input class="form-check-input" type="checkbox" id="deathday_box" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="mb-3">
+                            <label for="deathday_box">Добавить дату смерти</label>
+                            <input class="form-check-input" type="checkbox" id="deathday_box" checked />
+                        </div>
+                    }
+                    <div class="form-group mb-3 hide" id="deathday_block">
+                        <label asp-for="Deathday">Дата смерти</label>
+                        <input asp-for="Deathday" class="form-control" type="date" id="deathday_input" value="@Model?.Deathday.ToString("yyyy-MM-dd")">
+                        <span asp-validation-for="@Model!.Deathday" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label>Пол:</label>
+                        <select class="form-select" asp-for="Gender">
+                            @if (Model!.Id != 0)
+                            {
+                                <option value="@Model.Gender">@Model.Gender</option>
+                                @if (Model.Gender == "Мужской")
+                                {
+                                    <option value="Женский">Женский</option>
+                                }
+                                else
+                                {
+                                    <option value="Мужской">Мужской</option>
+                                }
+                            }
+                            else
+                            {
+                                <option value="Мужской">Мужской</option>
+                                <option value="Женский">Женский</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Height">Рост:</label>
+                        <input asp-for="Height" class="form-control" type="number" value="@Model?.Height">
+                        <span asp-validation-for="@Model.Height" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Weight">Вес:</label>
+                        <input asp-for="Weight" class="form-control" type="number" value="@Model?.Weight">
+                        <span asp-validation-for="@Model.Weight" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="@Model.Personality">Характер:</label>
+                        <span asp-validation-for="@Model.Personality" class="text-danger"></span>
+                        <textarea asp-for="@Model.Personality" class="form-control" rows="5" >@Model?.Personality</textarea>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="@Model.Appearance">Внешний вид:</label>
+                        <span asp-validation-for="@Model.Appearance" class="text-danger"></span>
+                        <textarea asp-for="@Model.Appearance" class="form-control" rows="5" >@Model?.Appearance</textarea>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="@Model.Conflict">Конфликт:</label>
+                        <span asp-validation-for="@Model.Conflict" class="text-danger"></span>
+                        <textarea asp-for="@Model.Conflict" class="form-control" rows="5">@Model?.Conflict</textarea>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="@Model.Goals">Цель:</label>
+                        <span asp-validation-for="@Model.Goals" class="text-danger"></span>
+                        <textarea asp-for="@Model.Goals" class="form-control" rows="5" >@Model?.Goals</textarea>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="@Model.Motivation">Мотивация:</label>
+                        <span asp-validation-for="@Model.Motivation" class="text-danger"></span>
+                        <textarea asp-for="@Model.Motivation" class="form-control" rows="5" >@Model?.Motivation</textarea>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="@Model.History">Краткая история до главных событий:</label>
+                        <span asp-validation-for="@Model.History" class="text-danger"></span>
+                        <textarea asp-for="@Model.History" class="form-control" rows="5" >@Model?.History</textarea>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label>Мировоззрение персонажа:</label>
+                        <select class="form-select" asp-for="Worldview!.Id">
+                            @if (Model!.Id != 0)
+                            {
+                                <option value="@Model.Worldview.Id">@Model.Worldview!.Name</option>
+                                @foreach (var worldview in Model!.Worldviews!
+                                   .Where(x => x.Id != Model.Worldview.Id))
+                                   {
+                                        <option value="@worldview.Id">@worldview.Name</option>
+                                   }
+                            }
+                            else
+                            {
+                                @foreach (var worldview in Model!.Worldviews!)
+                                {
+                                    <option value="@worldview.Id">@worldview.Name</option>
+                                }
+                            }
+                           
+                        </select>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="@Model.Picture" class="col-form-label">Портрет персонажа</label>
+                        <div class="col-sm-15">
+                            <input asp-for="@Model.PictureImage" type="file" class="form-control" value="@Model?.PictureImage">
+                        </div>
+                    </div>
+                    <div class="w-100 d-flex justify-content-center">
+                        <button class="btn btn-success" type="submit">Сохранить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+
+    <script src="~/js/Characters/date.js"></script>
+}
+

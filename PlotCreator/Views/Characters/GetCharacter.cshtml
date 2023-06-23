@@ -1,0 +1,513 @@
+﻿@model PlotCreator.Domain.ViewModels.CharacterViewModel
+
+@{
+	ViewData["title"] = Model.Name;
+	//Группы персонажа
+	var activeGroupsId = Model!.Groups!.Select(x => x.Id);
+	var groupsForAdd = Model!.GroupList!.Where(x => !activeGroupsId.Contains(x.Id));
+
+	var groupsForDelete = Model.Groups!;
+	if (ViewData["bookId"] != null)
+	{
+		groupsForDelete = Model.Groups!.Where(x => x.BookId.ToString()! == ViewData["bookId"]!.ToString()).ToList();
+	}
+
+	var defaultDateRu = "01.01.0001";
+	var defaultDateEng = "1/1/0001";
+}
+@section Styles{
+	<link rel="stylesheet" href="~/css/text.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/character/characterProfile.css" asp-append-version="true" />
+}
+<div class="container w-100 d-flex justify-content-between pb-1">
+	@if (ViewData["bookId"] != null)
+	{
+		<a class="btn btn-success fs-5" asp-controller="Characters" asp-action="GetBookCharacters" asp-route-bookId=@ViewData["bookId"]>&#8592;</a>
+	}
+	else
+	{
+		<a class="btn btn-success fs-5" asp-controller="Characters" asp-action="GetAllCharacters"
+	   asp-route-userId="@User.FindFirst("userId")!.Value">&#8592;</a>
+	}
+	<div class="w-auto d-flex align-items-center ">
+		
+	</div>
+</div>
+<div style="padding: 10px;"></div>
+<div class="container">
+
+	<div class="container d-flex mb-3 justify-content-center flex-wrap">
+		<div class="mb-3 " style="width: 250px;">
+			@if (Model.Picture is null)
+			{
+				<img src="/images/default/default.png" class="img-fluid border border-dark border-2 rounded-3 character-card-image w-100" style="height:250px;object-fit:cover">
+			}
+			else
+			{
+				<img src="@Model.Picture" class="img-fluid border border-dark border-2 rounded-3 character-card-image" alt="...">
+			}
+		</div>
+		<div class="flex-md-fill" style="margin-left:16px;">
+			<div class="card-title d-flex fs-2" style="color:var(--extra-dark);">@Model.Name
+			<div class="dropdown" style="margin-left:4px;">
+					<button style="background-color:var(--extra-light);" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
+                  <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/>
+                  <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"/>
+                </svg>
+              </button>
+              <ul class="dropdown-menu p-0">
+                <li>
+					<a class="btn btn-success" asp-controller="Characters" asp-action="Save" asp-route-id=@Model.Id asp-route-bookId="@ViewData["bookId"]" asp-route-userId="@User.FindFirst("userId").Value">Редактировать</a>
+                </li>
+				<li>
+					<a class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#deleteAcceptance">Удалить</a>
+                </li>
+              </ul>
+        </div>
+			
+			</div>
+			@if (Model.Birthday.ToString("d") == defaultDateRu || Model.Birthday.ToString("d") == defaultDateEng)
+			{
+				<p class="card-text">Дата рождения: <strong class="text-extra-dark">Неизвестно</strong></p>
+			}
+			else
+			{
+				<p class="card-text">Дата рождения: <strong class="text-extra-dark">@Model.Birthday.ToString("D")</strong></p>
+			}
+
+			@if (Model.Deathday.ToString("d") == defaultDateRu || Model.Deathday.ToString("d") == defaultDateEng)
+			{
+				<p class="card-text">Персонаж <strong class="text-extra-dark">ЖИВОЙ</strong></p>
+			}
+			else
+			{
+				<p class="card-text">Персонаж <strong class="text-extra-dark">МЕРТВ</strong>. Дата смерти: <strong class="text-extra-dark">@Model.Deathday.ToString("D")</strong></p>
+			}
+			<p class="card-text">Пол: <strong class="text-extra-dark">@Model.Gender</strong></p>
+			
+			@if (Model.Height == 0)
+			{
+				<p class="card-text">Рост: <strong class="text-extra-dark">Неизвестно</strong></p>
+			}
+			else
+			{
+				<p class="card-text">Рост: <strong class="text-extra-dark">@Model.Height см</strong></p>
+			}
+			@if (Model.Weight == 0)
+			{
+				<p class="card-text">Вес: <strong class="text-extra-dark">Неизвестно</strong></p>
+			}
+			else
+			{
+				<p class="card-text">Вес: <strong class="text-extra-dark">@Model.Weight кг</strong></p>
+			}
+			@*Мировоззрение*@
+			<p>
+				Мировоззрение:
+				<a class="text-extra-dark" data-bs-toggle="collapse" href="#WorldviewInfo" role="button" aria-expanded="false">
+					 @Model.Worldview!.Name
+			  </a>
+			</p>
+			<div class="collapse mb-2" id="WorldviewInfo">
+				<div class="card card-body body-frame-invert" style="max-width: 450px;">
+				  @Model.Worldview!.Description
+				</div>
+			</div>
+			@*Книги персонажа*@
+			<p>
+				<a class="text-extra-dark" data-bs-toggle="collapse" href="#BookInfo" role="button" aria-expanded="false">
+					Книги
+				</a>
+				: @Model.Books!.Count
+			</p>
+			<div class="collapse mb-2" id="BookInfo">
+				<div class="card body-frame-invert d-flex flex-wrap" style="max-width: 450px;">
+					@foreach (var book in Model.Books)
+					{
+						<a class="btn body-frame-invert group-btn" asp-controller="Books" asp-action="MyBook" asp-route-id="@book.Id">@book.Title</a>
+					}
+				</div>
+			</div>
+			@*Группы персонажа*@
+			<p>
+				<a class="text-extra-dark" data-bs-toggle="modal" data-bs-target="#groupDescription" role="button" aria-expanded="false">
+					Группы
+				</a>
+				: @Model.Groups!.Count
+				@if (ViewData["bookId"] != null)
+				{
+					@if (groupsForAdd.Count() > 0)
+					{
+						<button class="btn btn-success smbtn" data-bs-toggle="modal" data-bs-target="#groupAddition">
+							&#10010;
+						</button>
+					}
+					@if (groupsForDelete?.Count() > 0)
+					{
+						<a class="btn btn-danger smbtn" data-bs-toggle="modal" data-bs-target="#removalGroup">
+							&#10006;
+						</a>
+					}
+				}
+			</p>
+			@*События персонажа*@
+				<p>
+				<a class="text-extra-dark" data-bs-toggle="modal" data-bs-target="#eventDescription" role="button" aria-expanded="false">
+					События
+				</a>
+					 : @Model.Events!.Count
+				</p>
+			@*Эпизоды персонажа*@
+				<p>
+				<a class="text-extra-dark" data-bs-toggle="modal" data-bs-target="#episodeDescription" role="button" aria-expanded="false">
+					Эпизоды
+				</a>
+					 : @Model.Episodes!.Count
+				</p>
+		</div>
+	</div>
+	<div class="container">
+		<div class="accordion" id="AdditionDescription">
+			@*Характер персонажа*@
+			<div class="accordion-item">
+				<h2 class="accordion-header" id="headingOne">
+					<button class="accordion-button collapsed body-frame-invert" type="button" data-bs-toggle="collapse" data-bs-target="#CharacterPersonality" aria-expanded="false" aria-controls="CharacterPersonality">
+						Характер
+					</button>
+				</h2>
+				<div id="CharacterPersonality" class="accordion-collapse collapse " aria-labelledby="headingOne">
+					<div class="accordion-body">
+						@if(Model.Personality is null)
+						{
+							<p style="color: var(--main-dark);">Пусто</p>
+						}
+						@Model.Personality
+					</div>
+				</div>
+			</div>
+			@*Внешний вид персонажа*@
+			<div class="accordion-item">
+				<h2 class="accordion-header" id="headingTwo">
+					<button class="accordion-button collapsed body-frame-invert" type="button" data-bs-toggle="collapse" data-bs-target="#CharacterAppearance" aria-expanded="false" aria-controls="CharacterAppearance">
+						Внешний вид
+					</button>
+				</h2>
+				<div id="CharacterAppearance" class="accordion-collapse collapse " aria-labelledby="headingTwo">
+					<div class="accordion-body">
+						@if (Model.Appearance is null)
+						{
+							<p style="color: var(--main-dark);">Пусто</p>
+						}
+						@Model.Appearance
+					</div>
+				</div>
+			</div>
+			@*Цели персонажа*@
+			<div class="accordion-item">
+				<h2 class="accordion-header" id="headingThree">
+					<button class="accordion-button collapsed body-frame-invert" type="button" data-bs-toggle="collapse" data-bs-target="#CharacterGoals" aria-expanded="false" aria-controls="CharacterGoals">
+						Цели
+					</button>
+				</h2>
+				<div id="CharacterGoals" class="accordion-collapse collapse " aria-labelledby="headingThree">
+					<div class="accordion-body">
+						@if (Model.Goals is null)
+						{
+							<p style="color: var(--main-dark);">Пусто</p>
+						}
+						@Model.Goals
+					</div>
+				</div>
+			</div>
+			@*Мотивация персонажа*@
+			<div class="accordion-item">
+				<h2 class="accordion-header" id="headingFour">
+					<button class="accordion-button collapsed body-frame-invert" type="button" data-bs-toggle="collapse" data-bs-target="#CharacterMotivation" aria-expanded="false" aria-controls="CharacterMotivation">
+						Мотивация
+					</button>
+				</h2>
+				<div id="CharacterMotivation" class="accordion-collapse collapse" aria-labelledby="headingFour">
+					<div class="accordion-body">
+						@if (Model.Motivation is null)
+						{
+							<p style="color: var(--main-dark);">Пусто</p>
+						}
+						@Model.Motivation
+					</div>
+				</div>
+			</div>
+			@*История персонажа*@
+			<div class="accordion-item">
+				<h2 class="accordion-header" id="headingFive">
+					<button class="accordion-button collapsed body-frame-invert" type="button" data-bs-toggle="collapse" data-bs-target="#CharacterHistory" aria-expanded="false" aria-controls="CharacterHistory">
+						История до главных событий
+					</button>
+				</h2>
+				<div id="CharacterHistory" class="accordion-collapse collapse" aria-labelledby="headingFive">
+					<div class="accordion-body">
+						@if (Model.History is null)
+						{
+							<p style="color: var(--main-dark);">Пусто</p>
+						}
+						<p id="response-text-block" class="d-none">@Model.History</p>
+						<div id="main-text-block"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+@*----------------------------------------*@
+@*БЛОК МОДАЛЬНЫХ ОКОН ГРУПП*@
+@*Модальное окно добавления групп*@
+<div class="modal fade" id="groupAddition" tabindex="-1"  aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content body-frame">
+            <div class="modal-body">
+                <div class="d-flex justify-content-between">
+					<h5 class="modal-title" id="nameGroupText">Добавление групп</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+				<div class="pt-3">
+
+					@if (groupsForAdd.Count() > 0)
+					{
+						<form asp-action="AddGroups" class="d-flex flex-column">
+							<input name="characterId" type="text" value="@Model?.Id" hidden />
+							<input name="bookId" type="text" value=@ViewData["bookId"] hidden />
+							<div class="d-flex justify-content-between align-items-center flex-wrap">
+								<div class="input-group serch-container w-100 mb-2">
+									<input type="text" class="form-control search-bar" id="search-bar" placeholder="Название группы">
+									<button class="btn btn-success search-btn" type="button" id="search-btn">Поиск</button>
+									<button class="btn btn-danger reset-btn" type="button" id="reset-btn">Сброс</button>
+								</div>
+							</div>
+							<div class="mb-3 d-flex flex-column tab-list">
+								@foreach (var group in groupsForAdd)
+								{
+									<div class="p-2">
+										<input class="form-check-input" type="checkbox" value="@group.Id" name="checkedGroups" id="@group.Id Group">
+										<label class="form-check-label group-character" for="@group.Id Group">
+											@group.Name
+										</label>
+									</div>
+								}
+							</div>
+							
+							<button class="btn btn-success" type="submit">Добавить</button>
+						</form>
+					}
+					else
+					{
+						<h6 class="modal-title">Групп не найдено</h6>
+					}
+				</div>
+			</div>
+        </div>
+    </div>
+</div>
+
+@*Модальное окно удаления групп*@
+<div class="modal fade" id="removalGroup" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content body-frame">
+			<div class="modal-body">
+				<div class="d-flex justify-content-between">
+					<h5 class="modal-title" id="nameGroupText">Удаление групп</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="pt-3">
+
+					@if (groupsForDelete?.Count() > 0)
+					{
+						<form asp-action="RemoveGroups" class="d-flex flex-column">
+							<input name="characterId" type="text" value="@Model?.Id" hidden />
+							<input name="bookId" type="text" value=@ViewData["bookId"] hidden />
+							<div class="d-flex justify-content-between align-items-center flex-wrap">
+								<div class="input-group serch-container w-100 mb-2">
+									<input type="text" class="form-control search-bar" placeholder="Название группы">
+									<button class="btn btn-success search-btn" type="button">Поиск</button>
+									<button class="btn btn-danger reset-btn" type="button">Сброс</button>
+								</div>
+							</div>
+							<div class="mb-3 d-flex flex-column tab-list">
+								@foreach (var group in groupsForDelete)
+								{
+									<div class="p-2">
+										<input class="form-check-input" type="checkbox" value="@group.Id" name="checkedGroups" id="@group.Id Group">
+										<label class="form-check-label group-character" for="@group.Id Group">
+											@group.Name
+										</label>
+									</div>
+								}
+							</div>
+							<button class="btn btn-success" type="submit">Удалить</button>
+						</form>
+					}
+					else
+					{
+						<h6 class="modal-title">Прикрепленных групп не найдено</h6>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@*Модальное окно групп*@
+<div class="modal fade" id="groupDescription" tabindex="-1"  aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content body-frame">
+            <div class="modal-body">
+                <div class="d-flex justify-content-between">
+					<h5 class="modal-title" id="nameGroupText">Описание групп персонажа</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+				<div class="pt-3">
+
+					@if (Model?.Groups.Count > 0)
+					{
+						<input name="characterId" type="text" value="@Model?.Id" hidden />
+						<input name="bookId" type="text" value=@ViewData["bookId"] hidden />
+						<div class="d-flex justify-content-between align-items-center flex-wrap">
+							<div class="input-group serch-container w-100 mb-2">
+								<input type="text" class="form-control search-bar-dim" placeholder="Название группы">
+								<button class="btn btn-success search-btn-dim" type="button">Поиск</button>
+								<button class="btn btn-danger reset-btn-dim" type="button">Сброс</button>
+							</div>
+						</div>
+						<div class="mb-3 d-flex flex-column tab-list">
+							@foreach (var group in Model?.Groups!)
+							{
+								<button type="button" class="btn body-frame-invert group-btn " data-bs-toggle="modal" data-bs-target="#modelDescription" data-bs-description="@group.Description" data-bs-groupId="@group.Id" data-bs-name="@group.Name">@group.Name</button>
+							}
+						</div>
+					}
+					else
+					{
+					<h6 class="modal-title">Прикрепленных групп не найдено</h6>
+					}
+				</div>
+            </div>
+        </div>
+    </div>
+</div>
+@*Модальное описания групп*@
+<div class="modal fade" id="modelDescription" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content body-frame">
+			<div class="modal-body">
+				<div class="d-flex justify-content-between">
+					<h5 class="modal-title" id="nameGroupText">Описание группы</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="tab-list">
+					<p id="descriptionText"></p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+@*Модальное окно событий*@
+<div class="modal fade" id="eventDescription" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content body-frame">
+			<div class="modal-body">
+				<div class="d-flex justify-content-between">
+					<h5 class="modal-title" id="nameGroupText">Описание событий персонажа</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="pt-3">
+
+					@if (Model?.Events.Count > 0)
+					{
+						<div class="d-flex justify-content-between align-items-center flex-wrap">
+							<div class="input-group serch-container w-100 mb-2">
+								<input type="text" class="form-control search-bar-dim" placeholder="Название события">
+								<button class="btn btn-success search-btn-dim" type="button">Поиск</button>
+								<button class="btn btn-danger reset-btn-dim" type="button">Сброс</button>
+							</div>
+						</div>
+						<div class="mb-3 d-flex flex-column tab-list">
+							@foreach (var Event in Model?.Events!)
+							{
+								<a class="btn body-frame-invert group-btn " asp-controller="Events" asp-action="GetBookEvent" asp-route-id="@Event.Id">@Event.Title</a>
+							}
+						</div>
+					}
+					else
+					{
+						<h6 class="modal-title">Прикрепленных событий не найдено</h6>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@*Модальное окно эпизодов*@
+<div class="modal fade" id="episodeDescription" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content body-frame">
+			<div class="modal-body">
+				<div class="d-flex justify-content-between">
+					<h5 class="modal-title" id="nameGroupText">Описание эпизодов персонажа</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="pt-3">
+
+					@if (Model?.Episodes.Count > 0)
+					{
+						<div class="d-flex justify-content-between align-items-center flex-wrap">
+							<div class="input-group serch-container w-100 mb-2">
+								<input type="text" class="form-control search-bar-dim" placeholder="Название эпизода">
+								<button class="btn btn-success search-btn-dim" type="button">Поиск</button>
+								<button class="btn btn-danger reset-btn-dim" type="button">Сброс</button>
+							</div>
+						</div>
+						<div class="mb-3 d-flex flex-column tab-list">
+							@foreach (var episode in Model?.Episodes!)
+							{
+								<a class="btn body-frame-invert group-btn " asp-controller="Episodes" asp-action="GetBookEpisode" asp-route-id="@episode.Id">@episode.Heading</a>
+							}
+						</div>
+					}
+					else
+					{
+						<h6 class="modal-title">Прикрепленных эпизодов не найдено</h6>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+@*Подтверждение удаления*@
+<div class="modal fade" id="deleteAcceptance" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content body-frame">
+			<div class="modal-body">
+				<div class="d-flex justify-content-between">
+					<h5 class="modal-title" id="exampleModalLabel">Подтверждение удаления</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<p id="descriptionText"></p>
+			</div>
+			<div class="modal-footer">
+				<a class="btn btn-danger" asp-controller="Characters" asp-action="Delete" asp-route-id="@Model.Id">Удалить</a>
+				<button type="button" data-bs-dismiss="modal" class="btn btn-success">Отмена</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section Scripts{
+	<script src="~/js/textConstructor.js"></script>
+	<script type="module" src="~/js/Characters/modal.js"></script>
+ }

@@ -1,0 +1,41 @@
+﻿@model List<PlotCreator.Domain.ViewModels.IdeaViewModel>
+
+@{
+    ViewBag.Title = "Мои идеи";
+    Layout = "_Layout";
+}
+
+<div class="d-flex align-items-center">
+	<a class="btn btn-success fs-5" aria-current="page" asp-controller="Books" asp-action="MyBook" asp-route-Id="@ViewData["bookId"]"
+	   asp-route-userId="@User.FindFirst("userId").Value">&#8592;</a>
+	   
+	<h1 style="margin-left:10px;">Идеи книги «@ViewData["bookTitle"]»</h1>
+</div>
+<div style="padding: 10px;"></div>
+<div class="dropdown">
+	<button class="btn btn-success dropdown-toggle " type="button" data-bs-toggle="dropdown">
+		Добавить идею
+	</button>
+	<ul class="dropdown-menu">
+		<li><a class="dropdown-item" asp-controller="Ideas" asp-action="Save" asp-route-id="0" asp-route-bookId="@ViewData["bookId"]" asp-route-userId="@User.FindFirst("userId")!.Value">Создать новую</a></li>
+		<li><a class="dropdown-item" asp-controller="Ideas" asp-action="AddIdeasToBook" asp-route-userId="@User.FindFirst("userId")!.Value" asp-route-bookId=@ViewData["bookId"]>Добавить Существующую</a></li>
+	</ul>
+	@if (Model.Any())
+	{
+		<a class="btn btn-danger" asp-controller="Ideas" asp-action="DeleteIdeasFromBook" asp-route-bookId="@ViewData["bookId"]" asp-route-userId="@User.FindFirst("userId")!.Value">Удалить идею</a>
+	}
+</div>
+<hr class="dropdown-divider w-100 mb-3">
+<div class="d-flex flex-column">
+	@if (!Model.Any())
+	{
+		<h2 class="text-info">Идей не найдено!</h2>
+	}
+	@foreach (var idea in Model)
+	{
+		<a class="SceneContainer" asp-controller="Ideas" asp-action="MyIdea" asp-route-id="@idea.Id" asp-route-bookId="@ViewData["bookId"]">
+			<div class="listPointer"></div>
+            <h4>@idea.Topic</h4>
+        </a>
+	}
+</div>

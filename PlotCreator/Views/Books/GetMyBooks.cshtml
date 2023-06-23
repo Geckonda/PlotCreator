@@ -1,0 +1,56 @@
+﻿@model List<PlotCreator.Domain.ViewModels.BookViewModel>
+
+@{
+	ViewData["title"] = "Мои книги";
+}
+
+
+<h1>Мои книги</h1>
+<div style="padding: 10px;"></div>
+<div style="width: 100%;padding:2px 4px; border-radius: 4px;">
+	<div class="w-100 d-flex justify-content-between align-items-start flex-wrap">
+		<div>
+			<a class="btn btn-success mb-3" asp-area="" asp-action="Save" asp-route-id="0" asp-route-userId="@User.FindFirst("userId")!.Value">Добавить книгу</a>
+		</div>
+		<div class="input-group serch-container">
+			<input type="text" class="form-control" id="search-bar" placeholder="Название книги">
+			<button class="btn btn-success" type="button" id="search-btn">Поиск</button>
+			<button class="btn btn-danger" type="button" id="reset-btn">Сброс</button>
+		</div>
+	</div>
+</div>
+<hr class="dropdown-divider w-100 mb-3">
+<div class="container d-flex justify-content-around flex-wrap">
+	@if (!Model.Any())
+	{
+		<h2 class="text-info">Книг не найдено!</h2>
+	}
+	@foreach (var book in Model)
+	{
+		<a class="m-3" asp-controller="Books" asp-action="MyBook" asp-route-id="@book.Id">
+			<div class="card position-relative" style="width: 14rem;background-color:transparent;">
+				@if (book.Book_cover == null)
+				{
+					<img src="/images/default/default.png" class="card-img-top book-cover" alt="...">
+				}
+				else
+				{
+					<img src="@book.Book_cover" class="card-img-top book-cover" alt="...">
+				}
+				<div class="m-2 p-2 border border-dark rounded position-absolute top-0 start-0 fs-6 fw-bolder body-frame">@book.Rating!.Name</div>
+				<div class="position-absolute bottom-0 start-50 translate-middle-x d-flex flex-column align-items-center " style="width:80%;">
+					<h5 class="card-title p-1  book-name" style="color:var(--extra-light);padding-top:5px; text-align:center;">@book.Title</h5>
+					<p class="card-text col-10 text-truncate" style="color:var(--extra-light); text-align:center;">@book.Genre?.Name</p>
+					<div class="w-100 h-100  position-absolute rounded-3 body-frame-invert" style=" z-index:-1;"></div>
+				</div>
+			</div>
+		</a>
+	}
+	<h5 class="card-title p-1 hide" id="noBooks" >Книг не найдено</h5>
+</div>
+
+
+@section Scripts{
+
+	<script type="module" src="~/js/Books/book.js"></script>
+}

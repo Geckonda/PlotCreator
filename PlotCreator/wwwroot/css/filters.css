@@ -1,0 +1,34 @@
+﻿:root {
+    --extra-dark: #3A1800;
+    --middle-dark:#3D1E07;
+    --main-dark: #aa734c;
+    --main-light: #F7AB76;
+    --extra-light: #F7E3D4;
+}
+.filter_Field_Container{
+    padding: 5px;
+    margin: 10px 0;
+    border: 1px solid var(--main-dark);
+    border-radius: 5px;
+}
+.filter_Field_Container label{
+    margin: 0 10px;
+}
+.filter_Field_Container input{
+    text-align: center;
+}
+.filter-number{
+    height: 2rem;
+    width: 1rem;
+}
+.filter-date{
+    
+    border-radius: 5px;
+    height: 2rem;
+    width: 10rem;
+}
+.close-filter-button{
+    background-color: transparent;
+    color: var(--main-dark);
+    font-size: large;
+}
