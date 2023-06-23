@@ -4,6 +4,9 @@
     var textTitle = Model?.Id == 0 ? "Добавление персонажа" : "Редактирование персонажа";
     ViewBag.Title = textTitle;
     Layout = "_Layout";
+
+    var defaultDateRu = "01.01.0001";
+    var defaultDateEng = "1/1/0001";
 }
 
 <div style="padding: 10px;"></div>
@@ -25,14 +28,42 @@
                         <span asp-validation-for="@Model!.Name" class="text-danger"></span>
                     </div>
 
-                    <div class="form-group mb-3">
+                    @if (Model.Birthday.ToString("d") == defaultDateRu || Model.Birthday.ToString("d") == defaultDateEng)
+                    {
+                        <div class="mb-3">
+                            <label for="birthday_box">Добавить дату рождения</label>
+                            <input class="form-check-input" type="checkbox" id="birthday_box" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="mb-3">
+                            <label for="birthday_box">Добавить дату рождения</label>
+                            <input class="form-check-input" type="checkbox" id="birthday_box" checked />
+                        </div>
+                    }
+                    <div class="form-group mb-3  hide" id="birthday_block">
                         <label asp-for="Birthday">Дата рождения</label>
-                        <input asp-for="Birthday" class="form-control" type="date" value="@Model!.Birthday.ToString("yyyy-MM-dd")" required>
+                        <input asp-for="Birthday" class="form-control" id="birthday_input" type="date" value="@Model!.Birthday.ToString("yyyy-MM-dd")">
                         <span asp-validation-for="@Model.Birthday" class="text-danger"></span>
                     </div>
-                    <div class="form-group mb-3">
+                    @if (Model.Deathday.ToString("d") == defaultDateRu || Model.Deathday.ToString("d") == defaultDateEng)
+                    {
+                        <div class="mb-3">
+                            <label for="deathday_box">Добавить дату смерти</label>
+                            <input class="form-check-input" type="checkbox" id="deathday_box" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="mb-3">
+                            <label for="deathday_box">Добавить дату смерти</label>
+                            <input class="form-check-input" type="checkbox" id="deathday_box" checked />
+                        </div>
+                    }
+                    <div class="form-group mb-3 hide" id="deathday_block">
                         <label asp-for="Deathday">Дата смерти</label>
-                        <input asp-for="Deathday" class="form-control" type="date" value="@Model?.Deathday.ToString("yyyy-MM-dd")">
+                        <input asp-for="Deathday" class="form-control" type="date" id="deathday_input" value="@Model?.Deathday.ToString("yyyy-MM-dd")">
                         <span asp-validation-for="@Model!.Deathday" class="text-danger"></span>
                     </div>
                     
@@ -130,55 +161,6 @@
                         </select>
                     </div>
 
-                    @*@if (Model.Groups.Any())
-                    {
-                        <div class="form-group mb-3">
-                            <label>Принадлежность персонажа к группам: </label>
-                           @* 
-                            @if (Model.Groups.Count == 0)
-                            {
-                                <div class="alert alert-warning d-flex align-items-center" role="alert">
-                                    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Warning:"><use xlink:href="#exclamation-triangle-fill" /></svg>
-                                    <div>
-                                        Доступно только при прикреплении персонажа к книге
-                                    </div>
-                                </div>
-                                @*<label class="text-danger">Доступно только при прикреплении персонажа к книге</label>
-                            }
-                            <div class="container d-flex jus flex-wrap">
-                                @foreach (var group in Model!.Groups!)
-                                {
-                                    <div class="form-check m-3">
-                                        @if (Model.OwnGroups != null)
-                                        {
-                                            @if (Model.OwnGroups.Select(x => x.GroupId).Contains(group.Id))
-                                            {
-                                                <input class="form-check-input" type="checkbox" value="@group.Id" checked name="checkedGroups" id="@group.Id Group">
-                                                <label class="form-check-label" for="@group.Id Group">
-                                                    @group.Name
-                                                </label>
-                                            }
-                                            else
-                                            {
-                                                <input class="form-check-input" type="checkbox" value="@group.Id" name="checkedGroups" id="@group.Id Group">
-                                                <label class="form-check-label" for="@group.Id Group">
-                                                    @group.Name
-                                                </label>
-                                            }
-                                        }
-                                        else
-                                        {
-                                            <input class="form-check-input" type="checkbox" value="@group.Id" name="checkedGroups" id="@group.Id Group">
-                                            <label class="form-check-label" for="@group.Id Group">
-                                                    @group.Name
-                                                </label>
-                                        }
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    }*@
-
                     <div class="form-group mb-3">
                         <label asp-for="@Model.Picture" class="col-form-label">Портрет персонажа</label>
                         <div class="col-sm-15">
@@ -193,4 +175,9 @@
         </div>
     </div>
 </div>
+
+@section Scripts{
+
+    <script src="~/js/Characters/date.js"></script>
+}
 

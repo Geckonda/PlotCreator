@@ -92,13 +92,15 @@ namespace PlotCreator.Service.Implementations
 		}
 		private IQueryable<Event> FilterEvents(IQueryable<Event> events, EventFilter eventFilter)
 		{
-			if(eventFilter!.Date!.From.ToString("d") != "01.01.0001")
+			if((eventFilter!.Date!.From.ToString("d") != "1/1/0001") &&
+                (eventFilter!.Date!.From.ToString("d") != "01.01.0001"))
 			{
 				events = events.Where(x => x.Beginning >= eventFilter!.Date!.From);
 			}
-			if (eventFilter!.Date!.To.ToString("d") != "01.01.0001")
+			if ((eventFilter!.Date!.To.ToString("d") != "1/1/0001") &&
+                (eventFilter!.Date!.To.ToString("d") != "01.01.0001"))
 			{
-				events = events.Where(x => x.Ending >= eventFilter!.Date!.To);
+				events = events.Where(x => x.Ending <= eventFilter!.Date!.To);
 			}
 			if (eventFilter.CheckhovsGun)
 			{
@@ -125,11 +127,14 @@ namespace PlotCreator.Service.Implementations
 		}
 		private IQueryable<Character> FilterCharacters(IQueryable<Character> characters, CharacterFilter characterFilter)
 		{
-			if(characterFilter!.Date!.From.ToString("d") != "01.01.0001")
+			var x = characterFilter!.Date!.From.ToString("d");
+            if ((characterFilter!.Date!.From.ToString("d") != "1/1/0001") &&
+                (characterFilter!.Date!.From.ToString("d") != "01.01.0001"))
 			{
 				characters = characters.Where(x => x.Birthday >= characterFilter!.Date!.From);
 			}
-			if (characterFilter!.Date!.To.ToString("d") != "01.01.0001")
+			if ((characterFilter!.Date!.To.ToString("d") != "1/1/0001") &&
+                (characterFilter!.Date!.To.ToString("d") != "01.01.0001"))
 			{
 				characters = characters.Where(x => x.Birthday <= characterFilter!.Date.To);
 			}

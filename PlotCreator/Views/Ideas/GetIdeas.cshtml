@@ -13,7 +13,8 @@
 	
 		</div>
 		<div class="input-group serch-container">
-			<input type="text" class="form-control" id="search-bar" placeholder="Название события">
+			<button class="btn btn-success" type="button" id="reverse" style="margin-right:10px;">&#8595;</button>
+			<input type="text" class="form-control" id="search-bar" placeholder="Название идеи">
 			<button class="btn btn-success" type="button" id="search-btn">Поиск</button>
 			<button class="btn btn-danger" type="button" id="reset-btn">Сброс</button>
 		</div>
@@ -21,7 +22,7 @@
 </div>
 
 <hr class="dropdown-divider w-100 mb-3">
-<div class="cont-cont">
+<div class="cont-cont" id="block_container">
 	@if (!Model.Any())
 	{
 		<h2 class="text-info">Идей не найдено!</h2>

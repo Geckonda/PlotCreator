@@ -21,7 +21,7 @@
     </div>
     <div>
         <a class="btn btn-success" asp-controller="Ideas" asp-action="Save" asp-route-id="@Model.Id" asp-route-userId="@Model.User!.Id">Изменить</a>
-        <a class="btn btn-danger" asp-controller="Ideas" asp-action="Delete" asp-route-id="@Model.Id" asp-route-bookId="@ViewData["bookId"]" style="margin-left:10px;">Удалить</a>
+        <a class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAcceptance" style="margin-left:10px;">Удалить</a>
     </div>
        </div>
 <div style="padding: 10px;"></div>
@@ -35,6 +35,26 @@
     <p id="response-text-block" class="d-none">@Model.Content</p>
     <div id="main-text-block"></div>
  </div>
+
+@*Подтверждение удаления*@
+<div class="modal fade" id="deleteAcceptance" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content body-frame">
+            <div class="modal-body">
+                <div class="d-flex justify-content-between">
+                    <h5 class="modal-title" id="exampleModalLabel">Подтверждение удаления</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <p id="descriptionText"></p>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-danger" asp-controller="Ideas" asp-action="Delete" asp-route-id="@Model.Id" asp-route-bookId="@ViewData["bookId"]" style="margin-left:10px;">Удалить</a>
+                <button type="button" data-bs-dismiss="modal" class="btn btn-success">Отмена</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts{
         <script src="~/js/textConstructor.js"></script>
  }

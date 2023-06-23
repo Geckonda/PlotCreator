@@ -59,7 +59,7 @@
                                 <a class="btn btn-success" asp-controller="Books" asp-action="Save" asp-route-id="@Model.Id" asp-route-userId=@Model.User!.Id>Редактировать</a>
                             </li>
                             <li>
-                                <a class="btn btn-danger w-100" asp-controller="Books" asp-action="Delete" asp-route-id="@Model.Id">Удалить</a>
+                                <a class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#deleteAcceptance">Удалить</a>
                             </li>
                         </ul>
                     </div>
@@ -75,6 +75,26 @@
                     @Model.Description
                 </strong>
             </p>
+        </div>
+    </div>
+</div>
+
+
+@*Подтверждение удаления*@
+<div class="modal fade" id="deleteAcceptance" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content body-frame">
+            <div class="modal-body">
+                <div class="d-flex justify-content-between">
+                    <h5 class="modal-title" id="exampleModalLabel">Подтверждение удаления</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <p id="descriptionText"></p>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-danger" asp-controller="Books" asp-action="Delete" asp-route-id="@Model.Id">Удалить</a>
+                <button type="button" data-bs-dismiss="modal" class="btn btn-success">Отмена</button>
+            </div>
         </div>
     </div>
 </div>

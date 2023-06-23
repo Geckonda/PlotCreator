@@ -2,10 +2,10 @@ const searchBar = document.getElementById('search-bar');
 const searchBtn = document.getElementById('search-btn');
 const resetBtn = document.getElementById('reset-btn');
 
-const Idea = document.querySelectorAll('.idea-name');
-const IdeaCards = document.querySelectorAll('.ideaContainer');
+const Idea = document.querySelectorAll('.episode-name');
+const IdeaCards = document.querySelectorAll('.episodeContainer');
 
-const noIdea = document.getElementById("noIdea");
+const noIdea = document.getElementById("noEpisode");
 
 
 searchBtn.addEventListener('click', () => {
@@ -14,14 +14,14 @@ searchBtn.addEventListener('click', () => {
         elem.parentElement.classList.remove('hide');
         let textContent = GetLowerString(elem.innerHTML);
         let request = GetLowerString(searchBar.value);
-        if(!textContent.includes(request)){
+        if (!textContent.includes(request)) {
             elem.parentElement.classList.add('hide');
         }
-        else{
+        else {
             oneIsVisible = false;
         }
     })
-    if(oneIsVisible){
+    if (oneIsVisible) {
         noIdea.classList.remove('hide')
     }
 });
@@ -33,7 +33,7 @@ resetBtn.addEventListener('click', () => {
     noIdea.classList.add('hide')
 })
 
-function GetLowerString(str){
+function GetLowerString(str) {
     return str.toLowerCase();
 }
 

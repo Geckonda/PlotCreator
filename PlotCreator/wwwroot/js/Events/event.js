@@ -36,3 +36,24 @@ resetBtn.addEventListener('click', () => {
 function GetLowerString(str){
     return str.toLowerCase();
 }
+
+
+const reverse = document.getElementById('reverse');
+var reverseTrue = true;
+const parent = document.getElementById('block_container')
+reverse.addEventListener("click", () => {
+    reverseTrue = !reverseTrue;
+    if (reverseTrue) {
+        reverse.innerHTML = "&#8595;"
+    }
+    else {
+        reverse.innerHTML = "&#8593;"
+    }
+    reverseChildren(parent);
+})
+
+function reverseChildren(parent) {
+    for (var i = 1; i < parent.childNodes.length; i++) {
+        parent.insertBefore(parent.childNodes[i], parent.firstChild);
+    }
+}

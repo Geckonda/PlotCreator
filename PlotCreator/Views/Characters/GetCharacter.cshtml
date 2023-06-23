@@ -11,6 +11,9 @@
 	{
 		groupsForDelete = Model.Groups!.Where(x => x.BookId.ToString()! == ViewData["bookId"]!.ToString()).ToList();
 	}
+
+	var defaultDateRu = "01.01.0001";
+	var defaultDateEng = "1/1/0001";
 }
 @section Styles{
 	<link rel="stylesheet" href="~/css/text.css" asp-append-version="true" />
@@ -57,20 +60,29 @@
                 <li>
 					<a class="btn btn-success" asp-controller="Characters" asp-action="Save" asp-route-id=@Model.Id asp-route-bookId="@ViewData["bookId"]" asp-route-userId="@User.FindFirst("userId").Value">Редактировать</a>
                 </li>
-                <li>
-					<a class="w-100 btn btn-danger" asp-controller="Characters" asp-action="Delete" asp-route-id="@Model.Id">Удалить</a>
+				<li>
+					<a class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#deleteAcceptance">Удалить</a>
                 </li>
               </ul>
         </div>
 			
 			</div>
-			@if (Model.Birthday.ToString("g") == "01.01.0001 0:00")
+			@if (Model.Birthday.ToString("d") == defaultDateRu || Model.Birthday.ToString("d") == defaultDateEng)
 			{
 				<p class="card-text">Дата рождения: <strong class="text-extra-dark">Неизвестно</strong></p>
 			}
 			else
 			{
 				<p class="card-text">Дата рождения: <strong class="text-extra-dark">@Model.Birthday.ToString("D")</strong></p>
+			}
+
+			@if (Model.Deathday.ToString("d") == defaultDateRu || Model.Deathday.ToString("d") == defaultDateEng)
+			{
+				<p class="card-text">Персонаж <strong class="text-extra-dark">ЖИВОЙ</strong></p>
+			}
+			else
+			{
+				<p class="card-text">Персонаж <strong class="text-extra-dark">МЕРТВ</strong>. Дата смерти: <strong class="text-extra-dark">@Model.Deathday.ToString("D")</strong></p>
 			}
 			<p class="card-text">Пол: <strong class="text-extra-dark">@Model.Gender</strong></p>
 			
@@ -141,29 +153,17 @@
 			</p>
 			@*События персонажа*@
 				<p>
-					События: @Model.Events!.Count
-				@*@if (ViewData["bookId"] != null)
-				{
-					<a class="btn btn-success smbtn" >
-						&#10010;
-					</a>
-					<a class="btn btn-danger smbtn" >
-						&#10006;
-					</a>
-				}*@
+				<a class="text-extra-dark" data-bs-toggle="modal" data-bs-target="#eventDescription" role="button" aria-expanded="false">
+					События
+				</a>
+					 : @Model.Events!.Count
 				</p>
 			@*Эпизоды персонажа*@
 				<p>
-					Эпизоды: @Model.Episodes!.Count
-				@*@if (ViewData["bookId"] != null)
-				{
-					<a class="btn btn-success smbtn" >
-						&#10010;
-					</a>
-					<a class="btn btn-danger smbtn" >
-						&#10006;
-					</a>
-				}*@
+				<a class="text-extra-dark" data-bs-toggle="modal" data-bs-target="#episodeDescription" role="button" aria-expanded="false">
+					Эпизоды
+				</a>
+					 : @Model.Episodes!.Count
 				</p>
 		</div>
 	</div>
@@ -412,6 +412,100 @@
 	</div>
 </div>
 
+
+@*Модальное окно событий*@
+<div class="modal fade" id="eventDescription" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content body-frame">
+			<div class="modal-body">
+				<div class="d-flex justify-content-between">
+					<h5 class="modal-title" id="nameGroupText">Описание событий персонажа</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="pt-3">
+
+					@if (Model?.Events.Count > 0)
+					{
+						<div class="d-flex justify-content-between align-items-center flex-wrap">
+							<div class="input-group serch-container w-100 mb-2">
+								<input type="text" class="form-control search-bar-dim" placeholder="Название события">
+								<button class="btn btn-success search-btn-dim" type="button">Поиск</button>
+								<button class="btn btn-danger reset-btn-dim" type="button">Сброс</button>
+							</div>
+						</div>
+						<div class="mb-3 d-flex flex-column tab-list">
+							@foreach (var Event in Model?.Events!)
+							{
+								<a class="btn body-frame-invert group-btn " asp-controller="Events" asp-action="GetBookEvent" asp-route-id="@Event.Id">@Event.Title</a>
+							}
+						</div>
+					}
+					else
+					{
+						<h6 class="modal-title">Прикрепленных событий не найдено</h6>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@*Модальное окно эпизодов*@
+<div class="modal fade" id="episodeDescription" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content body-frame">
+			<div class="modal-body">
+				<div class="d-flex justify-content-between">
+					<h5 class="modal-title" id="nameGroupText">Описание эпизодов персонажа</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="pt-3">
+
+					@if (Model?.Episodes.Count > 0)
+					{
+						<div class="d-flex justify-content-between align-items-center flex-wrap">
+							<div class="input-group serch-container w-100 mb-2">
+								<input type="text" class="form-control search-bar-dim" placeholder="Название эпизода">
+								<button class="btn btn-success search-btn-dim" type="button">Поиск</button>
+								<button class="btn btn-danger reset-btn-dim" type="button">Сброс</button>
+							</div>
+						</div>
+						<div class="mb-3 d-flex flex-column tab-list">
+							@foreach (var episode in Model?.Episodes!)
+							{
+								<a class="btn body-frame-invert group-btn " asp-controller="Episodes" asp-action="GetBookEpisode" asp-route-id="@episode.Id">@episode.Heading</a>
+							}
+						</div>
+					}
+					else
+					{
+						<h6 class="modal-title">Прикрепленных эпизодов не найдено</h6>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+@*Подтверждение удаления*@
+<div class="modal fade" id="deleteAcceptance" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content body-frame">
+			<div class="modal-body">
+				<div class="d-flex justify-content-between">
+					<h5 class="modal-title" id="exampleModalLabel">Подтверждение удаления</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<p id="descriptionText"></p>
+			</div>
+			<div class="modal-footer">
+				<a class="btn btn-danger" asp-controller="Characters" asp-action="Delete" asp-route-id="@Model.Id">Удалить</a>
+				<button type="button" data-bs-dismiss="modal" class="btn btn-success">Отмена</button>
+			</div>
+		</div>
+	</div>
+</div>
 
 @section Scripts{
 	<script src="~/js/textConstructor.js"></script>

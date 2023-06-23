@@ -42,6 +42,7 @@
 			</a>
 		</div>
 		<div class="input-group serch-container">
+			<button class="btn btn-success" type="button" id="reverse" style="margin-right:10px;">&#8595;</button>
 			<input type="text" class="form-control" id="search-bar" placeholder="Название события">
 			<button class="btn btn-success" type="button" id="search-btn">Поиск</button>
 			<button class="btn btn-danger" type="button" id="reset-btn">Сброс</button>
@@ -54,7 +55,7 @@
 {
     <h2 class="text-info">Событий не найдено!</h2>
 }
-<div class="cont-cont">
+<div class="cont-cont" id="block_container">
     @foreach (var Event in Model.OrderBy(x => x.Beginning))
     {
         <a class="SceneContainer eventContainer" asp-controller="Events" asp-action="GetBookEvent" asp-route-id="@Event.Id">
@@ -92,14 +93,14 @@
 				<p>Чеховское ружье</p>
 				<div class="d-flex justify-content-between">
 					<div>
-						<input class="form-check-input" type="radio" value="true" asp-for="@eventFilter.CheckhovsGun" id="Мужской">
-						<label class="form-check-label" for="Мужской">
+						<input class="form-check-input" type="radio" value="true" asp-for="@eventFilter.CheckhovsGun" id="CheckhovsGunYes">
+						<label class="form-check-label" for="CheckhovsGunYes">
 							Да
 						</label>
 					</div>
 					<div>
-						<input class="form-check-input" type="radio" value="false" asp-for="@eventFilter.CheckhovsGun" id="Женский" checked>
-						<label class="form-check-label" for="Женский">
+						<input class="form-check-input" type="radio" value="false" asp-for="@eventFilter.CheckhovsGun" id="CheckhovsGunNo" checked>
+						<label class="form-check-label" for="CheckhovsGunNo">
 							Нет
 						</label>
 					</div>
@@ -109,14 +110,14 @@
 				<p>Событие для автора</p>
 				<div class="d-flex justify-content-between">
 					<div>
-						<input class="form-check-input" type="radio" value="true" asp-for="@eventFilter.IsHidden" id="Мужской">
-						<label class="form-check-label" for="Мужской">
+						<input class="form-check-input" type="radio" value="true" asp-for="@eventFilter.IsHidden" id="IsHiddenYes">
+						<label class="form-check-label" for="IsHiddenYes">
 							Да
 						</label>
 					</div>
 					<div>
-						<input class="form-check-input" type="radio" value="false" asp-for="@eventFilter.IsHidden" id="Женский" checked>
-						<label class="form-check-label" for="Женский">
+						<input class="form-check-input" type="radio" value="false" asp-for="@eventFilter.IsHidden" id="IsHiddenNo" checked>
+						<label class="form-check-label" for="IsHiddenNo">
 							Нет
 						</label>
 					</div>

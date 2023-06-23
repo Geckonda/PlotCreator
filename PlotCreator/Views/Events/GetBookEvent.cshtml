@@ -8,6 +8,7 @@
     //Персонажи События
     var activeCharactersid = Model!.Characters!.Select(x => x.Id);
     var charactersForAdd = Model!.CharacterList!.Where(x => !activeCharactersid.Contains(x.Id));
+    charactersForAdd = charactersForAdd.Where(x => x.Deathday.AddDays(1) > Model.Beginning || (x.Deathday.ToString("d") == "1/1/0001") || (x.Deathday.ToString("d") == "01.01.0001")).Where(x => x.Birthday < Model.Ending);
 
     var charactersForDelete = Model.Characters!;
     //-----------------
@@ -50,7 +51,7 @@
                         <a class="btn btn-success w-100" asp-controller="Events" asp-action="Save" asp-route-id="@Model.Id" asp-route-bookId="@Model.Book!.Id">Изменить</a>
                     </li>
                     <li>
-                        <a class="btn btn-danger w-100" asp-controller="Events" asp-action="Delete" asp-route-id="@Model.Id">Удалить</a>
+                        <a class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#deleteAcceptance">Удалить</a>
                     </li>
                 </ul>
             </div>
@@ -528,6 +529,26 @@
                         <h6 class="modal-title">Групп не найдено</h6>
                     }
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@*Подтверждение удаления*@
+<div class="modal fade" id="deleteAcceptance" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content body-frame">
+            <div class="modal-body">
+                <div class="d-flex justify-content-between">
+                    <h5 class="modal-title" id="exampleModalLabel">Подтверждение удаления</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <p id="descriptionText"></p>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-danger" asp-controller="Events" asp-action="Delete" asp-route-id="@Model.Id">Удалить</a>
+                <button type="button" data-bs-dismiss="modal" class="btn btn-success">Отмена</button>
             </div>
         </div>
     </div>
