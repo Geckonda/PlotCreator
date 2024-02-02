@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - PlotCreator</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    @*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />*@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
     <link rel="icon" href="~/images/default/icon/bookIcon.svg" type="image/svg" />
@@ -15,67 +15,75 @@
     <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&display=swap" rel="stylesheet">
     @RenderSection("Styles", false)
 </head>
-<body>
-    <div class="wrapper">
-        <header>
-            <nav class="navbar navbar-expand-lg navbar-dark">
-                <div class="container-fluid">
+<body class="page">
+    <div class="page__background"></div>
+    <div class="page__wrapper">
+        <header class="header page__header">
+            <div class="header__row container">
+                <!-- <img src="" alt="" class="logo"> -->
+                <a class="logo" asp-area="" asp-controller="Home" asp-action="Index">PlotCreator</a>
+                <nav class="menu header__menu">
+                    <ul class="menu__list">
+                        @if (User.Identity!.IsAuthenticated)
+                        {
+                            <li>
+                                <a  class="menu__link" aria-current="page" asp-controller="Ideas" asp-action="MyIdeas"
+                                asp-route-userId="@User.FindFirst("userId")!.Value">Мои идеи</a>
+                            </li>
+                            <li>
+                                <a  class="menu__link" aria-current="page" asp-controller="Books" asp-action="MyBooks"
+                                asp-route-userId="@User.FindFirst("userId")!.Value">Мои книги</a>
+                            </li>
+                            <li>
+                                <a  class="menu__link" aria-current="page" asp-controller="Characters" asp-action="GetAllCharacters"
+                                asp-route-userId="@User.FindFirst("userId")!.Value">Мои персонажи</a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+                <div class="header__profile">
+                    <ul class="menu__list">
+                        @if (!User.Identity.IsAuthenticated)
+                        {
+                            <li>
+                                <a class="menu__link" asp-controller="Account" asp-action="Login">Войти</a>
+                            </li>
+                             <li>
+                                <a class="menu__link" asp-controller="Account" asp-action="Register">Регистрация</a>
+                            </li>
+                        }
 
-                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">PlotCreator</a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                            @if (User.Identity!.IsAuthenticated)
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link active" aria-current="page" asp-controller="Ideas" asp-action="MyIdeas"
-                                       asp-route-userId="@User.FindFirst("userId")!.Value">Мои идеи</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link active" aria-current="page" asp-controller="Books" asp-action="MyBooks"
-                                       asp-route-userId="@User.FindFirst("userId")!.Value">Мои книги</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link active" aria-current="page" asp-controller="Characters" asp-action="GetAllCharacters"
-                                       asp-route-userId="@User.FindFirst("userId")!.Value">Мои персонажи</a>
-                                </li>
-                            }
-                        </ul>
-                        <div class="d-flex">
-                            @if (!User.Identity.IsAuthenticated)
-                            {
-                                <a class="nav-link active" asp-controller="Account" asp-action="Login">Авторизация</a>
-                                <a class="nav-link active" asp-controller="Account" asp-action="Register">Регистрация</a>
-                            }
+                        @*<li><hr class="dropdown-divider"></li>*@
 
-                            @*<li><hr class="dropdown-divider"></li>*@
-
-                            @if (User.Identity.IsAuthenticated)
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                           @* @if (User.IsInRole("Admin"))
                             {
-                                @if (User.IsInRole("Admin"))
-                                {
-                                    <a class="nav-link active" href="#">Админ панель</a>
-                                }
-                                <a class="nav-link active">@User.FindFirst("login")!.Value</a>
+                                <a class="nav-link active" href="#">Админ панель</a>
+                            }*@
+                            <li>
+                                <a href="#" class="menu__link" active">@User.FindFirst("login")!.Value</a>
+                            </li>
+                            <li>
                                 <form method="post" asp-controller="Account" asp-action="Logout">
-                                    <input class="nav-link active" type="submit" value="Выход" />
+                                    <label for="logout" class="menu__link">Выход</label>
+                                    <input type="submit" value="Выход" id="logout" style="visibility:hidden;" />
                                 </form>
-                            }
-                        </div>
-                    </div>
+                            </li>
+                        }
+                    </ul>
                 </div>
-            </nav>
+            </div>
         </header>
-        <main role="main" class="pb-3 position-relative">
+        
+        <main role="main" class="main page__main">
             @RenderBody()
         </main>
 
-        <footer class="border-top footer text-muted">
-            <div class="d-flex flex-column align-items-center">
+        <footer class="footer page__footer">
+            @*<div class="d-flex flex-column align-items-center">
                 &copy; 2023 - PlotCreator
-            </div>
+            </div>*@
         </footer>
     </div>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
