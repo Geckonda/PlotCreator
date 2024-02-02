@@ -19,16 +19,16 @@ namespace PlotCreator.Domain.Entity
         public Role? Role { get; set; }
 
         [Required]
-        public string Nickname { get; set; } = string.Empty;
+        public string? Nickname { get; set; }
 
         [Required]
-        public string Login { get; set; } = string.Empty;
+        public string? Login { get; set; }
 
         [Required]
-        public string Email {  get; set; } = string.Empty;
+        public string? Email {  get; set; }
 
         [Required]
-        public string Password { get; set; } = string.Empty;
-        public string Avatar { get; set; } = string.Empty;
+        public string? Password { get; set; }
+        public string? Avatar { get; set; }
     }
 }
