@@ -1,8 +1,27 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;
+using PlotCreator;
+using PlotCreator.DAL;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+var connection = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<ApplicationDBContext>(options => 
+    options.UseSqlServer(connection));
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Account/login");
+        options.AccessDeniedPath = new Microsoft.AspNetCore.Http.PathString("/Account/login");
+    });
+
+
+builder.Services.InitialiseRepositories();
+builder.Services.InitialiseServices();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -18,6 +37,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
