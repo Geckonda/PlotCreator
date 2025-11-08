@@ -20,7 +20,6 @@ namespace PlotCreator.Domain.Entity
 		[Required]
 		public string? Title { get; set; }
 
-        [Column(TypeName = "NText")]
         public string? Description { get; set; }
         public DateTime Beginning { get; set; }
         public DateTime Ending { get; set; }

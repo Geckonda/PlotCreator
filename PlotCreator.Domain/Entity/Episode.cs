@@ -21,7 +21,6 @@ namespace PlotCreator.Domain.Entity
 		public string? Heading { get; set; }
 		public int Position { get; set; }
 
-		[Column(TypeName = "NText")]
         public string? Content { get; set; }
 
         //Навигационные свойства для зависимых таблиц 

@@ -35,7 +35,6 @@ namespace PlotCreator.Domain.Entity
 
 
 
-        [Column(TypeName = "NText")]
         public string? Description { get; set; }
 
         public string? Book_cover { get; set; }
@@ -48,10 +47,10 @@ namespace PlotCreator.Domain.Entity
 		public List<Group>? Groups { get; set; } = new();
 
 
-		[DeleteBehavior(DeleteBehavior.NoAction)]
+		//[DeleteBehavior(DeleteBehavior.NoAction)]
         public List<Book_Idea> Books_Ideas { get; set; } = new();
 
-        [DeleteBehavior(DeleteBehavior.NoAction)]
+        //[DeleteBehavior(DeleteBehavior.NoAction)]
         public List<Book_Character> Books_Characters { get; set; } = new();
     }
 }

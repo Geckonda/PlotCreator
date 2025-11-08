@@ -70,6 +70,54 @@ namespace PlotCreator.DAL
 			//----------------
 			//Группы
 			modelBuilder.Entity<Group>().Navigation(group => group.Book).AutoInclude();
-		}
+
+
+            modelBuilder.Entity<Access_Modificator>().HasData(
+              new Access_Modificator { Id = 1, Name = "Публично" },
+              new Access_Modificator { Id = 2, Name = "Приватно" }
+            );
+
+
+            modelBuilder.Entity<Book_Status>().HasData(
+              new Book_Status { Id = 1, Name = "В процессе" },
+              new Book_Status { Id = 2, Name = "Завершен" },
+              new Book_Status { Id = 3, Name = "Заморожен" },
+              new Book_Status { Id = 4, Name = "Заброшен" }
+            );
+
+
+            modelBuilder.Entity<Genre>().HasData(
+              new Genre { Id = 1, Name = "Мистика" },
+              new Genre { Id = 2, Name = "Драма" },
+              new Genre  { Id = 3, Name = "Приключения" },
+              new Genre { Id = 4, Name = "Ужасы" },
+              new Genre { Id = 5, Name = "Романтика" }
+            );
+
+            modelBuilder.Entity<Rating>().HasData(
+             new Rating { Id = 1, Name = "0+" },
+             new Rating { Id = 2, Name = "6+" },
+             new Rating { Id = 3, Name = "12+" },
+             new Rating { Id = 4, Name = "16+" },
+             new Rating { Id = 5, Name = "18+" }
+           );
+
+            modelBuilder.Entity<Role>().HasData(
+             new Role { Id = 1, Name = "Admin" },
+             new Role { Id = 2, Name = "Moderator" },
+             new Role { Id = 3, Name = "User" }
+           );
+            modelBuilder.Entity<Worldview>().HasData(
+             new Worldview { Id = 1, Name = "Законопослушно-доброе", Description = "персонажи с таким мировоззрением считаются с правилами и совершают поступки, которых от них ожидает общество" },
+             new Worldview { Id = 2, Name = "Нейтрально-доброе", Description = "персонажи с таким мировоззрением совершают хорошие поступки в соответствии со своими потребностями" },
+             new Worldview { Id = 3, Name = "Хаотично-доброе", Description = "персонажи с таким мировоззрением действуют по совести, с небольшой оглядкой на мнение и ожидания других" },
+             new Worldview { Id = 4, Name = "Законопослушно-нейтральное", Description = "персонажи с таким мировоззрением действуют в соответствии с законом, традицией, или своим кодексом" },
+             new Worldview { Id = 5, Name = "Хаотично-нейтральное", Description = "персонажи с таким мировоззрением предпочитают чистоту от моральных вопросов в своих действиях, и не принимают какой бы то ни было стороны, даже если одна из них более выгодна в данное время" },
+             new Worldview { Id = 6, Name = "Нейтральное", Description = "персонажи с таким мировоззрением следуют своим целям или капризам, вознося свою цель/свободу выше всего остального" },
+             new Worldview { Id = 7, Name = "Законопослушно-злое", Description = "персонажи с таким мировоззрением постоянно берут то, что хотят, в рамках традиции, лояльности или порядка" },
+             new Worldview { Id = 8, Name = "Нейтрально-злое", Description = "персонажи с таким мировоззрением делают что угодно и когда угодно, без оглядки на сострадание и сомнение" },
+             new Worldview { Id = 9, Name = "Хаотично-злое", Description = "персонажи с таким мировоззрением совершают неконтролируемое насилие, стимулируемое их жадностью, ненавистью или жаждой крови" }
+           );
+        }
 	}
 }

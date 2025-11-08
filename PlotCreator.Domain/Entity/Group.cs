@@ -19,7 +19,6 @@ namespace PlotCreator.Domain.Entity
 
         public string? Name { get; set; }
 
-		[Column(TypeName = "Ntext")]
 		public string? Description { get; set; }
 		public string? Parent { get; set; }
 

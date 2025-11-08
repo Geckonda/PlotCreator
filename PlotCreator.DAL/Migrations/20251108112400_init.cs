@@ -1,12 +1,15 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
+
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
 namespace PlotCreator.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,10 +18,10 @@ namespace PlotCreator.DAL.Migrations
                 name: "Genres",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -29,10 +32,10 @@ namespace PlotCreator.DAL.Migrations
                 name: "Modificators",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -43,10 +46,10 @@ namespace PlotCreator.DAL.Migrations
                 name: "Ratings",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -57,9 +60,9 @@ namespace PlotCreator.DAL.Migrations
                 name: "Roles",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -70,10 +73,10 @@ namespace PlotCreator.DAL.Migrations
                 name: "Statuses",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -84,10 +87,10 @@ namespace PlotCreator.DAL.Migrations
                 name: "Worldview",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Description = table.Column<string>(type: "NText", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -98,14 +101,14 @@ namespace PlotCreator.DAL.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    roleId = table.Column<int>(type: "int", nullable: false),
-                    Nickname = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Login = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Avatar = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    roleId = table.Column<int>(type: "integer", nullable: false),
+                    Nickname = table.Column<string>(type: "text", nullable: false),
+                    Login = table.Column<string>(type: "text", nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    Password = table.Column<string>(type: "text", nullable: false),
+                    Avatar = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -122,16 +125,16 @@ namespace PlotCreator.DAL.Migrations
                 name: "Books",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    ModificatorId = table.Column<int>(type: "int", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RatingId = table.Column<int>(type: "int", nullable: false),
-                    GenreId = table.Column<int>(type: "int", nullable: false),
-                    StatusId = table.Column<int>(type: "int", nullable: false),
-                    Description = table.Column<string>(type: "NText", nullable: true),
-                    Book_cover = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    ModificatorId = table.Column<int>(type: "integer", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    RatingId = table.Column<int>(type: "integer", nullable: false),
+                    GenreId = table.Column<int>(type: "integer", nullable: false),
+                    StatusId = table.Column<int>(type: "integer", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    Book_cover = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -172,22 +175,23 @@ namespace PlotCreator.DAL.Migrations
                 name: "Characters",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
                     Birthday = table.Column<DateTime>(type: "Date", nullable: false),
-                    Gender = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Height = table.Column<int>(type: "int", nullable: false),
-                    Weight = table.Column<int>(type: "int", nullable: false),
-                    Personality = table.Column<string>(type: "NText", nullable: true),
-                    Appearance = table.Column<string>(type: "NText", nullable: true),
-                    Goals = table.Column<string>(type: "NText", nullable: true),
-                    Motivation = table.Column<string>(type: "NText", nullable: true),
-                    History = table.Column<string>(type: "NText", nullable: true),
-                    WorldviewId = table.Column<int>(type: "int", nullable: false),
-                    Picture = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Deathday = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Gender = table.Column<string>(type: "text", nullable: true),
+                    Height = table.Column<int>(type: "integer", nullable: false),
+                    Weight = table.Column<int>(type: "integer", nullable: false),
+                    Personality = table.Column<string>(type: "text", nullable: true),
+                    Appearance = table.Column<string>(type: "text", nullable: true),
+                    Conflict = table.Column<string>(type: "text", nullable: true),
+                    Goals = table.Column<string>(type: "text", nullable: true),
+                    Motivation = table.Column<string>(type: "text", nullable: true),
+                    History = table.Column<string>(type: "text", nullable: true),
+                    WorldviewId = table.Column<int>(type: "integer", nullable: false),
+                    Picture = table.Column<string>(type: "text", nullable: true),
+                    Deathday = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -210,12 +214,12 @@ namespace PlotCreator.DAL.Migrations
                 name: "Ideas",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    Topic = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Data_Creation = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Content = table.Column<string>(type: "NText", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    Topic = table.Column<string>(type: "text", nullable: false),
+                    Data_Creation = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Content = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -232,12 +236,12 @@ namespace PlotCreator.DAL.Migrations
                 name: "Episodes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    BookId = table.Column<int>(type: "int", nullable: false),
-                    Heading = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Position = table.Column<int>(type: "int", nullable: false),
-                    Content = table.Column<string>(type: "NText", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    BookId = table.Column<int>(type: "integer", nullable: false),
+                    Heading = table.Column<string>(type: "text", nullable: false),
+                    Position = table.Column<int>(type: "integer", nullable: false),
+                    Content = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -254,17 +258,17 @@ namespace PlotCreator.DAL.Migrations
                 name: "Events",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    BookId = table.Column<int>(type: "int", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "NText", nullable: true),
-                    Beginning = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Ending = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ChekhovsGun = table.Column<bool>(type: "bit", nullable: false),
-                    IsHidden = table.Column<bool>(type: "bit", nullable: false),
-                    Icon = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Colour = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    BookId = table.Column<int>(type: "integer", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    Beginning = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Ending = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ChekhovsGun = table.Column<bool>(type: "boolean", nullable: false),
+                    IsHidden = table.Column<bool>(type: "boolean", nullable: false),
+                    Icon = table.Column<string>(type: "text", nullable: true),
+                    Colour = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -281,12 +285,12 @@ namespace PlotCreator.DAL.Migrations
                 name: "Groups",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    BookId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Description = table.Column<string>(type: "Ntext", nullable: true),
-                    Parent = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    BookId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    Parent = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -303,10 +307,10 @@ namespace PlotCreator.DAL.Migrations
                 name: "Book-Character",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    BookId = table.Column<int>(type: "int", nullable: false),
-                    CharacterId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    BookId = table.Column<int>(type: "integer", nullable: false),
+                    CharacterId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -315,7 +319,8 @@ namespace PlotCreator.DAL.Migrations
                         name: "FK_Book-Character_Books_BookId",
                         column: x => x.BookId,
                         principalTable: "Books",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Book-Character_Characters_CharacterId",
                         column: x => x.CharacterId,
@@ -327,10 +332,10 @@ namespace PlotCreator.DAL.Migrations
                 name: "Book-Idea",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    BookId = table.Column<int>(type: "int", nullable: false),
-                    IdeaId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    BookId = table.Column<int>(type: "integer", nullable: false),
+                    IdeaId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -339,7 +344,8 @@ namespace PlotCreator.DAL.Migrations
                         name: "FK_Book-Idea_Books_BookId",
                         column: x => x.BookId,
                         principalTable: "Books",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Book-Idea_Ideas_IdeaId",
                         column: x => x.IdeaId,
@@ -351,10 +357,10 @@ namespace PlotCreator.DAL.Migrations
                 name: "Episode-Character",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    EpisodeId = table.Column<int>(type: "int", nullable: false),
-                    CharacterId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    EpisodeId = table.Column<int>(type: "integer", nullable: false),
+                    CharacterId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -375,10 +381,10 @@ namespace PlotCreator.DAL.Migrations
                 name: "Episode-Event",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    EpisodeId = table.Column<int>(type: "int", nullable: false),
-                    EventId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    EpisodeId = table.Column<int>(type: "integer", nullable: false),
+                    EventId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -399,10 +405,10 @@ namespace PlotCreator.DAL.Migrations
                 name: "Event-Character",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    EventId = table.Column<int>(type: "int", nullable: false),
-                    CharacterId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    EventId = table.Column<int>(type: "integer", nullable: false),
+                    CharacterId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -423,10 +429,10 @@ namespace PlotCreator.DAL.Migrations
                 name: "Group-Character",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    GroupId = table.Column<int>(type: "int", nullable: false),
-                    CharacterId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    GroupId = table.Column<int>(type: "integer", nullable: false),
+                    CharacterId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -447,10 +453,10 @@ namespace PlotCreator.DAL.Migrations
                 name: "Group-Event",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    GroupId = table.Column<int>(type: "int", nullable: false),
-                    EventId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    GroupId = table.Column<int>(type: "integer", nullable: false),
+                    EventId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -465,6 +471,76 @@ namespace PlotCreator.DAL.Migrations
                         column: x => x.GroupId,
                         principalTable: "Groups",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.InsertData(
+                table: "Genres",
+                columns: new[] { "Id", "Description", "Name" },
+                values: new object[,]
+                {
+                    { 1, null, "Мистика" },
+                    { 2, null, "Драма" },
+                    { 3, null, "Приключения" },
+                    { 4, null, "Ужасы" },
+                    { 5, null, "Романтика" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Modificators",
+                columns: new[] { "Id", "Description", "Name" },
+                values: new object[,]
+                {
+                    { 1, null, "Публично" },
+                    { 2, null, "Приватно" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Ratings",
+                columns: new[] { "Id", "Description", "Name" },
+                values: new object[,]
+                {
+                    { 1, null, "0+" },
+                    { 2, null, "6+" },
+                    { 3, null, "12+" },
+                    { 4, null, "16+" },
+                    { 5, null, "18+" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Roles",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Admin" },
+                    { 2, "Moderator" },
+                    { 3, "User" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Statuses",
+                columns: new[] { "Id", "Description", "Name" },
+                values: new object[,]
+                {
+                    { 1, null, "В процессе" },
+                    { 2, null, "Завершен" },
+                    { 3, null, "Заморожен" },
+                    { 4, null, "Заброшен" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Worldview",
+                columns: new[] { "Id", "Description", "Name" },
+                values: new object[,]
+                {
+                    { 1, "персонажи с таким мировоззрением считаются с правилами и совершают поступки, которых от них ожидает общество", "Законопослушно-доброе" },
+                    { 2, "персонажи с таким мировоззрением совершают хорошие поступки в соответствии со своими потребностями", "Нейтрально-доброе" },
+                    { 3, "персонажи с таким мировоззрением действуют по совести, с небольшой оглядкой на мнение и ожидания других", "Хаотично-доброе" },
+                    { 4, "персонажи с таким мировоззрением действуют в соответствии с законом, традицией, или своим кодексом", "Законопослушно-нейтральное" },
+                    { 5, "персонажи с таким мировоззрением предпочитают чистоту от моральных вопросов в своих действиях, и не принимают какой бы то ни было стороны, даже если одна из них более выгодна в данное время", "Хаотично-нейтральное" },
+                    { 6, "персонажи с таким мировоззрением следуют своим целям или капризам, вознося свою цель/свободу выше всего остального", "Нейтральное" },
+                    { 7, "персонажи с таким мировоззрением постоянно берут то, что хотят, в рамках традиции, лояльности или порядка", "Законопослушно-злое" },
+                    { 8, "персонажи с таким мировоззрением делают что угодно и когда угодно, без оглядки на сострадание и сомнение", "Нейтрально-злое" },
+                    { 9, "персонажи с таким мировоззрением совершают неконтролируемое насилие, стимулируемое их жадностью, ненавистью или жаждой крови", "Хаотично-злое" }
                 });
 
             migrationBuilder.CreateIndex(
