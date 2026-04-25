@@ -22,6 +22,7 @@ namespace PlotCreator.Domain.Entity
         public string? Topic { get; set; }
 
         [Required]
+        [Column(TypeName = "date")]
         public DateTime Data_Creation { get; set; }
 
         public string? Content { get; set; }

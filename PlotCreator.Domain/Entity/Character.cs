@@ -44,6 +44,8 @@ namespace PlotCreator.Domain.Entity
         public Worldview? Worldview { get; set; } // Навигационное свойство
 
         public string? Picture { get; set; }
+
+        [Column(TypeName = "date")]
         public DateTime Deathday { get; set; }
 
 		//Навигационные свойства для зависимых таблиц 

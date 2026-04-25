@@ -21,7 +21,11 @@ namespace PlotCreator.Domain.Entity
 		public string? Title { get; set; }
 
         public string? Description { get; set; }
+
+        [Column(TypeName = "date")]
         public DateTime Beginning { get; set; }
+
+        [Column(TypeName = "date")]
         public DateTime Ending { get; set; }
         public bool ChekhovsGun { get; set; }
         public bool IsHidden { get; set; }
