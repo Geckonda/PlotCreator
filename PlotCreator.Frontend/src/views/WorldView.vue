@@ -8,6 +8,8 @@ import { useWorldUiStore } from '@/stores/worldUi'
 import WorldTopbar from '@/components/world/WorldTopbar.vue'
 import WorldSidebar from '@/components/world/WorldSidebar.vue'
 import GridView from '@/components/views/GridView.vue'
+import EntityDetailPanel from '@/components/entity/EntityDetailPanel.vue'
+import EntityCreateModal from '@/components/entity/EntityCreateModal.vue'
 import type { Entity } from '@/types/entity'
 
 const route = useRoute()
@@ -15,7 +17,7 @@ const worldsStore = useWorldsStore()
 const entitiesStore = useEntitiesStore()
 const ui = useWorldUiStore()
 
-const { view, activeType, search } = storeToRefs(ui)
+const { view, activeType, search, showCreate } = storeToRefs(ui)
 
 const worldId = computed(() => String(route.params.id))
 
@@ -38,8 +40,29 @@ const filteredEntities = computed(() => {
   )
 })
 
+const selectedEntity = computed(() =>
+  ui.selectedId ? entitiesStore.byId.get(ui.selectedId) ?? null : null,
+)
+
 function selectEntity(entity: Entity) {
   ui.selectedId = entity.id
+}
+
+function closeDetail() {
+  ui.selectedId = null
+}
+
+function handleCreate(entity: Entity) {
+  entitiesStore.add(entity)
+  ui.showCreate = false
+  ui.selectedId = entity.id
+  ui.view = 'grid'
+  ui.activeType = null
+}
+
+function handleDelete(entity: Entity) {
+  entitiesStore.remove(entity.id)
+  ui.selectedId = null
 }
 </script>
 
@@ -59,9 +82,22 @@ function selectEntity(entity: Entity) {
       />
 
       <div v-else-if="view === 'timeline'" class="world__placeholder">
-        Хронология (step 4)
+        Хронология (step 5)
       </div>
+
+      <EntityDetailPanel
+        v-if="selectedEntity && view !== 'timeline'"
+        :entity="selectedEntity"
+        @close="closeDetail"
+        @delete="handleDelete"
+      />
     </div>
+
+    <EntityCreateModal
+      v-if="showCreate"
+      @close="ui.showCreate = false"
+      @save="handleCreate"
+    />
   </div>
 </template>
 
