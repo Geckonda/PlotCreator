@@ -14,12 +14,11 @@ export function useForceSimulation(
   relations: Ref<Relation[]>,
   opts: ForceSimulationOptions,
 ) {
-  const positions: Record<string, Pos> = {}
-  const velocities: Record<string, Vel> = {}
+  const positions: Record<number, Pos> = {}
+  const velocities: Record<number, Vel> = {}
 
-  // Component templates read `tick` to force re-evaluation each frame.
   const tick = ref(0)
-  const dragId = ref<string | null>(null)
+  const dragId = ref<number | null>(null)
 
   let ticks = 0
   let frame: number | null = null
@@ -40,8 +39,9 @@ export function useForceSimulation(
       velocities[e.id] = { vx: 0, vy: 0 }
     })
 
-    const ids = new Set(list.map((e) => e.id))
-    for (const id of Object.keys(positions)) {
+    const ids = new Set<number>(list.map((e) => e.id))
+    for (const key of Object.keys(positions)) {
+      const id = Number(key)
       if (!ids.has(id)) {
         delete positions[id]
         delete velocities[id]
@@ -63,7 +63,6 @@ export function useForceSimulation(
     const cool = Math.max(0.02, 1 - ticks / 350)
     const ids = entities.value.map((e) => e.id).filter((id) => positions[id])
 
-    // Repulsion
     for (let i = 0; i < ids.length; i++) {
       for (let j = i + 1; j < ids.length; j++) {
         const a = ids[i]
@@ -80,7 +79,6 @@ export function useForceSimulation(
       }
     }
 
-    // Springs (relations pull connected nodes toward target distance)
     for (const rel of relations.value) {
       const fp = positions[rel.from]
       const tp = positions[rel.to]
@@ -95,13 +93,11 @@ export function useForceSimulation(
       velocities[rel.to].vy -= (dy / d) * f
     }
 
-    // Center gravity
     for (const id of ids) {
       velocities[id].vx += (cx - positions[id].x) * 0.0025 * cool
       velocities[id].vy += (cy - positions[id].y) * 0.0025 * cool
     }
 
-    // Integrate (damping + boundary clamp); skip the dragged node
     for (const id of ids) {
       if (dragId.value === id) continue
       velocities[id].vx *= 0.8
@@ -130,7 +126,7 @@ export function useForceSimulation(
     frame = null
   }
 
-  function setDragPosition(id: string, x: number, y: number) {
+  function setDragPosition(id: number, x: number, y: number) {
     if (!positions[id]) return
     positions[id].x = x
     positions[id].y = y
@@ -142,7 +138,7 @@ export function useForceSimulation(
     [entities, relations],
     () => {
       ensurePositions()
-      ticks = 0 // re-warm so new graphs settle
+      ticks = 0
     },
     { flush: 'post' },
   )

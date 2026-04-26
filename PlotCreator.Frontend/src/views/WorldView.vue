@@ -13,6 +13,7 @@ import ForceGraph from '@/components/graph/ForceGraph.vue'
 import EntityDetailPanel from '@/components/entity/EntityDetailPanel.vue'
 import EntityCreateModal from '@/components/entity/EntityCreateModal.vue'
 import type { Entity } from '@/types/entity'
+import type { EntityCreatePayload } from '@/types/api'
 
 const route = useRoute()
 const worldsStore = useWorldsStore()
@@ -21,13 +22,16 @@ const ui = useWorldUiStore()
 
 const { view, activeType, search, showCreate } = storeToRefs(ui)
 
-const worldId = computed(() => String(route.params.id))
+const worldId = computed(() => Number(route.params.id))
 
 watch(
   worldId,
-  (id) => {
+  async (id) => {
+    if (Number.isNaN(id)) return
     worldsStore.setCurrent(id)
     ui.reset()
+    entitiesStore.clear()
+    await entitiesStore.fetchForWorld(id)
   },
   { immediate: true },
 )
@@ -43,7 +47,7 @@ const filteredEntities = computed(() => {
 })
 
 const selectedEntity = computed(() =>
-  ui.selectedId ? entitiesStore.byId.get(ui.selectedId) ?? null : null,
+  ui.selectedId !== null ? entitiesStore.byId.get(ui.selectedId) ?? null : null,
 )
 
 function selectEntity(entity: Entity) {
@@ -54,17 +58,25 @@ function closeDetail() {
   ui.selectedId = null
 }
 
-function handleCreate(entity: Entity) {
-  entitiesStore.add(entity)
-  ui.showCreate = false
-  ui.selectedId = entity.id
-  ui.view = 'grid'
-  ui.activeType = null
+async function handleCreate(payload: EntityCreatePayload) {
+  try {
+    const entity = await entitiesStore.create(worldId.value, payload)
+    ui.showCreate = false
+    ui.selectedId = entity.id
+    ui.view = 'grid'
+    ui.activeType = null
+  } catch (err) {
+    console.error('Create failed', err)
+  }
 }
 
-function handleDelete(entity: Entity) {
-  entitiesStore.remove(entity.id)
-  ui.selectedId = null
+async function handleDelete(entity: Entity) {
+  try {
+    await entitiesStore.remove(entity)
+    ui.selectedId = null
+  } catch (err) {
+    console.error('Delete failed', err)
+  }
 }
 </script>
 
@@ -128,5 +140,4 @@ function handleDelete(entity: Entity) {
   display: flex;
   overflow: hidden;
 }
-
 </style>

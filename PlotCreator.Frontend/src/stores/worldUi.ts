@@ -7,7 +7,7 @@ export type WorldViewMode = 'graph' | 'grid' | 'timeline'
 export const useWorldUiStore = defineStore('worldUi', () => {
   const view = ref<WorldViewMode>('graph')
   const activeType = ref<EntityType | null>(null)
-  const selectedId = ref<string | null>(null)
+  const selectedId = ref<number | null>(null)
   const search = ref('')
   const showCreate = ref(false)
 

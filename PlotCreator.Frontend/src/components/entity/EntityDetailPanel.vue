@@ -52,12 +52,12 @@ const editStyle = computed(() => ({
   border: `1px solid ${cfg.value.color}48`,
 }))
 
-function getOther(rel: { from: string; to: string }) {
+function getOther(rel: { from: number; to: number }) {
   const otherId = rel.from === props.entity.id ? rel.to : rel.from
   return entitiesStore.byId.get(otherId) ?? null
 }
 
-function getDirection(rel: { from: string }) {
+function getDirection(rel: { from: number }) {
   return rel.from === props.entity.id ? '→' : '←'
 }
 </script>

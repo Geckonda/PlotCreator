@@ -8,7 +8,7 @@ import { useForceSimulation } from '@/composables/useForceSimulation'
 const props = defineProps<{
   entities: Entity[]
   relations: Relation[]
-  selectedId: string | null
+  selectedId: number | null
   filterType: EntityType | null
 }>()
 
@@ -19,7 +19,7 @@ const emit = defineEmits<{
 
 const containerRef = ref<HTMLElement | null>(null)
 const svgRef = ref<SVGSVGElement | null>(null)
-const hovered = ref<string | null>(null)
+const hovered = ref<number | null>(null)
 
 const { width, height } = useElementSize(containerRef)
 
@@ -32,13 +32,13 @@ const { positions, tick, dragId, setDragPosition, start } = sim
 onMounted(() => start())
 
 const entityById = computed(() => {
-  const m = new Map<string, Entity>()
+  const m = new Map<number, Entity>()
   for (const e of props.entities) m.set(e.id, e)
   return m
 })
 
 const activeSet = computed(() => {
-  const ids = new Set<string>()
+  const ids = new Set<number>()
   for (const e of props.entities) {
     if (!props.filterType || e.type === props.filterType) ids.add(e.id)
   }
@@ -46,8 +46,8 @@ const activeSet = computed(() => {
 })
 
 const connectedToHover = computed(() => {
-  if (!hovered.value) return null
-  const ids = new Set<string>([hovered.value])
+  if (hovered.value === null) return null
+  const ids = new Set<number>([hovered.value])
   for (const r of props.relations) {
     if (r.from === hovered.value || r.to === hovered.value) {
       ids.add(r.from)
@@ -58,8 +58,8 @@ const connectedToHover = computed(() => {
 })
 
 const connectedToSelected = computed(() => {
-  if (!props.selectedId) return null
-  const ids = new Set<string>([props.selectedId])
+  if (props.selectedId === null) return null
+  const ids = new Set<number>([props.selectedId])
   for (const r of props.relations) {
     if (r.from === props.selectedId || r.to === props.selectedId) {
       ids.add(r.from)
@@ -174,7 +174,7 @@ function truncate(name: string): string {
   return name.length > 16 ? name.slice(0, 15) + '…' : name
 }
 
-function onNodeMouseDown(evt: MouseEvent, id: string) {
+function onNodeMouseDown(evt: MouseEvent, id: number) {
   evt.stopPropagation()
   dragId.value = id
   const onMove = (ev: MouseEvent) => {

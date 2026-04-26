@@ -10,7 +10,7 @@ export type EntityType =
 export type EntityStatus = 'draft' | 'in-progress' | 'complete'
 
 export interface Entity {
-  id: string
+  id: number
   type: EntityType
   name: string
   tags: string[]
@@ -19,8 +19,8 @@ export interface Entity {
 }
 
 export interface Relation {
-  id: string
-  from: string
-  to: string
+  id: number
+  from: number
+  to: number
   label: string
 }

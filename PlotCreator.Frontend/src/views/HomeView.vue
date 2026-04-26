@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import { useWorldsStore } from '@/stores/worlds'
 import type { World } from '@/types/world'
 import WorldCard from '@/components/home/WorldCard.vue'
@@ -7,13 +9,23 @@ import NewWorldCard from '@/components/home/NewWorldCard.vue'
 
 const router = useRouter()
 const worldsStore = useWorldsStore()
+const { worlds, loading, error } = storeToRefs(worldsStore)
+
+onMounted(() => worldsStore.fetchAll())
 
 function enterWorld(world: World) {
-  router.push({ name: 'world', params: { id: world.id } })
+  router.push({ name: 'world', params: { id: String(world.id) } })
 }
 
-function newWorld() {
-  // TODO: world creation flow (out of scope for the worldbuilder UI scaffold)
+async function newWorld() {
+  const name = window.prompt('Название нового мира')
+  if (!name) return
+  try {
+    const w = await worldsStore.create({ name, color: '#7a4824' })
+    router.push({ name: 'world', params: { id: String(w.id) } })
+  } catch (err) {
+    console.error('Create world failed', err)
+  }
 }
 </script>
 
@@ -30,9 +42,12 @@ function newWorld() {
         <p class="home__lede">Выберите мир или создайте новый</p>
       </section>
 
-      <div class="home__grid">
+      <div v-if="loading" class="home__state">Загрузка…</div>
+      <div v-else-if="error" class="home__state home__state--err">{{ error }}</div>
+
+      <div v-else class="home__grid">
         <div
-          v-for="(w, i) in worldsStore.worlds"
+          v-for="(w, i) in worlds"
           :key="w.id"
           class="home__cell"
           :style="{ animation: `fadeUp 0.4s ${i * 0.1 + 0.1}s both` }"
@@ -118,5 +133,14 @@ function newWorld() {
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 22px;
   max-width: 960px;
+}
+
+.home__state {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.home__state--err {
+  color: #a02929;
 }
 </style>

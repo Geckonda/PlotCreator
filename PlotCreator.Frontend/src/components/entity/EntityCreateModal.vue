@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed, reactive } from 'vue'
-import type { Entity, EntityStatus, EntityType } from '@/types/entity'
+import type { EntityStatus, EntityType } from '@/types/entity'
+import type { EntityCreatePayload } from '@/types/api'
 import { ENTITY_TYPE_LIST, ENTITY_TYPES } from '@/config/entityTypes'
 import { STATUS_LIST } from '@/config/statuses'
 
 const emit = defineEmits<{
   (e: 'close'): void
-  (e: 'save', entity: Entity): void
+  (e: 'save', payload: EntityCreatePayload): void
 }>()
 
 interface Form {
@@ -58,8 +59,7 @@ function close() {
 
 function submit() {
   if (!form.name.trim()) return
-  const entity: Entity = {
-    id: `e${Date.now()}`,
+  const payload: EntityCreatePayload = {
     type: form.type,
     name: form.name.trim(),
     desc: form.desc.trim() || undefined,
@@ -69,7 +69,7 @@ function submit() {
       .filter(Boolean),
     status: form.status,
   }
-  emit('save', entity)
+  emit('save', payload)
 }
 </script>
 
