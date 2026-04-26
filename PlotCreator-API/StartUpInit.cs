@@ -1,4 +1,4 @@
-﻿using PlotCreator.DAL.Interfaces;
+using PlotCreator.DAL.Interfaces;
 using PlotCreator.DAL.Repositories;
 using PlotCreator.Domain.Entity;
 using PlotCreator.Service.Implementations;
@@ -11,24 +11,25 @@ namespace PlotCreator_API
         public static void InitialiseRepositories(this IServiceCollection services)
         {
             services.AddScoped<IBaseRepository<User>, UserRepository>();
-            services.AddScoped<IBookRepository, BookRepository>();
-            services.AddScoped<IIdeaRepository, IdeaRepository>();
-            services.AddScoped<ICharacterRepository, CharacterRepository>();
-            services.AddScoped<IGroupRepository, GroupRepository>();
-            services.AddScoped<IEpisodeRepository, EpisodeRepository>();
-			services.AddScoped<IEventRepository, EventRepository>();
-		}
+            services.AddScoped<IWorldRepository, WorldRepository>();
+            services.AddScoped<IRelationRepository, RelationRepository>();
+            services.AddScoped(typeof(IEntityRepository<>), typeof(EntityRepository<>));
+        }
 
         public static void InitialiseServices(this IServiceCollection services)
         {
+            services.AddScoped<ICurrentUserService, DefaultUserService>();
             services.AddScoped<IAccountService, AccountService>();
-            services.AddScoped<IBookService, BookService>();
-            services.AddScoped<IIdeaService, IdeaService>();
+            services.AddScoped<IWorldService, WorldService>();
+            services.AddScoped<IEntityService, EntityService>();
+            services.AddScoped<IRelationService, RelationService>();
             services.AddScoped<ICharacterService, CharacterService>();
-            services.AddScoped<IGroupService, GroupService>();
+            services.AddScoped<ILocationService, LocationService>();
+            services.AddScoped<IEventService, EventService>();
+            services.AddScoped<IFactionService, FactionService>();
             services.AddScoped<IEpisodeService, EpisodeService>();
-			services.AddScoped<IEventService, EventService>();
-			services.AddScoped<IFilterService, FilterService>();
-		}
+            services.AddScoped<IArtifactService, ArtifactService>();
+            services.AddScoped<ILoreService, LoreService>();
+        }
     }
 }

@@ -106,7 +106,7 @@ namespace PlotCreator.Service.Implementations
                 }
                 user = new User()
                 {
-                    roleId = Convert.ToInt32(UserRole.User),
+                    RoleId = Convert.ToInt32(UserRole.User),
                     Nickname = model.Nickname,
                     Login = model.Login,
                     Email = model.Email,
@@ -136,7 +136,7 @@ namespace PlotCreator.Service.Implementations
 
         private ClaimsIdentity Authenticate(User user)
         {
-            var role = CheckUserRole(user.roleId);
+            var role = CheckUserRole(user.RoleId);
             var claims = new List<Claim>
             {
                 new Claim(ClaimsIdentity.DefaultNameClaimType, user.Login!),
