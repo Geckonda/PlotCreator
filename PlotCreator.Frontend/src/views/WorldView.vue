@@ -8,6 +8,7 @@ import { useWorldUiStore } from '@/stores/worldUi'
 import WorldTopbar from '@/components/world/WorldTopbar.vue'
 import WorldSidebar from '@/components/world/WorldSidebar.vue'
 import GridView from '@/components/views/GridView.vue'
+import TimelineView from '@/components/views/TimelineView.vue'
 import EntityDetailPanel from '@/components/entity/EntityDetailPanel.vue'
 import EntityCreateModal from '@/components/entity/EntityCreateModal.vue'
 import type { Entity } from '@/types/entity'
@@ -81,9 +82,10 @@ function handleDelete(entity: Entity) {
         @select="selectEntity"
       />
 
-      <div v-else-if="view === 'timeline'" class="world__placeholder">
-        Хронология (step 5)
-      </div>
+      <TimelineView
+        v-else-if="view === 'timeline'"
+        :entities="filteredEntities"
+      />
 
       <EntityDetailPanel
         v-if="selectedEntity && view !== 'timeline'"
@@ -116,12 +118,4 @@ function handleDelete(entity: Entity) {
   overflow: hidden;
 }
 
-.world__placeholder {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--dim);
-  font-style: italic;
-}
 </style>
