@@ -10,12 +10,12 @@ defineProps<{
 
 <style scoped>
 .tag {
-  font-size: 11px;
-  padding: 2px 7px;
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.04);
-  color: #7056a5;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 13px;
+  padding: 3px 9px;
+  border-radius: 5px;
+  background: rgba(101, 67, 33, 0.06);
+  color: #8a6f3d;
+  border: 1px solid rgba(101, 67, 33, 0.12);
   white-space: nowrap;
 }
 </style>

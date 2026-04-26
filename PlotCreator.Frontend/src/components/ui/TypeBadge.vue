@@ -28,9 +28,9 @@ const style = computed(() => ({
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font-size: 11px;
-  padding: 2px 8px;
+  gap: 5px;
+  font-size: 13px;
+  padding: 3px 10px;
   border-radius: 99px;
   font-family: var(--font-display);
   letter-spacing: 0.04em;
@@ -39,7 +39,7 @@ const style = computed(() => ({
 }
 
 .badge--tiny {
-  font-size: 10px;
-  padding: 1px 6px;
+  font-size: 12px;
+  padding: 2px 8px;
 }
 </style>

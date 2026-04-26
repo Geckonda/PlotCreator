@@ -29,18 +29,18 @@ const dotStyle = computed(() => ({
 .pip {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
 }
 
 .pip__dot {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   display: inline-block;
   flex-shrink: 0;
 }
 
 .pip__label {
-  font-size: 11px;
+  font-size: 13px;
 }
 </style>

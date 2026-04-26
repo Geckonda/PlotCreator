@@ -1,24 +1,25 @@
 :root {
-  --bg: #080612;
-  --surface: #0e0b1d;
-  --card: #13102a;
-  --card2: #191535;
-  --border: rgba(167, 139, 250, 0.1);
-  --border2: rgba(167, 139, 250, 0.22);
-  --text: #ede9f8;
-  --muted: #6b5a8e;
-  --dim: #3a2f52;
-  --accent: #a78bfa;
-  --gold: #c9a84c;
+  /* Parchment / leather book palette */
+  --bg: #ede1c2;          /* aged page */
+  --surface: #e3d4af;     /* leather chrome (topbar, sidebar bg) */
+  --card: #f6ecd3;        /* fresh page (cards) */
+  --card2: #f0e5c5;       /* card hover */
+  --border: rgba(101, 67, 33, 0.18);
+  --border2: rgba(101, 67, 33, 0.34);
+  --text: #3a2414;        /* sepia ink */
+  --muted: #7a5d3a;       /* faded ink */
+  --dim: #ad9669;         /* very faded */
+  --accent: #7a4824;      /* rich brown — UI accent */
+  --gold: #b8860b;        /* gilt highlight */
 
   --font-serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
   --font-display: 'Cinzel', 'EB Garamond', Georgia, serif;
 
   font-family: var(--font-serif);
-  font-size: 16px;
+  font-size: 17px;
   color: var(--text);
   background-color: var(--bg);
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 *,
@@ -53,12 +54,12 @@ input,
 textarea,
 select {
   font-family: var(--font-serif);
-  font-size: 15px;
-  background: rgba(255, 255, 255, 0.04);
+  font-size: 16px;
+  background: rgba(0, 0, 0, 0.03);
   border: 1px solid var(--border);
   color: var(--text);
-  padding: 8px 12px;
-  border-radius: 6px;
+  padding: 9px 14px;
+  border-radius: 7px;
   outline: none;
   width: 100%;
   transition: border-color 0.2s, background 0.2s;
@@ -68,7 +69,7 @@ input:focus,
 textarea:focus,
 select:focus {
   border-color: var(--accent);
-  background: rgba(167, 139, 250, 0.06);
+  background: rgba(122, 72, 36, 0.05);
 }
 
 select option {
@@ -80,7 +81,7 @@ a {
 }
 
 ::-webkit-scrollbar {
-  width: 4px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -88,7 +89,7 @@ a {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(167, 139, 250, 0.18);
+  background: rgba(101, 67, 33, 0.3);
   border-radius: 2px;
 }
 

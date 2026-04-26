@@ -29,7 +29,7 @@ import { RouterLink, RouterView } from 'vue-router'
 .app-title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   font-weight: 700;
   letter-spacing: 0.14em;
   color: var(--accent);
@@ -37,14 +37,14 @@ import { RouterLink, RouterView } from 'vue-router'
 
 .app-nav {
   display: flex;
-  gap: 1.25rem;
+  gap: 1.5rem;
 }
 
 .app-nav a {
   color: var(--muted);
   text-decoration: none;
   font-family: var(--font-display);
-  font-size: 0.85rem;
+  font-size: 1rem;
   letter-spacing: 0.04em;
   transition: color 0.15s;
 }

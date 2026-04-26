@@ -6,9 +6,9 @@ export interface StatusConfig {
 }
 
 export const STATUSES: Record<EntityStatus, StatusConfig> = {
-  draft:         { label: 'Черновик', color: '#5a4e78' },
-  'in-progress': { label: 'В работе', color: '#fbbf24' },
-  complete:      { label: 'Готово',   color: '#34d399' },
+  draft:         { label: 'Черновик', color: '#8b7e5a' },
+  'in-progress': { label: 'В работе', color: '#b8860b' },
+  complete:      { label: 'Готово',   color: '#3d6b4a' },
 }
 
 export const STATUS_LIST = Object.entries(STATUSES) as Array<
