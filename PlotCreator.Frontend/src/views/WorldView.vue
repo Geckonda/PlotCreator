@@ -9,6 +9,7 @@ import WorldTopbar from '@/components/world/WorldTopbar.vue'
 import WorldSidebar from '@/components/world/WorldSidebar.vue'
 import GridView from '@/components/views/GridView.vue'
 import TimelineView from '@/components/views/TimelineView.vue'
+import ForceGraph from '@/components/graph/ForceGraph.vue'
 import EntityDetailPanel from '@/components/entity/EntityDetailPanel.vue'
 import EntityCreateModal from '@/components/entity/EntityCreateModal.vue'
 import type { Entity } from '@/types/entity'
@@ -74,8 +75,18 @@ function handleDelete(entity: Entity) {
     <div class="world__body">
       <WorldSidebar />
 
+      <ForceGraph
+        v-if="view === 'graph'"
+        :entities="filteredEntities"
+        :relations="entitiesStore.relations"
+        :selected-id="ui.selectedId"
+        :filter-type="activeType"
+        @select="selectEntity"
+        @deselect="closeDetail"
+      />
+
       <GridView
-        v-if="view === 'grid' || view === 'graph'"
+        v-else-if="view === 'grid'"
         :entities="filteredEntities"
         :relations="entitiesStore.relations"
         :filter-type="activeType"
