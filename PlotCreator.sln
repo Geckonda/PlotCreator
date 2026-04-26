@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlotCreator.Domain", "PlotC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlotCreator.Service", "PlotCreator.Service\PlotCreator.Service.csproj", "{7C8C59A4-E9CD-41F6-A136-704697E28DAC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlotCreator-API", "PlotCreator-API\PlotCreator-API.csproj", "{D45BBA43-B3AE-4CBB-8E33-A21E3E75722C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{7C8C59A4-E9CD-41F6-A136-704697E28DAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C8C59A4-E9CD-41F6-A136-704697E28DAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C8C59A4-E9CD-41F6-A136-704697E28DAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D45BBA43-B3AE-4CBB-8E33-A21E3E75722C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D45BBA43-B3AE-4CBB-8E33-A21E3E75722C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D45BBA43-B3AE-4CBB-8E33-A21E3E75722C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D45BBA43-B3AE-4CBB-8E33-A21E3E75722C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
