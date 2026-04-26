@@ -7,7 +7,7 @@ import { RouterLink, RouterView } from 'vue-router'
     <h1 class="app-title">PlotCreator</h1>
     <nav class="app-nav">
       <RouterLink to="/">Home</RouterLink>
-      <RouterLink to="/books">Books</RouterLink>
+      <RouterLink to="/world/ered-hal">World</RouterLink>
       <RouterLink to="/about">About</RouterLink>
     </nav>
   </header>
@@ -23,13 +23,16 @@ import { RouterLink, RouterView } from 'vue-router'
   align-items: center;
   justify-content: space-between;
   padding: 1rem 2rem;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--border);
 }
 
 .app-title {
   margin: 0;
+  font-family: var(--font-display);
   font-size: 1.25rem;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--accent);
 }
 
 .app-nav {
@@ -38,13 +41,20 @@ import { RouterLink, RouterView } from 'vue-router'
 }
 
 .app-nav a {
-  color: var(--color-text);
+  color: var(--muted);
   text-decoration: none;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  transition: color 0.15s;
+}
+
+.app-nav a:hover {
+  color: var(--text);
 }
 
 .app-nav a.router-link-active {
-  color: var(--color-accent);
-  font-weight: 600;
+  color: var(--accent);
 }
 
 .app-main {
