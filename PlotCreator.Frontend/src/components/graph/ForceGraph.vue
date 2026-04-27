@@ -157,7 +157,7 @@ const renderEdges = computed<RenderEdge[]>(() => {
     const fromColor = fromEntity
       ? ENTITY_TYPES[fromEntity.type].color
       : '#7a4824'
-    const fromType = fromEntity?.type ?? 'Character'
+    const fromType: EntityType = fromEntity?.type ?? 'character'
     out.push({ rel, fp, tp: tp_adj, tp_adj, mx, my, lx, ly, fromColor, fromType, lit, dimmed })
   }
   return out
