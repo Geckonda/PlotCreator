@@ -63,6 +63,72 @@ export interface EntityCreatePayload {
   desc?: string
 }
 
+// ───── Per-type DTOs (returned by GET /api/{type}/{id}) ─────
+
+export interface CharacterDto extends EntitySummaryDto {
+  worldId: number
+  birthday: string | null
+  deathday: string | null
+  gender: string | null
+  height: number | null
+  weight: number | null
+  personality: string | null
+  appearance: string | null
+  conflict: string | null
+  goals: string | null
+  motivation: string | null
+  history: string | null
+  pictureUrl: string | null
+}
+
+export interface LocationDto extends EntitySummaryDto {
+  worldId: number
+  region: string | null
+  climate: string | null
+  pictureUrl: string | null
+}
+
+export interface EventDto extends EntitySummaryDto {
+  worldId: number
+  beginning: string | null
+  ending: string | null
+  chekhovsGun: boolean
+}
+
+export interface FactionDto extends EntitySummaryDto {
+  worldId: number
+  ideology: string | null
+  headquarters: string | null
+}
+
+export interface EpisodeDto extends EntitySummaryDto {
+  worldId: number
+  position: number
+  content: string | null
+}
+
+export interface ArtifactDto extends EntitySummaryDto {
+  worldId: number
+  material: string | null
+  origin: string | null
+  pictureUrl: string | null
+}
+
+export interface LoreDto extends EntitySummaryDto {
+  worldId: number
+  era: string | null
+  content: string | null
+}
+
+export type FullEntityDto =
+  | CharacterDto
+  | LocationDto
+  | EventDto
+  | FactionDto
+  | EpisodeDto
+  | ArtifactDto
+  | LoreDto
+
 // ───── Mappers ─────
 
 export const toWorld = (dto: WorldDto): World => ({

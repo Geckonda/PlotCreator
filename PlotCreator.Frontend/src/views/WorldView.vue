@@ -58,15 +58,20 @@ function closeDetail() {
   ui.selectedId = null
 }
 
+function closeCreate() {
+  showCreate.value = false
+}
+
 async function handleCreate(payload: EntityCreatePayload) {
   try {
     const entity = await entitiesStore.create(worldId.value, payload)
-    ui.showCreate = false
     ui.selectedId = entity.id
     ui.view = 'grid'
     ui.activeType = null
   } catch (err) {
     console.error('Create failed', err)
+  } finally {
+    closeCreate()
   }
 }
 
@@ -120,7 +125,7 @@ async function handleDelete(entity: Entity) {
 
     <EntityCreateModal
       v-if="showCreate"
-      @close="ui.showCreate = false"
+      @close="closeCreate"
       @save="handleCreate"
     />
   </div>
