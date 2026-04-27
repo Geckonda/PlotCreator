@@ -2,6 +2,7 @@
 import { computed, reactive } from 'vue'
 import type { EntityStatus, EntityType } from '@/types/entity'
 import type { EntityCreatePayload } from '@/types/api'
+import TagsInput from '../forms/TagsInput.vue'
 import { ENTITY_TYPE_LIST, ENTITY_TYPES } from '@/config/entityTypes'
 import { STATUS_LIST } from '@/config/statuses'
 
@@ -14,7 +15,7 @@ interface Form {
   type: EntityType
   name: string
   desc: string
-  tags: string
+  tags: string[]
   status: EntityStatus
 }
 
@@ -22,7 +23,7 @@ const form = reactive<Form>({
   type: 'character',
   name: '',
   desc: '',
-  tags: '',
+  tags: [],
   status: 'draft',
 })
 
@@ -63,10 +64,7 @@ function submit() {
     type: form.type,
     name: form.name.trim(),
     desc: form.desc.trim() || undefined,
-    tags: form.tags
-      .split(',')
-      .map((t) => t.trim())
-      .filter(Boolean),
+    tags: form.tags,
     status: form.status,
   }
   emit('save', payload)
@@ -120,12 +118,15 @@ function submit() {
             class="field__textarea"
           />
         </div>
-
-        <div class="field-row">
           <div class="field">
             <label>Теги</label>
-            <input v-model="form.tags" placeholder="тег1, тег2…" />
+              <TagsInput
+                v-model="form.tags"
+                placeholder="Введите и нажмите Enter..."
+              />
           </div>
+        <div class="field-row">
+         
           <div class="field">
             <label>Статус</label>
             <select v-model="form.status">

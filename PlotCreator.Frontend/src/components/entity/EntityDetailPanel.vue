@@ -11,6 +11,7 @@ import { useWorldsStore } from '@/stores/worlds'
 import TypeBadge from '@/components/ui/TypeBadge.vue'
 import DynamicField from '@/components/entity/DynamicField.vue'
 import RelationCreator from '@/components/entity/RelationCreator.vue'
+import TagsInput from '@/components/forms/TagsInput.vue'
 
 const props = defineProps<{
   entity: Entity
@@ -34,7 +35,7 @@ interface FormState {
   name: string
   description: string
   status: EntityStatus
-  tagsText: string
+  tagsText: string[]
   extras: Record<string, unknown>
 }
 
@@ -42,7 +43,7 @@ const form = reactive<FormState>({
   name: '',
   description: '',
   status: 'draft',
-  tagsText: '',
+  tagsText: [],
   extras: {},
 })
 
@@ -60,7 +61,7 @@ function applyDto(dto: FullEntityDto) {
   form.name = dto.name
   form.description = dto.desc ?? ''
   form.status = dto.status
-  form.tagsText = (dto.tags ?? []).join(', ')
+  form.tagsText = dto.tags ?? []
   const extras: Record<string, unknown> = {}
   for (const def of schema.value) {
     extras[def.key] = (dto as unknown as Record<string, unknown>)[def.key] ?? null
@@ -95,9 +96,6 @@ watch(
 
 function buildPayload(): object {
   const tags = form.tagsText
-    .split(',')
-    .map((t) => t.trim())
-    .filter(Boolean)
   return {
     name: form.name.trim(),
     desc: form.description.trim() || null,
@@ -202,11 +200,15 @@ const saveStyle = computed(() => ({
 
         <div class="field">
           <label>Теги</label>
-          <input
+          <TagsInput
+                v-model="form.tagsText"
+                placeholder="Введите и нажмите Enter..."
+              />
+          <!-- <input
             v-model="form.tagsText"
             type="text"
             placeholder="тег1, тег2…"
-          />
+          /> -->
         </div>
       </section>
 
