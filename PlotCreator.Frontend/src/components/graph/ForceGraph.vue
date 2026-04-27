@@ -306,24 +306,26 @@ const viewTransform = computed(
       <g
         v-for="edge in renderEdges"
         :key="edge.rel.id"
-        :opacity="edge.dimmed ? 0.08 : edge.lit ? 1 : 0.28"
+        :opacity="edge.dimmed ? 0.12 : 1"
         class="graph__edge-group"
       >
         <path
           :d="`M${edge.fp.x},${edge.fp.y} Q${edge.mx},${edge.my} ${edge.tp.x},${edge.tp.y}`"
           fill="none"
-          :stroke="edge.lit ? edge.fromColor : 'rgba(101, 67, 33, 0.55)'"
-          :stroke-width="edge.lit ? 2 : 1.1"
+          :stroke="edge.lit ? edge.fromColor : 'rgba(101, 67, 33, 0.65)'"
+          :stroke-width="edge.lit ? 2.2 : 1.2"
           :stroke-dasharray="edge.lit ? 'none' : '5 5'"
+          stroke-linecap="round"
         />
         <text
-          v-if="edge.lit"
+          v-if="!edge.dimmed"
           :x="edge.lx"
           :y="edge.ly"
           text-anchor="middle"
           dominant-baseline="middle"
-          font-size="11"
-          fill="rgba(58, 36, 20, 0.78)"
+          :font-size="edge.lit ? 12 : 11"
+          :font-weight="edge.lit ? 600 : 500"
+          :fill="edge.lit ? edge.fromColor : 'rgba(50, 30, 16, 0.9)'"
           class="graph__edge-label"
         >
           {{ edge.rel.label }}
@@ -454,6 +456,11 @@ const viewTransform = computed(
   letter-spacing: 0.04em;
   pointer-events: none;
   user-select: none;
+  paint-order: stroke;
+  stroke: var(--bg);
+  stroke-width: 4px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .graph__node {
