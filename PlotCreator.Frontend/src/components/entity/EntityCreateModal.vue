@@ -77,7 +77,6 @@ function submit() {
       <header class="dialog__head" :style="headerStyle">
         <div>
           <div class="dialog__title">Новая сущность</div>
-          <div class="dialog__sub">Мир Эред'Халь</div>
         </div>
         <button class="dialog__close" @click="close">×</button>
       </header>
