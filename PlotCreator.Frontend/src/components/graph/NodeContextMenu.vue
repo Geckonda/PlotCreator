@@ -70,7 +70,7 @@ function pickDelete() {
     </div>
     <button type="button" class="ctx-menu__item" @click="pickOpen">
       <span class="ctx-menu__item-icon">🔍</span>
-      <span>Открыть детали</span>
+      <span>Открыть подробнее</span>
     </button>
     <button
       type="button"

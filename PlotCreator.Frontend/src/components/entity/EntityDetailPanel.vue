@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import type { Entity, EntityStatus, Relation } from '@/types/entity'
 import { entityKey, relationFromKey, relationToKey } from '@/types/entity'
 import type { FullEntityDto } from '@/types/api'
@@ -25,7 +26,20 @@ const emit = defineEmits<{
 
 const entitiesStore = useEntitiesStore()
 const worldsStore = useWorldsStore()
+const router = useRouter()
 const cfg = computed(() => ENTITY_TYPES[props.entity.type])
+
+function openFullView() {
+  if (worldsStore.currentId === null) return
+  router.push({
+    name: 'entity-detail',
+    params: {
+      id: worldsStore.currentId,
+      type: props.entity.type,
+      entityId: props.entity.id,
+    },
+  })
+}
 
 const loading = ref(false)
 const saving = ref(false)
@@ -222,7 +236,16 @@ const saveStyle = computed(() => ({
     <header class="panel__head" :style="headerStyle">
       <div class="panel__head-row">
         <TypeBadge :type="entity.type" />
-        <button class="panel__close" @click="emit('close')">×</button>
+        <div class="panel__head-actions">
+          <button
+            class="panel__expand"
+            title="Открыть подробнее"
+            @click="openFullView"
+          >
+            ↗ Подробнее
+          </button>
+          <button class="panel__close" @click="emit('close')">×</button>
+        </div>
       </div>
       <input
         v-model="form.name"
@@ -390,6 +413,30 @@ const saveStyle = computed(() => ({
 
 .panel__close:hover {
   color: var(--text);
+}
+
+.panel__head-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.panel__expand {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.panel__expand:hover {
+  color: var(--text);
+  border-color: var(--border2);
 }
 
 .panel__name-input {

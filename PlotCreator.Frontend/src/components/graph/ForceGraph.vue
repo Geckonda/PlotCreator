@@ -19,6 +19,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'select', entity: Entity): void
+  (e: 'open-details', entity: Entity): void
   (e: 'deselect'): void
   (e: 'delete-entity', entity: Entity): void
 }>()
@@ -333,7 +334,7 @@ function onNodeMouseDown(evt: MouseEvent, key: EntityKey) {
 
 function onContextMenuOpenDetails() {
   if (!contextMenu.value) return
-  emit('select', contextMenu.value.entity)
+  emit('open-details', contextMenu.value.entity)
 }
 
 function onContextMenuDelete() {

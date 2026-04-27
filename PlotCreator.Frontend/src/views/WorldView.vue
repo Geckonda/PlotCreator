@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useWorldsStore } from '@/stores/worlds'
 import { useEntitiesStore } from '@/stores/entities'
@@ -17,6 +17,7 @@ import { entityKey } from '@/types/entity'
 import type { EntityCreatePayload } from '@/types/api'
 
 const route = useRoute()
+const router = useRouter()
 const worldsStore = useWorldsStore()
 const entitiesStore = useEntitiesStore()
 const ui = useWorldUiStore()
@@ -55,6 +56,17 @@ const selectedEntity = computed(() =>
 
 function selectEntity(entity: Entity) {
   ui.selectedKey = entityKey(entity.type, entity.id)
+}
+
+function goToDetail(entity: Entity) {
+  router.push({
+    name: 'entity-detail',
+    params: {
+      id: worldId.value,
+      type: entity.type,
+      entityId: entity.id,
+    },
+  })
 }
 
 function closeDetail() {
@@ -103,6 +115,7 @@ async function handleDelete(entity: Entity) {
         :selected-key="ui.selectedKey"
         :filter-type="activeType"
         @select="selectEntity"
+        @open-details="goToDetail"
         @deselect="closeDetail"
         @delete-entity="handleDelete"
       />
@@ -112,7 +125,7 @@ async function handleDelete(entity: Entity) {
         :entities="filteredEntities"
         :relations="entitiesStore.relations"
         :filter-type="activeType"
-        @select="selectEntity"
+        @select="goToDetail"
       />
 
       <TimelineView
