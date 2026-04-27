@@ -13,6 +13,7 @@ import ForceGraph from '@/components/graph/ForceGraph.vue'
 import EntityDetailPanel from '@/components/entity/EntityDetailPanel.vue'
 import EntityCreateModal from '@/components/entity/EntityCreateModal.vue'
 import type { Entity } from '@/types/entity'
+import { entityKey } from '@/types/entity'
 import type { EntityCreatePayload } from '@/types/api'
 
 const route = useRoute()
@@ -47,15 +48,17 @@ const filteredEntities = computed(() => {
 })
 
 const selectedEntity = computed(() =>
-  ui.selectedId !== null ? entitiesStore.byId.get(ui.selectedId) ?? null : null,
+  ui.selectedKey !== null
+    ? entitiesStore.byKey.get(ui.selectedKey) ?? null
+    : null,
 )
 
 function selectEntity(entity: Entity) {
-  ui.selectedId = entity.id
+  ui.selectedKey = entityKey(entity.type, entity.id)
 }
 
 function closeDetail() {
-  ui.selectedId = null
+  ui.selectedKey = null
 }
 
 function closeCreate() {
@@ -65,7 +68,7 @@ function closeCreate() {
 async function handleCreate(payload: EntityCreatePayload) {
   try {
     const entity = await entitiesStore.create(worldId.value, payload)
-    ui.selectedId = entity.id
+    ui.selectedKey = entityKey(entity.type, entity.id)
     ui.view = 'grid'
     ui.activeType = null
   } catch (err) {
@@ -78,7 +81,7 @@ async function handleCreate(payload: EntityCreatePayload) {
 async function handleDelete(entity: Entity) {
   try {
     await entitiesStore.remove(entity)
-    ui.selectedId = null
+    ui.selectedKey = null
   } catch (err) {
     console.error('Delete failed', err)
   }
@@ -96,7 +99,7 @@ async function handleDelete(entity: Entity) {
         v-if="view === 'graph'"
         :entities="filteredEntities"
         :relations="entitiesStore.relations"
-        :selected-id="ui.selectedId"
+        :selected-key="ui.selectedKey"
         :filter-type="activeType"
         @select="selectEntity"
         @deselect="closeDetail"

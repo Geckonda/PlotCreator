@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import type { Entity, EntityType, Relation } from '@/types/entity'
+import type { Entity, EntityKey, EntityType, Relation } from '@/types/entity'
+import { entityKey, relationFromKey, relationToKey } from '@/types/entity'
 import type {
   EntityCreatePayload,
   FullEntityDto,
@@ -10,7 +11,8 @@ import { toEntity, toRelation } from '@/types/api'
 import * as entitiesApi from '@/services/entities'
 import * as relationsApi from '@/services/relations'
 
-const detailKey = (type: EntityType, id: number) => `${type}:${id}`
+// Same string shape we use for byKey lookups — kept as one source of truth.
+const detailKey = entityKey
 
 export const useEntitiesStore = defineStore('entities', () => {
   const entities = ref<Entity[]>([])
@@ -19,9 +21,9 @@ export const useEntitiesStore = defineStore('entities', () => {
   const loading = ref(false)
   const error = ref<string | null>(null)
 
-  const byId = computed(() => {
-    const m = new Map<number, Entity>()
-    for (const e of entities.value) m.set(e.id, e)
+  const byKey = computed(() => {
+    const m = new Map<EntityKey, Entity>()
+    for (const e of entities.value) m.set(entityKey(e.type, e.id), e)
     return m
   })
 
@@ -69,18 +71,21 @@ export const useEntitiesStore = defineStore('entities', () => {
   async function update(type: EntityType, id: number, body: object) {
     const dto = await entitiesApi.updateEntity(type, id, body)
     details.value.set(detailKey(type, id), dto)
-    const i = entities.value.findIndex((e) => e.id === id && e.type === type)
+    const i = entities.value.findIndex((e) => e.type === type && e.id === id)
     if (i >= 0) entities.value[i] = toEntity(dto)
     return dto
   }
 
   async function remove(entity: Entity) {
     await entitiesApi.deleteEntity(entity.type, entity.id)
-    entities.value = entities.value.filter((e) => e.id !== entity.id)
-    relations.value = relations.value.filter(
-      (r) => r.from !== entity.id && r.to !== entity.id,
+    const k = entityKey(entity.type, entity.id)
+    entities.value = entities.value.filter(
+      (e) => entityKey(e.type, e.id) !== k,
     )
-    details.value.delete(detailKey(entity.type, entity.id))
+    relations.value = relations.value.filter(
+      (r) => relationFromKey(r) !== k && relationToKey(r) !== k,
+    )
+    details.value.delete(k)
   }
 
   async function createRelation(
@@ -98,15 +103,18 @@ export const useEntitiesStore = defineStore('entities', () => {
     relations.value = relations.value.filter((r) => r.id !== id)
   }
 
-  function relationsFor(id: number) {
-    return relations.value.filter((r) => r.from === id || r.to === id)
+  function relationsFor(type: EntityType, id: number) {
+    const k = entityKey(type, id)
+    return relations.value.filter(
+      (r) => relationFromKey(r) === k || relationToKey(r) === k,
+    )
   }
 
   return {
     entities,
     relations,
     details,
-    byId,
+    byKey,
     loading,
     error,
     fetchForWorld,

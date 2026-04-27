@@ -153,6 +153,8 @@ export const toEntity = (dto: EntitySummaryDto): Entity => ({
 export const toRelation = (dto: RelationDto): Relation => ({
   id: dto.id,
   from: dto.fromId,
+  fromType: dto.fromType,
   to: dto.toId,
+  toType: dto.toType,
   label: dto.label,
 })

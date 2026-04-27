@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
-import type { Entity, EntityStatus } from '@/types/entity'
+import type { Entity, EntityStatus, Relation } from '@/types/entity'
+import { entityKey, relationFromKey, relationToKey } from '@/types/entity'
 import type { FullEntityDto } from '@/types/api'
 import { ENTITY_TYPES } from '@/config/entityTypes'
 import { STATUS_LIST } from '@/config/statuses'
@@ -120,15 +121,22 @@ async function save() {
   }
 }
 
-const connRels = computed(() => entitiesStore.relationsFor(props.entity.id))
+const selfKey = computed(() => entityKey(props.entity.type, props.entity.id))
 
-function getOther(rel: { from: number; to: number }) {
-  const otherId = rel.from === props.entity.id ? rel.to : rel.from
-  return entitiesStore.byId.get(otherId) ?? null
+const connRels = computed(() =>
+  entitiesStore.relationsFor(props.entity.type, props.entity.id),
+)
+
+function getOther(rel: Relation) {
+  const otherKey =
+    relationFromKey(rel) === selfKey.value
+      ? relationToKey(rel)
+      : relationFromKey(rel)
+  return entitiesStore.byKey.get(otherKey) ?? null
 }
 
-function getDirection(rel: { from: number }) {
-  return rel.from === props.entity.id ? '→' : '←'
+function getDirection(rel: Relation) {
+  return relationFromKey(rel) === selfKey.value ? '→' : '←'
 }
 
 async function deleteRelation(id: number) {

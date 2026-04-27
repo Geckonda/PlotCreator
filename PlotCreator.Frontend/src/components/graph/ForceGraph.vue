@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import type { Entity, EntityType, Relation } from '@/types/entity'
+import type { Entity, EntityKey, EntityType, Relation } from '@/types/entity'
+import { entityKey, relationFromKey, relationToKey } from '@/types/entity'
 import { ENTITY_TYPES, ENTITY_TYPE_LIST } from '@/config/entityTypes'
 import { useElementSize } from '@/composables/useElementSize'
 import { useForceSimulation } from '@/composables/useForceSimulation'
@@ -8,7 +9,7 @@ import { useForceSimulation } from '@/composables/useForceSimulation'
 const props = defineProps<{
   entities: Entity[]
   relations: Relation[]
-  selectedId: number | null
+  selectedKey: EntityKey | null
   filterType: EntityType | null
 }>()
 
@@ -19,7 +20,7 @@ const emit = defineEmits<{
 
 const containerRef = ref<HTMLElement | null>(null)
 const svgRef = ref<SVGSVGElement | null>(null)
-const hovered = ref<number | null>(null)
+const hovered = ref<EntityKey | null>(null)
 
 const { width, height } = useElementSize(containerRef)
 
@@ -31,42 +32,47 @@ const { positions, tick, dragId, setDragPosition, start } = sim
 
 onMounted(() => start())
 
-const entityById = computed(() => {
-  const m = new Map<number, Entity>()
-  for (const e of props.entities) m.set(e.id, e)
+const entityByKey = computed(() => {
+  const m = new Map<EntityKey, Entity>()
+  for (const e of props.entities) m.set(entityKey(e.type, e.id), e)
   return m
 })
 
 const activeSet = computed(() => {
-  const ids = new Set<number>()
+  const keys = new Set<EntityKey>()
   for (const e of props.entities) {
-    if (!props.filterType || e.type === props.filterType) ids.add(e.id)
+    if (!props.filterType || e.type === props.filterType)
+      keys.add(entityKey(e.type, e.id))
   }
-  return ids
+  return keys
 })
 
 const connectedToHover = computed(() => {
   if (hovered.value === null) return null
-  const ids = new Set<number>([hovered.value])
+  const keys = new Set<EntityKey>([hovered.value])
   for (const r of props.relations) {
-    if (r.from === hovered.value || r.to === hovered.value) {
-      ids.add(r.from)
-      ids.add(r.to)
+    const fk = relationFromKey(r)
+    const tk = relationToKey(r)
+    if (fk === hovered.value || tk === hovered.value) {
+      keys.add(fk)
+      keys.add(tk)
     }
   }
-  return ids
+  return keys
 })
 
 const connectedToSelected = computed(() => {
-  if (props.selectedId === null) return null
-  const ids = new Set<number>([props.selectedId])
+  if (props.selectedKey === null) return null
+  const keys = new Set<EntityKey>([props.selectedKey])
   for (const r of props.relations) {
-    if (r.from === props.selectedId || r.to === props.selectedId) {
-      ids.add(r.from)
-      ids.add(r.to)
+    const fk = relationFromKey(r)
+    const tk = relationToKey(r)
+    if (fk === props.selectedKey || tk === props.selectedKey) {
+      keys.add(fk)
+      keys.add(tk)
     }
   }
-  return ids
+  return keys
 })
 
 interface RenderEdge {
@@ -86,20 +92,22 @@ const renderEdges = computed<RenderEdge[]>(() => {
   void tick.value
   const out: RenderEdge[] = []
   for (const rel of props.relations) {
-    const fp = positions[rel.from]
-    const tp = positions[rel.to]
+    const fk = relationFromKey(rel)
+    const tk = relationToKey(rel)
+    const fp = positions[fk]
+    const tp = positions[tk]
     if (!fp || !tp) continue
-    const aOk = activeSet.value.has(rel.from)
-    const bOk = activeSet.value.has(rel.to)
+    const aOk = activeSet.value.has(fk)
+    const bOk = activeSet.value.has(tk)
     if (!aOk && !bOk) continue
     const isHovLit =
       !!connectedToHover.value &&
-      connectedToHover.value.has(rel.from) &&
-      connectedToHover.value.has(rel.to)
+      connectedToHover.value.has(fk) &&
+      connectedToHover.value.has(tk)
     const isSelLit =
       !!connectedToSelected.value &&
-      connectedToSelected.value.has(rel.from) &&
-      connectedToSelected.value.has(rel.to)
+      connectedToSelected.value.has(fk) &&
+      connectedToSelected.value.has(tk)
     const lit = isHovLit || isSelLit
     const dimmed =
       !aOk ||
@@ -109,7 +117,7 @@ const renderEdges = computed<RenderEdge[]>(() => {
     const my = (fp.y + tp.y) / 2 - (tp.x - fp.x) * 0.18
     const lx = 0.25 * fp.x + 0.5 * mx + 0.25 * tp.x
     const ly = 0.25 * fp.y + 0.5 * my + 0.25 * tp.y
-    const fromEntity = entityById.value.get(rel.from)
+    const fromEntity = entityByKey.value.get(fk)
     const fromColor = fromEntity
       ? ENTITY_TYPES[fromEntity.type].color
       : '#7a4824'
@@ -119,6 +127,7 @@ const renderEdges = computed<RenderEdge[]>(() => {
 })
 
 interface RenderNode {
+  key: EntityKey
   entity: Entity
   cfg: (typeof ENTITY_TYPES)[EntityType]
   x: number
@@ -135,19 +144,21 @@ const renderNodes = computed<RenderNode[]>(() => {
   void tick.value
   const out: RenderNode[] = []
   for (const entity of props.entities) {
-    const p = positions[entity.id]
+    const k = entityKey(entity.type, entity.id)
+    const p = positions[k]
     if (!p) continue
     const cfg = ENTITY_TYPES[entity.type]
-    const active = activeSet.value.has(entity.id)
-    const isSel = props.selectedId === entity.id
-    const isHov = hovered.value === entity.id
+    const active = activeSet.value.has(k)
+    const isSel = props.selectedKey === k
+    const isHov = hovered.value === k
     const bright = isSel || isHov
     const dimmed =
       !active ||
       (!!connectedToHover.value &&
-        !connectedToHover.value.has(entity.id) &&
+        !connectedToHover.value.has(k) &&
         !isSel)
     out.push({
+      key: k,
       entity,
       cfg,
       x: p.x,
@@ -174,13 +185,13 @@ function truncate(name: string): string {
   return name.length > 16 ? name.slice(0, 15) + '…' : name
 }
 
-function onNodeMouseDown(evt: MouseEvent, id: number) {
+function onNodeMouseDown(evt: MouseEvent, key: EntityKey) {
   evt.stopPropagation()
-  dragId.value = id
+  dragId.value = key
   const onMove = (ev: MouseEvent) => {
     const rect = svgRef.value?.getBoundingClientRect()
     if (!rect) return
-    setDragPosition(id, ev.clientX - rect.left, ev.clientY - rect.top)
+    setDragPosition(key, ev.clientX - rect.left, ev.clientY - rect.top)
   }
   const onUp = () => {
     dragId.value = null
@@ -254,12 +265,12 @@ function onNodeClick(evt: MouseEvent, entity: Entity) {
 
       <g
         v-for="node in renderNodes"
-        :key="node.entity.id"
+        :key="node.key"
         :transform="`translate(${node.x},${node.y})`"
         :opacity="node.dimmed ? 0.18 : 1"
         class="graph__node"
-        @mousedown="onNodeMouseDown($event, node.entity.id)"
-        @mouseenter="hovered = node.entity.id"
+        @mousedown="onNodeMouseDown($event, node.key)"
+        @mouseenter="hovered = node.key"
         @mouseleave="hovered = null"
         @click="onNodeClick($event, node.entity)"
       >
