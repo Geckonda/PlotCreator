@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import type { Entity, EntityKey, EntityType, Relation } from '@/types/entity'
 import { entityKey, relationFromKey, relationToKey } from '@/types/entity'
 import { ENTITY_TYPES, ENTITY_TYPE_LIST } from '@/config/entityTypes'
 import { useElementSize } from '@/composables/useElementSize'
 import { useForceSimulation } from '@/composables/useForceSimulation'
+import NodeContextMenu from './NodeContextMenu.vue'
+import RelationLabelPopover from './RelationLabelPopover.vue'
+import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
 
 const props = defineProps<{
+  worldId: number
   entities: Entity[]
   relations: Relation[]
   selectedKey: EntityKey | null
@@ -16,6 +20,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'select', entity: Entity): void
   (e: 'deselect'): void
+  (e: 'delete-entity', entity: Entity): void
 }>()
 
 const containerRef = ref<HTMLElement | null>(null)
@@ -26,6 +31,18 @@ const view = ref({ x: 0, y: 0, k: 1 })
 const isPanning = ref(false)
 const MIN_ZOOM = 0.2
 const MAX_ZOOM = 4
+
+const linkSource = ref<EntityKey | null>(null)
+const linkPointer = ref<{ x: number; y: number } | null>(null)
+const linkHover = ref<EntityKey | null>(null)
+const contextMenu = ref<{ entity: Entity; x: number; y: number } | null>(null)
+const pendingRelation = ref<{
+  from: Entity
+  to: Entity
+  x: number
+  y: number
+} | null>(null)
+const pendingDelete = ref<Entity | null>(null)
 
 const { width, height } = useElementSize(containerRef)
 
@@ -84,11 +101,13 @@ interface RenderEdge {
   rel: Relation
   fp: { x: number; y: number }
   tp: { x: number; y: number }
+  tp_adj: { x: number; y: number }
   mx: number
   my: number
   lx: number
   ly: number
   fromColor: string
+  fromType: EntityType
   lit: boolean
   dimmed: boolean
 }
@@ -118,6 +137,18 @@ const renderEdges = computed<RenderEdge[]>(() => {
       !aOk ||
       !bOk ||
       (!!connectedToHover.value && !isHovLit && !isSelLit)
+    
+    // Calculate adjusted target position to stop at node boundary
+    const toEntity = entityByKey.value.get(tk)
+    const targetRadius = toEntity ? ENTITY_TYPES[toEntity.type].radius : 12
+    const dx = tp.x - fp.x
+    const dy = tp.y - fp.y
+    const dist = Math.sqrt(dx * dx + dy * dy)
+    const tp_adj = dist > 0 ? {
+      x: tp.x - (dx / dist) * (targetRadius + 2),
+      y: tp.y - (dy / dist) * (targetRadius + 2)
+    } : tp
+    
     const mx = (fp.x + tp.x) / 2 + (tp.y - fp.y) * 0.18
     const my = (fp.y + tp.y) / 2 - (tp.x - fp.x) * 0.18
     const lx = 0.25 * fp.x + 0.5 * mx + 0.25 * tp.x
@@ -126,7 +157,8 @@ const renderEdges = computed<RenderEdge[]>(() => {
     const fromColor = fromEntity
       ? ENTITY_TYPES[fromEntity.type].color
       : '#7a4824'
-    out.push({ rel, fp, tp, mx, my, lx, ly, fromColor, lit, dimmed })
+    const fromType = fromEntity?.type ?? 'Character'
+    out.push({ rel, fp, tp: tp_adj, tp_adj, mx, my, lx, ly, fromColor, fromType, lit, dimmed })
   }
   return out
 })
@@ -155,7 +187,7 @@ const renderNodes = computed<RenderNode[]>(() => {
     const cfg = ENTITY_TYPES[entity.type]
     const active = activeSet.value.has(k)
     const isSel = props.selectedKey === k
-    const isHov = hovered.value === k
+    const isHov = hovered.value === k || linkHover.value === k
     const bright = isSel || isHov
     const dimmed =
       !active ||
@@ -201,22 +233,152 @@ function clientToGraph(clientX: number, clientY: number) {
   }
 }
 
+function findNodeAt(gx: number, gy: number): EntityKey | null {
+  for (const node of renderNodes.value) {
+    const dx = gx - node.x
+    const dy = gy - node.y
+    const r = node.r + 6
+    if (dx * dx + dy * dy <= r * r) return node.key
+  }
+  return null
+}
+
 function onNodeMouseDown(evt: MouseEvent, key: EntityKey) {
   evt.stopPropagation()
-  if (evt.button !== 0) return
-  dragId.value = key
-  const onMove = (ev: MouseEvent) => {
-    const p = clientToGraph(ev.clientX, ev.clientY)
-    setDragPosition(key, p.x, p.y)
+  if (evt.button === 0) {
+    dragId.value = key
+    const onMove = (ev: MouseEvent) => {
+      const p = clientToGraph(ev.clientX, ev.clientY)
+      setDragPosition(key, p.x, p.y)
+    }
+    const onUp = () => {
+      dragId.value = null
+      window.removeEventListener('mousemove', onMove)
+      window.removeEventListener('mouseup', onUp)
+    }
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mouseup', onUp)
+    return
   }
-  const onUp = () => {
-    dragId.value = null
-    window.removeEventListener('mousemove', onMove)
-    window.removeEventListener('mouseup', onUp)
+  if (evt.button === 2) {
+    evt.preventDefault()
+    contextMenu.value = null
+    pendingRelation.value = null
+    const sourceEntity = entityByKey.value.get(key)
+    if (!sourceEntity) return
+    const startX = evt.clientX
+    const startY = evt.clientY
+    let moved = false
+
+    const onMove = (ev: MouseEvent) => {
+      const dx = ev.clientX - startX
+      const dy = ev.clientY - startY
+      if (!moved && dx * dx + dy * dy > 16) {
+        moved = true
+        linkSource.value = key
+      }
+      if (moved) {
+        const p = clientToGraph(ev.clientX, ev.clientY)
+        linkPointer.value = p
+        const hit = findNodeAt(p.x, p.y)
+        linkHover.value = hit && hit !== key ? hit : null
+      }
+    }
+
+    const cleanup = () => {
+      linkSource.value = null
+      linkPointer.value = null
+      linkHover.value = null
+      window.removeEventListener('mousemove', onMove)
+      window.removeEventListener('mouseup', onUp)
+      window.removeEventListener('keydown', onKey, true)
+    }
+
+    const onUp = (ev: MouseEvent) => {
+      const targetKey = linkHover.value
+      if (!moved) {
+        const rect = containerRef.value?.getBoundingClientRect()
+        const cx = rect ? ev.clientX - rect.left : ev.clientX
+        const cy = rect ? ev.clientY - rect.top : ev.clientY
+        contextMenu.value = { entity: sourceEntity, x: cx, y: cy }
+      } else if (targetKey) {
+        const targetEntity = entityByKey.value.get(targetKey)
+        if (targetEntity) {
+          const rect = containerRef.value?.getBoundingClientRect()
+          const cx = rect ? ev.clientX - rect.left : ev.clientX
+          const cy = rect ? ev.clientY - rect.top : ev.clientY
+          pendingRelation.value = {
+            from: sourceEntity,
+            to: targetEntity,
+            x: cx,
+            y: cy,
+          }
+        }
+      }
+      cleanup()
+    }
+
+    const onKey = (ev: KeyboardEvent) => {
+      if (ev.key === 'Escape') {
+        ev.stopPropagation()
+        cleanup()
+      }
+    }
+
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mouseup', onUp)
+    window.addEventListener('keydown', onKey, true)
   }
-  window.addEventListener('mousemove', onMove)
-  window.addEventListener('mouseup', onUp)
 }
+
+function onContextMenuOpenDetails() {
+  if (!contextMenu.value) return
+  emit('select', contextMenu.value.entity)
+}
+
+function onContextMenuDelete() {
+  if (!contextMenu.value) return
+  pendingDelete.value = contextMenu.value.entity
+}
+
+function onConfirmDelete() {
+  if (!pendingDelete.value) return
+  emit('delete-entity', pendingDelete.value)
+  pendingDelete.value = null
+}
+
+function onCancelDelete() {
+  pendingDelete.value = null
+}
+
+function closeContextMenu() {
+  contextMenu.value = null
+}
+
+function onRelationCreated() {
+  pendingRelation.value = null
+}
+
+function onRelationCancel() {
+  pendingRelation.value = null
+}
+
+watch(view, () => {
+  contextMenu.value = null
+  pendingRelation.value = null
+})
+
+const linkSourcePos = computed(() => {
+  if (!linkSource.value) return null
+  const p = positions[linkSource.value]
+  return p ? { x: p.x, y: p.y } : null
+})
+
+const linkSourceColor = computed(() => {
+  if (!linkSource.value) return '#7a4824'
+  const e = entityByKey.value.get(linkSource.value)
+  return e ? ENTITY_TYPES[e.type].color : '#7a4824'
+})
 
 function onSvgMouseDown(evt: MouseEvent) {
   if (evt.button !== 0) return
@@ -287,6 +449,7 @@ const viewTransform = computed(
       }"
       @mousedown="onSvgMouseDown"
       @wheel="onWheel"
+      @contextmenu.prevent
     >
       <defs>
         <radialGradient
@@ -300,6 +463,20 @@ const viewTransform = computed(
           <stop offset="0%" :stop-color="cfg.color" stop-opacity="0.4" />
           <stop offset="100%" :stop-color="cfg.color" stop-opacity="0.05" />
         </radialGradient>
+
+        <marker
+          v-for="[type, cfg] in ENTITY_TYPE_LIST"
+          :key="`arrow-${type}`"
+          :id="`arrow-${type}`"
+          markerWidth="10"
+          markerHeight="10"
+          refX="8"
+          refY="3"
+          orient="auto"
+          markerUnits="strokeWidth"
+        >
+          <path d="M0,0 L0,6 L9,3 z" :fill="cfg.color" />
+        </marker>
       </defs>
 
       <g :transform="viewTransform">
@@ -310,12 +487,13 @@ const viewTransform = computed(
         class="graph__edge-group"
       >
         <path
-          :d="`M${edge.fp.x},${edge.fp.y} Q${edge.mx},${edge.my} ${edge.tp.x},${edge.tp.y}`"
+          :d="`M${edge.fp.x},${edge.fp.y} Q${edge.mx},${edge.my} ${edge.tp_adj.x},${edge.tp_adj.y}`"
           fill="none"
           :stroke="edge.lit ? edge.fromColor : 'rgba(101, 67, 33, 0.65)'"
           :stroke-width="edge.lit ? 2.2 : 1.2"
           :stroke-dasharray="edge.lit ? 'none' : '5 5'"
           stroke-linecap="round"
+          :marker-end="`url(#arrow-${edge.fromType})`"
         />
         <text
           v-if="!edge.dimmed"
@@ -397,8 +575,54 @@ const viewTransform = computed(
           {{ truncate(node.entity.name) }}
         </text>
       </g>
+
+      <line
+        v-if="linkSourcePos && linkPointer"
+        :x1="linkSourcePos.x"
+        :y1="linkSourcePos.y"
+        :x2="linkPointer.x"
+        :y2="linkPointer.y"
+        :stroke="linkSourceColor"
+        stroke-width="2"
+        stroke-dasharray="6 4"
+        stroke-linecap="round"
+        opacity="0.85"
+        class="graph__draglink"
+      />
       </g>
     </svg>
+
+    <NodeContextMenu
+      v-if="contextMenu"
+      :entity="contextMenu.entity"
+      :x="contextMenu.x"
+      :y="contextMenu.y"
+      @open-details="onContextMenuOpenDetails"
+      @delete="onContextMenuDelete"
+      @close="closeContextMenu"
+    />
+
+    <RelationLabelPopover
+      v-if="pendingRelation"
+      :world-id="worldId"
+      :from="pendingRelation.from"
+      :to="pendingRelation.to"
+      :x="pendingRelation.x"
+      :y="pendingRelation.y"
+      @created="onRelationCreated"
+      @cancel="onRelationCancel"
+    />
+
+    <ConfirmDialog
+      v-if="pendingDelete"
+      tone="danger"
+      title="Удаление"
+      :message="`Удалить «${pendingDelete.name}»?`"
+      detail="Все связи этой сущности также будут удалены."
+      confirm-label="Удалить"
+      @confirm="onConfirmDelete"
+      @cancel="onCancelDelete"
+    />
 
     <div class="graph__legend">
       <div
@@ -419,7 +643,7 @@ const viewTransform = computed(
     </div>
 
     <div class="graph__hint">
-      Перетащите узел · Колесо — масштаб · Тяните фон — двигать
+      ЛКМ — узел/панорама · Колесо — масштаб · ПКМ — меню или связь
     </div>
   </div>
 </template>
@@ -449,6 +673,10 @@ const viewTransform = computed(
 
 .graph__edge-group {
   transition: opacity 0.2s;
+}
+
+.graph__draglink {
+  pointer-events: none;
 }
 
 .graph__edge-label {

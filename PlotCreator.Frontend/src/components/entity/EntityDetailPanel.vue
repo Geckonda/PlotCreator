@@ -12,6 +12,7 @@ import TypeBadge from '@/components/ui/TypeBadge.vue'
 import DynamicField from '@/components/entity/DynamicField.vue'
 import RelationCreator from '@/components/entity/RelationCreator.vue'
 import TagsInput from '@/components/forms/TagsInput.vue'
+import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
 
 const props = defineProps<{
   entity: Entity
@@ -137,12 +138,67 @@ function getDirection(rel: Relation) {
   return relationFromKey(rel) === selfKey.value ? '→' : '←'
 }
 
-async function deleteRelation(id: number) {
+type ConfirmKind =
+  | { kind: 'entity' }
+  | { kind: 'relation'; id: number; otherName: string; label: string }
+
+const confirmState = ref<ConfirmKind | null>(null)
+const confirmBusy = ref(false)
+
+const confirmTitle = computed(() =>
+  confirmState.value?.kind === 'relation' ? 'Удаление связи' : 'Удаление',
+)
+
+const confirmMessage = computed(() => {
+  if (!confirmState.value) return ''
+  if (confirmState.value.kind === 'entity') {
+    return `Удалить «${props.entity.name}»?`
+  }
+  return `Удалить связь «${confirmState.value.label}» с «${confirmState.value.otherName}»?`
+})
+
+const confirmDetail = computed(() =>
+  confirmState.value?.kind === 'entity'
+    ? 'Все связи этой сущности также будут удалены.'
+    : undefined,
+)
+
+function askDeleteEntity() {
+  confirmState.value = { kind: 'entity' }
+}
+
+function askDeleteRelation(rel: Relation) {
+  const other = getOther(rel)
+  confirmState.value = {
+    kind: 'relation',
+    id: rel.id,
+    otherName: other?.name ?? '—',
+    label: rel.label,
+  }
+}
+
+async function onConfirm() {
+  if (!confirmState.value || confirmBusy.value) return
+  const state = confirmState.value
+  if (state.kind === 'entity') {
+    confirmState.value = null
+    emit('delete', props.entity)
+    return
+  }
+  confirmBusy.value = true
   try {
-    await entitiesStore.removeRelation(id)
+    await entitiesStore.removeRelation(state.id)
+    confirmState.value = null
   } catch (e) {
     console.error('Delete relation failed', e)
+  } finally {
+    confirmBusy.value = false
   }
+}
+
+function onCancel() {
+  if (confirmBusy.value) return
+  confirmState.value = null
 }
 
 const panelStyle = computed(() => ({
@@ -264,7 +320,7 @@ const saveStyle = computed(() => ({
               <button
                 class="panel__conn-del"
                 title="Удалить связь"
-                @click="deleteRelation(rel.id)"
+                @click="askDeleteRelation(rel)"
               >
                 ×
               </button>
@@ -285,8 +341,20 @@ const saveStyle = computed(() => ({
       >
         {{ saving ? 'Сохранение…' : dirty ? 'Сохранить' : 'Сохранено' }}
       </button>
-      <button class="panel__delete" @click="emit('delete', entity)">✕</button>
+      <button class="panel__delete" @click="askDeleteEntity">✕</button>
     </footer>
+
+    <ConfirmDialog
+      v-if="confirmState"
+      tone="danger"
+      :title="confirmTitle"
+      :message="confirmMessage"
+      :detail="confirmDetail"
+      confirm-label="Удалить"
+      :busy="confirmBusy"
+      @confirm="onConfirm"
+      @cancel="onCancel"
+    />
   </aside>
 </template>
 

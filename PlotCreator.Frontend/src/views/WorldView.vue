@@ -97,12 +97,14 @@ async function handleDelete(entity: Entity) {
 
       <ForceGraph
         v-if="view === 'graph'"
+        :world-id="worldId"
         :entities="filteredEntities"
         :relations="entitiesStore.relations"
         :selected-key="ui.selectedKey"
         :filter-type="activeType"
         @select="selectEntity"
         @deselect="closeDetail"
+        @delete-entity="handleDelete"
       />
 
       <GridView
