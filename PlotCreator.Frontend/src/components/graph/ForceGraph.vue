@@ -22,6 +22,11 @@ const containerRef = ref<HTMLElement | null>(null)
 const svgRef = ref<SVGSVGElement | null>(null)
 const hovered = ref<EntityKey | null>(null)
 
+const view = ref({ x: 0, y: 0, k: 1 })
+const isPanning = ref(false)
+const MIN_ZOOM = 0.2
+const MAX_ZOOM = 4
+
 const { width, height } = useElementSize(containerRef)
 
 const entitiesRef = computed(() => props.entities)
@@ -185,13 +190,24 @@ function truncate(name: string): string {
   return name.length > 16 ? name.slice(0, 15) + '…' : name
 }
 
+function clientToGraph(clientX: number, clientY: number) {
+  const rect = svgRef.value?.getBoundingClientRect()
+  if (!rect) return { x: 0, y: 0 }
+  const sx = clientX - rect.left
+  const sy = clientY - rect.top
+  return {
+    x: (sx - view.value.x) / view.value.k,
+    y: (sy - view.value.y) / view.value.k,
+  }
+}
+
 function onNodeMouseDown(evt: MouseEvent, key: EntityKey) {
   evt.stopPropagation()
+  if (evt.button !== 0) return
   dragId.value = key
   const onMove = (ev: MouseEvent) => {
-    const rect = svgRef.value?.getBoundingClientRect()
-    if (!rect) return
-    setDragPosition(key, ev.clientX - rect.left, ev.clientY - rect.top)
+    const p = clientToGraph(ev.clientX, ev.clientY)
+    setDragPosition(key, p.x, p.y)
   }
   const onUp = () => {
     dragId.value = null
@@ -202,14 +218,60 @@ function onNodeMouseDown(evt: MouseEvent, key: EntityKey) {
   window.addEventListener('mouseup', onUp)
 }
 
-function onBackgroundClick() {
-  emit('deselect')
+function onSvgMouseDown(evt: MouseEvent) {
+  if (evt.button !== 0) return
+  const startX = evt.clientX
+  const startY = evt.clientY
+  const baseX = view.value.x
+  const baseY = view.value.y
+  let moved = false
+  const onMove = (ev: MouseEvent) => {
+    const dx = ev.clientX - startX
+    const dy = ev.clientY - startY
+    if (!moved && dx * dx + dy * dy > 9) {
+      moved = true
+      isPanning.value = true
+    }
+    if (moved) {
+      view.value = { x: baseX + dx, y: baseY + dy, k: view.value.k }
+    }
+  }
+  const onUp = () => {
+    window.removeEventListener('mousemove', onMove)
+    window.removeEventListener('mouseup', onUp)
+    if (moved) {
+      isPanning.value = false
+    } else {
+      emit('deselect')
+    }
+  }
+  window.addEventListener('mousemove', onMove)
+  window.addEventListener('mouseup', onUp)
+}
+
+function onWheel(evt: WheelEvent) {
+  evt.preventDefault()
+  const rect = svgRef.value?.getBoundingClientRect()
+  if (!rect) return
+  const mx = evt.clientX - rect.left
+  const my = evt.clientY - rect.top
+  const factor = Math.exp(-evt.deltaY * 0.0015)
+  const k0 = view.value.k
+  const k1 = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, k0 * factor))
+  if (k1 === k0) return
+  const x = mx - ((mx - view.value.x) / k0) * k1
+  const y = my - ((my - view.value.y) / k0) * k1
+  view.value = { x, y, k: k1 }
 }
 
 function onNodeClick(evt: MouseEvent, entity: Entity) {
   evt.stopPropagation()
   emit('select', entity)
 }
+
+const viewTransform = computed(
+  () => `translate(${view.value.x},${view.value.y}) scale(${view.value.k})`
+)
 </script>
 
 <template>
@@ -219,8 +281,12 @@ function onNodeClick(evt: MouseEvent, entity: Entity) {
       width="100%"
       height="100%"
       class="graph__svg"
-      :class="{ 'graph__svg--grabbing': dragId !== null }"
-      @click="onBackgroundClick"
+      :class="{
+        'graph__svg--grabbing': dragId !== null,
+        'graph__svg--panning': isPanning,
+      }"
+      @mousedown="onSvgMouseDown"
+      @wheel="onWheel"
     >
       <defs>
         <radialGradient
@@ -236,6 +302,7 @@ function onNodeClick(evt: MouseEvent, entity: Entity) {
         </radialGradient>
       </defs>
 
+      <g :transform="viewTransform">
       <g
         v-for="edge in renderEdges"
         :key="edge.rel.id"
@@ -328,6 +395,7 @@ function onNodeClick(evt: MouseEvent, entity: Entity) {
           {{ truncate(node.entity.name) }}
         </text>
       </g>
+      </g>
     </svg>
 
     <div class="graph__legend">
@@ -349,7 +417,7 @@ function onNodeClick(evt: MouseEvent, entity: Entity) {
     </div>
 
     <div class="graph__hint">
-      Перетащите узел · Клик — подробности
+      Перетащите узел · Колесо — масштаб · Тяните фон — двигать
     </div>
   </div>
 </template>
@@ -369,9 +437,11 @@ function onNodeClick(evt: MouseEvent, entity: Entity) {
 
 .graph__svg {
   display: block;
+  cursor: grab;
 }
 
-.graph__svg--grabbing {
+.graph__svg--grabbing,
+.graph__svg--panning {
   cursor: grabbing;
 }
 
