@@ -32,8 +32,17 @@ async function newWorld() {
 <template>
   <div class="home">
     <header class="home__head">
-      <div class="home__brand">WORLDFORGE</div>
-      <div class="home__sub">Конструктор миров</div>
+      <div class="home__head-text">
+        <div class="home__brand">WORLDFORGE</div>
+        <div class="home__sub">Конструктор миров</div>
+      </div>
+      <button
+        class="home__settings"
+        title="Управление типами сущностей"
+        @click="router.push({ name: 'type-manager' })"
+      >
+        ⚙ Типы
+      </button>
     </header>
 
     <main class="home__main">
@@ -86,6 +95,28 @@ async function newWorld() {
 .home__head {
   padding: 28px 48px;
   border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.home__settings {
+  font-family: var(--font-display);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 16px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.home__settings:hover {
+  color: var(--accent);
+  border-color: var(--border2);
 }
 
 .home__brand {

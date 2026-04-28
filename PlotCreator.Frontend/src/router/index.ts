@@ -23,6 +23,11 @@ const router = createRouter({
         entityId: Number(route.params.entityId),
       }),
     },
+    {
+      path: '/settings/types',
+      name: 'type-manager',
+      component: () => import('@/views/TypeManagerView.vue'),
+    },
   ],
 })
 
