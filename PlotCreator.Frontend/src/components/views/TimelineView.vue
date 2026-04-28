@@ -1,27 +1,29 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Entity } from '@/types/entity'
-import { ENTITY_TYPES } from '@/config/entityTypes'
+import { useEntityTypesStore } from '@/stores/entityTypes'
 import TypeBadge from '@/components/ui/TypeBadge.vue'
 
 const props = defineProps<{
   entities: Entity[]
 }>()
 
+const types = useEntityTypesStore()
+
 const TIME_PATTERN = /лет|год|недавно|глава/i
 
 const events = computed(() =>
-  props.entities.filter((e) => e.type === 'event' || e.type === 'episode'),
+  props.entities.filter((e) => e.typeKey === 'event' || e.typeKey === 'episode'),
 )
 
-const lore = computed(() => props.entities.filter((e) => e.type === 'lore'))
+const lore = computed(() => props.entities.filter((e) => e.typeKey === 'lore'))
 
 function timeTag(entity: Entity): string {
   return entity.tags.find((t) => TIME_PATTERN.test(t)) ?? '—'
 }
 
 function dotStyle(entity: Entity, square = false) {
-  const color = ENTITY_TYPES[entity.type].color
+  const color = types.display(entity.typeKey).color
   const base = {
     background: color,
     boxShadow: `0 0 10px ${color}88`,
@@ -52,7 +54,7 @@ function dotStyle(entity: Entity, square = false) {
         <div class="entry__dot" :style="dotStyle(e)" />
         <div class="entry__body">
           <div class="entry__name">{{ e.name }}</div>
-          <TypeBadge :type="e.type" tiny />
+          <TypeBadge :type-key="e.typeKey" tiny />
           <p v-if="e.desc" class="entry__desc">{{ e.desc }}</p>
         </div>
       </div>
@@ -69,7 +71,7 @@ function dotStyle(entity: Entity, square = false) {
         <div class="entry__dot" :style="dotStyle(e, true)" />
         <div class="entry__body">
           <div class="entry__name">{{ e.name }}</div>
-          <TypeBadge :type="e.type" tiny />
+          <TypeBadge :type-key="e.typeKey" tiny />
           <p v-if="e.desc" class="entry__desc">{{ e.desc }}</p>
         </div>
       </div>

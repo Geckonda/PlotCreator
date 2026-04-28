@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using PlotCreator.DAL.Interfaces;
 using PlotCreator.Domain.Entity;
-using PlotCreator.Domain.Enum;
 
 namespace PlotCreator.DAL.Repositories
 {
@@ -46,11 +45,10 @@ namespace PlotCreator.DAL.Repositories
                 .AsNoTracking()
                 .ToListAsync();
 
-        public async Task DeleteForEntityAsync(int entityId, EntityType type)
+        public async Task DeleteForEntityAsync(int entityId)
         {
             await _db.Relations
-                .Where(r => (r.FromId == entityId && r.FromType == type) ||
-                            (r.ToId == entityId && r.ToType == type))
+                .Where(r => r.FromId == entityId || r.ToId == entityId)
                 .ExecuteDeleteAsync();
         }
     }

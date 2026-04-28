@@ -6,7 +6,6 @@ using PlotCreator.DAL;
 using PlotCreator.DAL.Interfaces;
 using PlotCreator.Domain.Contracts;
 using PlotCreator.Domain.Entity;
-using PlotCreator.Domain.Entity.Base;
 using PlotCreator.Domain.Enum;
 using PlotCreator.Domain.Response.Implementations;
 using PlotCreator.Domain.Response.Interfaces;
@@ -33,18 +32,16 @@ namespace PlotCreator.Service.Implementations
 
         public async Task<IBaseResponse<RelationDto>> CreateAsync(int worldId, RelationCreateRequest request)
         {
-            if (!await EntityExistsAsync(worldId, request.FromId, request.FromType))
+            if (!await EntityExistsInWorldAsync(worldId, request.FromId))
                 return NotFound<RelationDto>("From entity not found in this world");
-            if (!await EntityExistsAsync(worldId, request.ToId, request.ToType))
+            if (!await EntityExistsInWorldAsync(worldId, request.ToId))
                 return NotFound<RelationDto>("To entity not found in this world");
 
             var rel = new Relation
             {
                 WorldId = worldId,
                 FromId = request.FromId,
-                FromType = request.FromType,
                 ToId = request.ToId,
-                ToType = request.ToType,
                 Label = request.Label
             };
             await _relations.Add(rel);
@@ -68,26 +65,15 @@ namespace PlotCreator.Service.Implementations
             return Ok(true);
         }
 
-        private async Task<bool> EntityExistsAsync(int worldId, int entityId, EntityType type) => type switch
-        {
-            EntityType.Character => await _db.Characters.AnyAsync(e => e.Id == entityId && e.WorldId == worldId),
-            EntityType.Location  => await _db.Locations.AnyAsync(e => e.Id == entityId && e.WorldId == worldId),
-            EntityType.Event     => await _db.Events.AnyAsync(e => e.Id == entityId && e.WorldId == worldId),
-            EntityType.Faction   => await _db.Factions.AnyAsync(e => e.Id == entityId && e.WorldId == worldId),
-            EntityType.Episode   => await _db.Episodes.AnyAsync(e => e.Id == entityId && e.WorldId == worldId),
-            EntityType.Artifact  => await _db.Artifacts.AnyAsync(e => e.Id == entityId && e.WorldId == worldId),
-            EntityType.Lore      => await _db.Lores.AnyAsync(e => e.Id == entityId && e.WorldId == worldId),
-            _ => false
-        };
+        private async Task<bool> EntityExistsInWorldAsync(int worldId, int entityId) =>
+            await _db.Entities.AnyAsync(e => e.Id == entityId && e.WorldId == worldId);
 
         private static RelationDto ToDto(Relation r) => new()
         {
             Id = r.Id,
             WorldId = r.WorldId,
             FromId = r.FromId,
-            FromType = r.FromType,
             ToId = r.ToId,
-            ToType = r.ToType,
             Label = r.Label,
             CreatedAt = r.CreatedAt
         };

@@ -1,12 +1,12 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import type { EntityKey, EntityType } from '@/types/entity'
+import type { EntityKey } from '@/types/entity'
 
 export type WorldViewMode = 'graph' | 'grid' | 'timeline'
 
 export const useWorldUiStore = defineStore('worldUi', () => {
   const view = ref<WorldViewMode>('graph')
-  const activeType = ref<EntityType | null>(null)
+  const activeType = ref<string | null>(null)
   const selectedKey = ref<EntityKey | null>(null)
   const search = ref('')
   const showCreate = ref(false)

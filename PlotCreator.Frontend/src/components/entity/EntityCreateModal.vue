@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed, reactive } from 'vue'
-import type { EntityStatus, EntityType } from '@/types/entity'
+import { computed, onMounted, reactive } from 'vue'
+import type { EntityStatus } from '@/types/entity'
 import type { EntityCreatePayload } from '@/types/api'
 import TagsInput from '../forms/TagsInput.vue'
-import { ENTITY_TYPE_LIST, ENTITY_TYPES } from '@/config/entityTypes'
+import { useEntityTypesStore } from '@/stores/entityTypes'
 import { STATUS_LIST } from '@/config/statuses'
 
 const emit = defineEmits<{
@@ -11,8 +11,10 @@ const emit = defineEmits<{
   (e: 'save', payload: EntityCreatePayload): void
 }>()
 
+const types = useEntityTypesStore()
+
 interface Form {
-  type: EntityType
+  typeKey: string
   name: string
   desc: string
   tags: string[]
@@ -20,14 +22,21 @@ interface Form {
 }
 
 const form = reactive<Form>({
-  type: 'character',
+  typeKey: 'character',
   name: '',
   desc: '',
   tags: [],
   status: 'draft',
 })
 
-const cfg = computed(() => ENTITY_TYPES[form.type])
+onMounted(async () => {
+  await types.ensureLoaded()
+  if (!types.byKey[form.typeKey] && types.types.length > 0) {
+    form.typeKey = types.types[0].key
+  }
+})
+
+const cfg = computed(() => types.display(form.typeKey))
 
 const dialogStyle = computed(() => ({
   border: `1px solid ${cfg.value.color}3a`,
@@ -44,9 +53,9 @@ const submitStyle = computed(() => ({
   color: cfg.value.color,
 }))
 
-function typeButtonStyle(type: EntityType) {
-  const active = form.type === type
-  const c = ENTITY_TYPES[type].color
+function typeButtonStyle(typeKey: string) {
+  const active = form.typeKey === typeKey
+  const c = types.display(typeKey).color
   return {
     background: active ? `${c}22` : 'rgba(101, 67, 33, 0.04)',
     border: `1px solid ${active ? c + '55' : 'rgba(101, 67, 33, 0.12)'}`,
@@ -61,7 +70,7 @@ function close() {
 function submit() {
   if (!form.name.trim()) return
   const payload: EntityCreatePayload = {
-    type: form.type,
+    typeKey: form.typeKey,
     name: form.name.trim(),
     desc: form.desc.trim() || undefined,
     tags: form.tags,
@@ -86,14 +95,14 @@ function submit() {
           <label>Тип сущности</label>
           <div class="type-grid">
             <button
-              v-for="[type, c] in ENTITY_TYPE_LIST"
-              :key="type"
+              v-for="t in types.types"
+              :key="t.id"
               type="button"
               class="type-btn"
-              :style="typeButtonStyle(type)"
-              @click="form.type = type"
+              :style="typeButtonStyle(t.key)"
+              @click="form.typeKey = t.key"
             >
-              {{ c.icon }} {{ c.label }}
+              {{ t.icon }} {{ t.label }}
             </button>
           </div>
         </div>
@@ -117,15 +126,14 @@ function submit() {
             class="field__textarea"
           />
         </div>
-          <div class="field">
-            <label>Теги</label>
-              <TagsInput
-                v-model="form.tags"
-                placeholder="Введите и нажмите Enter..."
-              />
-          </div>
+        <div class="field">
+          <label>Теги</label>
+          <TagsInput
+            v-model="form.tags"
+            placeholder="Введите и нажмите Enter..."
+          />
+        </div>
         <div class="field-row">
-         
           <div class="field">
             <label>Статус</label>
             <select v-model="form.status">
@@ -186,12 +194,6 @@ function submit() {
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 4px;
-}
-
-.dialog__sub {
-  font-size: 13px;
-  color: var(--muted);
-  font-style: italic;
 }
 
 .dialog__close {

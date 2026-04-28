@@ -26,13 +26,7 @@ namespace PlotCreator.Domain.Entity
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
-        public List<Character> Characters { get; set; } = new();
-        public List<Location> Locations { get; set; } = new();
-        public List<Event> Events { get; set; } = new();
-        public List<Faction> Factions { get; set; } = new();
-        public List<Episode> Episodes { get; set; } = new();
-        public List<Artifact> Artifacts { get; set; } = new();
-        public List<Lore> Lores { get; set; } = new();
+        public List<WorldEntity> Entities { get; set; } = new();
         public List<Relation> Relations { get; set; } = new();
     }
 }

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { FieldDef } from '@/config/entityFields'
+import type { PropertyDef } from '@/types/api'
 
 const props = defineProps<{
-  def: FieldDef
+  def: PropertyDef
   modelValue: unknown
 }>()
 
@@ -39,11 +39,16 @@ function emitDate(ev: Event) {
 function emitCheckbox(ev: Event) {
   emit('update:modelValue', (ev.target as HTMLInputElement).checked)
 }
+
+function emitSelect(ev: Event) {
+  const v = (ev.target as HTMLSelectElement).value
+  emit('update:modelValue', v === '' ? null : v)
+}
 </script>
 
 <template>
   <div class="field">
-    <label>{{ def.label }}</label>
+    <label v-if="def.kind !== 'checkbox'">{{ def.label }}</label>
 
     <input
       v-if="def.kind === 'text'"
@@ -73,6 +78,27 @@ function emitCheckbox(ev: Event) {
       @input="emitDate"
     />
 
+    <select
+      v-else-if="def.kind === 'select'"
+      :value="stringValue"
+      @change="emitSelect"
+    >
+      <option value="">—</option>
+      <option v-for="o in def.options ?? []" :key="o" :value="o">{{ o }}</option>
+    </select>
+
+    <div v-else-if="def.kind === 'image'" class="field-image">
+      <input
+        type="text"
+        :value="stringValue"
+        placeholder="https://…"
+        @input="emitText"
+      />
+      <div v-if="stringValue" class="field-image__preview">
+        <img :src="stringValue" :alt="def.label" />
+      </div>
+    </div>
+
     <label v-else-if="def.kind === 'checkbox'" class="checkbox">
       <input type="checkbox" :checked="boolValue" @change="emitCheckbox" />
       <span>{{ def.label }}</span>
@@ -98,7 +124,8 @@ function emitCheckbox(ev: Event) {
 .field input[type='text'],
 .field input[type='number'],
 .field input[type='date'],
-.field textarea {
+.field textarea,
+.field select {
   width: 100%;
   font-family: var(--font-serif);
   font-size: 14px;
@@ -111,6 +138,26 @@ function emitCheckbox(ev: Event) {
 .field textarea {
   resize: vertical;
   min-height: 60px;
+}
+
+.field-image {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field-image__preview {
+  max-width: 240px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--card);
+}
+
+.field-image__preview img {
+  width: 100%;
+  height: auto;
+  display: block;
 }
 
 .checkbox {

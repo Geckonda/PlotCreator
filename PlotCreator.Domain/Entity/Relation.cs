@@ -1,6 +1,5 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using PlotCreator.Domain.Enum;
 
 namespace PlotCreator.Domain.Entity
 {
@@ -12,10 +11,10 @@ namespace PlotCreator.Domain.Entity
         public World? World { get; set; }
 
         public int FromId { get; set; }
-        public EntityType FromType { get; set; }
+        public WorldEntity? From { get; set; }
 
         public int ToId { get; set; }
-        public EntityType ToType { get; set; }
+        public WorldEntity? To { get; set; }
 
         [Required]
         [MaxLength(200)]

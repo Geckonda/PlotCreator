@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import type { Entity } from '@/types/entity'
-import { ENTITY_TYPES } from '@/config/entityTypes'
+import { useEntityTypesStore } from '@/stores/entityTypes'
 import { useEntitiesStore } from '@/stores/entities'
 
 const props = defineProps<{
@@ -18,6 +18,7 @@ const emit = defineEmits<{
 }>()
 
 const entitiesStore = useEntitiesStore()
+const types = useEntityTypesStore()
 const rootRef = ref<HTMLElement | null>(null)
 const inputRef = ref<HTMLInputElement | null>(null)
 const label = ref('')
@@ -57,9 +58,7 @@ async function save() {
   try {
     await entitiesStore.createRelation(props.worldId, {
       fromId: props.from.id,
-      fromType: props.from.type,
       toId: props.to.id,
-      toType: props.to.type,
       label: trimmed,
     })
     emit('created')
@@ -82,16 +81,16 @@ async function save() {
     <div class="rl-pop__pair">
       <span
         class="rl-pop__chip"
-        :style="{ color: ENTITY_TYPES[from.type].color }"
+        :style="{ color: types.display(from.typeKey).color }"
       >
-        {{ ENTITY_TYPES[from.type].icon }} {{ from.name }}
+        {{ types.display(from.typeKey).icon }} {{ from.name }}
       </span>
       <span class="rl-pop__arrow">→</span>
       <span
         class="rl-pop__chip"
-        :style="{ color: ENTITY_TYPES[to.type].color }"
+        :style="{ color: types.display(to.typeKey).color }"
       >
-        {{ ENTITY_TYPES[to.type].icon }} {{ to.name }}
+        {{ types.display(to.typeKey).icon }} {{ to.name }}
       </span>
     </div>
 

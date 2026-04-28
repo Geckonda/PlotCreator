@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type { Entity } from '@/types/entity'
-import { ENTITY_TYPES } from '@/config/entityTypes'
+import { useEntityTypesStore } from '@/stores/entityTypes'
 import { useEntitiesStore } from '@/stores/entities'
 
 const props = defineProps<{
@@ -15,6 +15,7 @@ const emit = defineEmits<{
 }>()
 
 const entitiesStore = useEntitiesStore()
+const types = useEntityTypesStore()
 const search = ref('')
 const target = ref<Entity | null>(null)
 const label = ref('')
@@ -26,7 +27,7 @@ const matches = computed(() => {
   if (!q) return [] as Entity[]
   const out: Entity[] = []
   for (const e of entitiesStore.entities) {
-    if (e.id === props.from.id && e.type === props.from.type) continue
+    if (e.id === props.from.id) continue
     const inName = e.name.toLowerCase().includes(q)
     const inTags = e.tags.some((t) => t.toLowerCase().includes(q))
     if (inName || inTags) out.push(e)
@@ -55,9 +56,7 @@ async function save() {
   try {
     await entitiesStore.createRelation(props.worldId, {
       fromId: props.from.id,
-      fromType: props.from.type,
       toId: target.value.id,
-      toType: target.value.type,
       label: label.value.trim(),
     })
     emit('created')
@@ -76,9 +75,9 @@ async function save() {
       <div v-if="target" class="creator__chip">
         <span
           class="creator__chip-icon"
-          :style="{ color: ENTITY_TYPES[target.type].color }"
+          :style="{ color: types.display(target.typeKey).color }"
         >
-          {{ ENTITY_TYPES[target.type].icon }}
+          {{ types.display(target.typeKey).icon }}
         </span>
         <span class="creator__chip-name">{{ target.name }}</span>
         <button
@@ -99,15 +98,15 @@ async function save() {
         <ul v-if="matches.length" class="creator__matches">
           <li
             v-for="m in matches"
-            :key="`${m.type}:${m.id}`"
+            :key="m.id"
             class="creator__match"
             @click="pick(m)"
           >
             <span
               class="creator__match-icon"
-              :style="{ color: ENTITY_TYPES[m.type].color }"
+              :style="{ color: types.display(m.typeKey).color }"
             >
-              {{ ENTITY_TYPES[m.type].icon }}
+              {{ types.display(m.typeKey).icon }}
             </span>
             <span class="creator__match-name">{{ m.name }}</span>
           </li>

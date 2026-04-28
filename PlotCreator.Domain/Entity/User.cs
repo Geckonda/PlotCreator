@@ -29,5 +29,6 @@ namespace PlotCreator.Domain.Entity
         public string? Avatar { get; set; }
 
         public List<World> Worlds { get; set; } = new();
+        public List<EntityType> EntityTypes { get; set; } = new();
     }
 }

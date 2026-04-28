@@ -1,4 +1,4 @@
-import type { Entity, EntityStatus, EntityType, Relation } from './entity'
+import type { Entity, EntityStatus, Relation } from './entity'
 import type { World } from './world'
 
 // ───── Wire DTOs (match BE Contracts/ shape) ─────
@@ -25,109 +25,116 @@ export interface WorldUpdateRequest extends WorldCreateRequest {}
 
 export interface EntitySummaryDto {
   id: number
-  type: EntityType
+  typeKey: string
   name: string
   tags: string[]
   status: EntityStatus
   desc?: string | null
 }
 
+export type FieldKind =
+  | 'text'
+  | 'textarea'
+  | 'number'
+  | 'date'
+  | 'checkbox'
+  | 'select'
+  | 'image'
+
+export interface PropertyDef {
+  key: string
+  label: string
+  kind: FieldKind
+  options?: string[]
+  required?: boolean
+}
+
+export interface EntityTypeDto {
+  id: number
+  key: string
+  label: string
+  color: string | null
+  icon: string | null
+  radius: number
+  propertySchema: PropertyDef[]
+  isSystemDefault: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export interface EntityTypeCreateRequest {
+  key: string
+  label: string
+  color?: string | null
+  icon?: string | null
+  radius?: number
+  propertySchema?: PropertyDef[]
+}
+
+export interface EntityTypeUpdateRequest {
+  label: string
+  color?: string | null
+  icon?: string | null
+  radius: number
+  propertySchema?: PropertyDef[]
+}
+
+export type TipTapDoc = {
+  type: 'doc'
+  content?: unknown[]
+}
+
+export const emptyTipTapDoc = (): TipTapDoc => ({ type: 'doc', content: [] })
+
+export interface EntityDto {
+  id: number
+  worldId: number
+  typeKey: string
+  name: string
+  tags: string[]
+  status: EntityStatus
+  desc?: string | null
+  properties: Record<string, unknown>
+  content: TipTapDoc
+}
+
+export interface EntityCreatePayload {
+  typeKey: string
+  name: string
+  tags: string[]
+  status: EntityStatus
+  desc?: string
+  properties?: Record<string, unknown>
+  content?: TipTapDoc
+}
+
+export interface EntityUpdatePayload {
+  name: string
+  tags: string[]
+  status: EntityStatus
+  desc?: string | null
+  properties?: Record<string, unknown>
+  content?: TipTapDoc
+}
+
 export interface RelationDto {
   id: number
   worldId: number
   fromId: number
-  fromType: EntityType
   toId: number
-  toType: EntityType
   label: string
   createdAt: string
 }
 
 export interface RelationCreateRequest {
   fromId: number
-  fromType: EntityType
   toId: number
-  toType: EntityType
   label: string
 }
 
 export interface RelationUpdateRequest {
   label: string
 }
-
-export interface EntityCreatePayload {
-  type: EntityType
-  name: string
-  tags: string[]
-  status: EntityStatus
-  desc?: string
-}
-
-// ───── Per-type DTOs (returned by GET /api/{type}/{id}) ─────
-
-export interface CharacterDto extends EntitySummaryDto {
-  worldId: number
-  birthday: string | null
-  deathday: string | null
-  gender: string | null
-  height: number | null
-  weight: number | null
-  personality: string | null
-  appearance: string | null
-  conflict: string | null
-  goals: string | null
-  motivation: string | null
-  history: string | null
-  pictureUrl: string | null
-}
-
-export interface LocationDto extends EntitySummaryDto {
-  worldId: number
-  region: string | null
-  climate: string | null
-  pictureUrl: string | null
-}
-
-export interface EventDto extends EntitySummaryDto {
-  worldId: number
-  beginning: string | null
-  ending: string | null
-  chekhovsGun: boolean
-}
-
-export interface FactionDto extends EntitySummaryDto {
-  worldId: number
-  ideology: string | null
-  headquarters: string | null
-}
-
-export interface EpisodeDto extends EntitySummaryDto {
-  worldId: number
-  position: number
-  content: string | null
-}
-
-export interface ArtifactDto extends EntitySummaryDto {
-  worldId: number
-  material: string | null
-  origin: string | null
-  pictureUrl: string | null
-}
-
-export interface LoreDto extends EntitySummaryDto {
-  worldId: number
-  era: string | null
-  content: string | null
-}
-
-export type FullEntityDto =
-  | CharacterDto
-  | LocationDto
-  | EventDto
-  | FactionDto
-  | EpisodeDto
-  | ArtifactDto
-  | LoreDto
 
 // ───── Mappers ─────
 
@@ -141,9 +148,9 @@ export const toWorld = (dto: WorldDto): World => ({
   active: true,
 })
 
-export const toEntity = (dto: EntitySummaryDto): Entity => ({
+export const toEntity = (dto: EntitySummaryDto | EntityDto): Entity => ({
   id: dto.id,
-  type: dto.type,
+  typeKey: dto.typeKey,
   name: dto.name,
   tags: dto.tags,
   status: dto.status,
@@ -153,8 +160,6 @@ export const toEntity = (dto: EntitySummaryDto): Entity => ({
 export const toRelation = (dto: RelationDto): Relation => ({
   id: dto.id,
   from: dto.fromId,
-  fromType: dto.fromType,
   to: dto.toId,
-  toType: dto.toType,
   label: dto.label,
 })

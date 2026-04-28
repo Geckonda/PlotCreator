@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type { Entity, Relation } from '@/types/entity'
-import { ENTITY_TYPES } from '@/config/entityTypes'
+import { useEntityTypesStore } from '@/stores/entityTypes'
 import TypeBadge from '@/components/ui/TypeBadge.vue'
 import StatusPip from '@/components/ui/StatusPip.vue'
 import EntityTag from '@/components/ui/EntityTag.vue'
@@ -19,7 +19,8 @@ const emit = defineEmits<{
   (e: 'select', entity: Entity): void
 }>()
 
-const cfg = computed(() => ENTITY_TYPES[props.entity.type])
+const types = useEntityTypesStore()
+const cfg = computed(() => types.display(props.entity.typeKey))
 const hov = ref(false)
 
 const connCount = computed(
@@ -32,7 +33,7 @@ const connCount = computed(
 const showImg = computed(
   () =>
     !props.compact &&
-    ['character', 'location', 'artifact'].includes(props.entity.type),
+    ['character', 'location', 'artifact'].includes(props.entity.typeKey),
 )
 
 const cardStyle = computed(() => ({
@@ -81,7 +82,7 @@ const connWord = computed(() => {
       <StatusPip :status="entity.status" />
     </div>
 
-    <TypeBadge :type="entity.type" tiny />
+    <TypeBadge :type-key="entity.typeKey" tiny />
 
     <p v-if="!compact && entity.desc" class="card__desc">
       {{ entity.desc }}

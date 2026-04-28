@@ -13,7 +13,8 @@ namespace PlotCreator_API
             services.AddScoped<IBaseRepository<User>, UserRepository>();
             services.AddScoped<IWorldRepository, WorldRepository>();
             services.AddScoped<IRelationRepository, RelationRepository>();
-            services.AddScoped(typeof(IEntityRepository<>), typeof(EntityRepository<>));
+            services.AddScoped<IEntityRepository, EntityRepository>();
+            services.AddScoped<IEntityTypeRepository, EntityTypeRepository>();
         }
 
         public static void InitialiseServices(this IServiceCollection services)
@@ -22,14 +23,8 @@ namespace PlotCreator_API
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IWorldService, WorldService>();
             services.AddScoped<IEntityService, EntityService>();
+            services.AddScoped<IEntityTypeService, EntityTypeService>();
             services.AddScoped<IRelationService, RelationService>();
-            services.AddScoped<ICharacterService, CharacterService>();
-            services.AddScoped<ILocationService, LocationService>();
-            services.AddScoped<IEventService, EventService>();
-            services.AddScoped<IFactionService, FactionService>();
-            services.AddScoped<IEpisodeService, EpisodeService>();
-            services.AddScoped<IArtifactService, ArtifactService>();
-            services.AddScoped<ILoreService, LoreService>();
         }
     }
 }

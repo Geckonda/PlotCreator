@@ -3,10 +3,9 @@ import { computed, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import type { Entity, EntityStatus, Relation } from '@/types/entity'
 import { entityKey, relationFromKey, relationToKey } from '@/types/entity'
-import type { FullEntityDto } from '@/types/api'
-import { ENTITY_TYPES } from '@/config/entityTypes'
+import type { EntityDto, EntityUpdatePayload, PropertyDef } from '@/types/api'
+import { useEntityTypesStore } from '@/stores/entityTypes'
 import { STATUS_LIST } from '@/config/statuses'
-import { ENTITY_FIELD_SCHEMAS, type FieldDef } from '@/config/entityFields'
 import { useEntitiesStore } from '@/stores/entities'
 import { useWorldsStore } from '@/stores/worlds'
 import TypeBadge from '@/components/ui/TypeBadge.vue'
@@ -26,8 +25,11 @@ const emit = defineEmits<{
 
 const entitiesStore = useEntitiesStore()
 const worldsStore = useWorldsStore()
+const types = useEntityTypesStore()
 const router = useRouter()
-const cfg = computed(() => ENTITY_TYPES[props.entity.type])
+
+const cfg = computed(() => types.display(props.entity.typeKey))
+const schema = computed<PropertyDef[]>(() => types.schemaFor(props.entity.typeKey))
 
 function openFullView() {
   if (worldsStore.currentId === null) return
@@ -35,7 +37,6 @@ function openFullView() {
     name: 'entity-detail',
     params: {
       id: worldsStore.currentId,
-      type: props.entity.type,
       entityId: props.entity.id,
     },
   })
@@ -51,7 +52,7 @@ interface FormState {
   description: string
   status: EntityStatus
   tagsText: string[]
-  extras: Record<string, unknown>
+  properties: Record<string, unknown>
 }
 
 const form = reactive<FormState>({
@@ -59,29 +60,25 @@ const form = reactive<FormState>({
   description: '',
   status: 'draft',
   tagsText: [],
-  extras: {},
+  properties: {},
 })
 
 const original = ref<string>('')
-
-const schema = computed<FieldDef[]>(
-  () => ENTITY_FIELD_SCHEMAS[props.entity.type] ?? [],
-)
 
 function snapshot(): string {
   return JSON.stringify(form)
 }
 
-function applyDto(dto: FullEntityDto) {
+function applyDto(dto: EntityDto) {
   form.name = dto.name
   form.description = dto.desc ?? ''
   form.status = dto.status
   form.tagsText = dto.tags ?? []
-  const extras: Record<string, unknown> = {}
+  const props_: Record<string, unknown> = {}
   for (const def of schema.value) {
-    extras[def.key] = (dto as unknown as Record<string, unknown>)[def.key] ?? null
+    props_[def.key] = dto.properties[def.key] ?? null
   }
-  form.extras = extras
+  form.properties = props_
   original.value = snapshot()
 }
 
@@ -91,7 +88,8 @@ async function load() {
   loading.value = true
   error.value = null
   try {
-    const dto = await entitiesStore.fetchDetail(props.entity.type, props.entity.id)
+    await types.ensureLoaded()
+    const dto = await entitiesStore.fetchDetail(props.entity.id)
     applyDto(dto)
   } catch (e: unknown) {
     error.value = e instanceof Error ? e.message : 'Не удалось загрузить'
@@ -101,7 +99,7 @@ async function load() {
 }
 
 watch(
-  () => `${props.entity.type}:${props.entity.id}`,
+  () => props.entity.id,
   () => {
     showCreator.value = false
     load()
@@ -109,14 +107,13 @@ watch(
   { immediate: true },
 )
 
-function buildPayload(): object {
-  const tags = form.tagsText
+function buildPayload(): EntityUpdatePayload {
   return {
     name: form.name.trim(),
     desc: form.description.trim() || null,
     status: form.status,
-    tags,
-    ...form.extras,
+    tags: form.tagsText,
+    properties: { ...form.properties },
   }
 }
 
@@ -125,7 +122,7 @@ async function save() {
   saving.value = true
   error.value = null
   try {
-    await entitiesStore.update(props.entity.type, props.entity.id, buildPayload())
+    await entitiesStore.update(props.entity.id, buildPayload())
     original.value = snapshot()
   } catch (e: unknown) {
     error.value = e instanceof Error ? e.message : 'Не удалось сохранить'
@@ -134,22 +131,20 @@ async function save() {
   }
 }
 
-const selfKey = computed(() => entityKey(props.entity.type, props.entity.id))
+const selfId = computed(() => props.entity.id)
 
-const connRels = computed(() =>
-  entitiesStore.relationsFor(props.entity.type, props.entity.id),
-)
+const connRels = computed(() => entitiesStore.relationsFor(props.entity.id))
 
 function getOther(rel: Relation) {
   const otherKey =
-    relationFromKey(rel) === selfKey.value
+    relationFromKey(rel) === selfId.value
       ? relationToKey(rel)
       : relationFromKey(rel)
   return entitiesStore.byKey.get(otherKey) ?? null
 }
 
 function getDirection(rel: Relation) {
-  return relationFromKey(rel) === selfKey.value ? '→' : '←'
+  return relationFromKey(rel) === selfId.value ? '→' : '←'
 }
 
 type ConfirmKind =
@@ -235,7 +230,7 @@ const saveStyle = computed(() => ({
   <aside class="panel" :style="panelStyle">
     <header class="panel__head" :style="headerStyle">
       <div class="panel__head-row">
-        <TypeBadge :type="entity.type" />
+        <TypeBadge :type-key="entity.typeKey" />
         <div class="panel__head-actions">
           <button
             class="panel__expand"
@@ -280,14 +275,9 @@ const saveStyle = computed(() => ({
         <div class="field">
           <label>Теги</label>
           <TagsInput
-                v-model="form.tagsText"
-                placeholder="Введите и нажмите Enter..."
-              />
-          <!-- <input
             v-model="form.tagsText"
-            type="text"
-            placeholder="тег1, тег2…"
-          /> -->
+            placeholder="Введите и нажмите Enter..."
+          />
         </div>
       </section>
 
@@ -297,8 +287,8 @@ const saveStyle = computed(() => ({
           v-for="def in schema"
           :key="def.key"
           :def="def"
-          :model-value="form.extras[def.key]"
-          @update:model-value="form.extras[def.key] = $event"
+          :model-value="form.properties[def.key]"
+          @update:model-value="form.properties[def.key] = $event"
         />
       </section>
 
@@ -330,9 +320,9 @@ const saveStyle = computed(() => ({
             <template v-if="getOther(rel)">
               <span
                 class="panel__conn-icon"
-                :style="{ color: ENTITY_TYPES[getOther(rel)!.type].color }"
+                :style="{ color: types.display(getOther(rel)!.typeKey).color }"
               >
-                {{ ENTITY_TYPES[getOther(rel)!.type].icon }}
+                {{ types.display(getOther(rel)!.typeKey).icon }}
               </span>
               <div class="panel__conn-text">
                 <div class="panel__conn-name">{{ getOther(rel)!.name }}</div>

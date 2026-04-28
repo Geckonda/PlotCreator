@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
-import type { EntityType } from '@/types/entity'
-import { ENTITY_TYPE_LIST, ENTITY_TYPES } from '@/config/entityTypes'
+import { useEntityTypesStore } from '@/stores/entityTypes'
 import { useWorldUiStore, type WorldViewMode } from '@/stores/worldUi'
 import { useEntitiesStore } from '@/stores/entities'
 import { useWorldsStore } from '@/stores/worlds'
@@ -10,13 +9,16 @@ import { useWorldsStore } from '@/stores/worlds'
 const ui = useWorldUiStore()
 const entitiesStore = useEntitiesStore()
 const worldsStore = useWorldsStore()
+const types = useEntityTypesStore()
 
 const { view, activeType } = storeToRefs(ui)
 
 const counts = computed(() => {
-  const out = {} as Record<EntityType, number>
-  for (const [type] of ENTITY_TYPE_LIST) out[type] = 0
-  for (const e of entitiesStore.entities) out[e.type]++
+  const out: Record<string, number> = {}
+  for (const t of types.types) out[t.key] = 0
+  for (const e of entitiesStore.entities) {
+    out[e.typeKey] = (out[e.typeKey] ?? 0) + 1
+  }
   return out
 })
 
@@ -25,13 +27,13 @@ function pickView(v: WorldViewMode) {
   activeType.value = null
 }
 
-function pickType(t: EntityType) {
+function pickType(typeKey: string) {
   view.value = 'grid'
-  activeType.value = t
+  activeType.value = typeKey
 }
 
-function colorFor(type: EntityType, isActive: boolean): string {
-  return isActive ? ENTITY_TYPES[type].color : 'inherit'
+function colorFor(typeKey: string, isActive: boolean): string {
+  return isActive ? types.display(typeKey).color : 'inherit'
 }
 </script>
 
@@ -73,20 +75,20 @@ function colorFor(type: EntityType, isActive: boolean): string {
       <div class="sidebar__section">Сущности</div>
 
       <button
-        v-for="[type, cfg] in ENTITY_TYPE_LIST"
-        :key="type"
+        v-for="t in types.types"
+        :key="t.id"
         class="nav-item nav-item--sub"
-        :class="{ 'nav-item--active': activeType === type }"
-        @click="pickType(type)"
+        :class="{ 'nav-item--active': activeType === t.key }"
+        @click="pickType(t.key)"
       >
         <span
           class="nav-item__icon"
-          :style="{ color: colorFor(type, activeType === type) }"
+          :style="{ color: colorFor(t.key, activeType === t.key) }"
         >
-          {{ cfg.icon }}
+          {{ t.icon }}
         </span>
-        <span class="nav-item__label">{{ cfg.label }}</span>
-        <span class="nav-item__count">{{ counts[type] }}</span>
+        <span class="nav-item__label">{{ t.label }}</span>
+        <span class="nav-item__count">{{ counts[t.key] ?? 0 }}</span>
       </button>
     </div>
 

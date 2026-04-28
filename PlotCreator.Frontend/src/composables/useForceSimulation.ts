@@ -33,7 +33,7 @@ export function useForceSimulation(
     const list = entities.value
 
     list.forEach((e, i) => {
-      const k = entityKey(e.type, e.id)
+      const k = entityKey(e.id)
       if (positions[k]) return
       const angle = (2 * Math.PI * i) / Math.max(list.length, 1)
       const r = Math.min(w, h) * 0.28 + (Math.random() - 0.5) * 60
@@ -41,11 +41,12 @@ export function useForceSimulation(
       velocities[k] = { vx: 0, vy: 0 }
     })
 
-    const keys = new Set<EntityKey>(list.map((e) => entityKey(e.type, e.id)))
+    const keys = new Set<EntityKey>(list.map((e) => entityKey(e.id)))
     for (const key of Object.keys(positions)) {
-      if (!keys.has(key)) {
-        delete positions[key]
-        delete velocities[key]
+      const numericKey = Number(key)
+      if (!keys.has(numericKey)) {
+        delete positions[numericKey]
+        delete velocities[numericKey]
       }
     }
   }
@@ -63,7 +64,7 @@ export function useForceSimulation(
     const cy = h / 2
     const cool = Math.max(0.02, 1 - ticks / 350)
     const keys = entities.value
-      .map((e) => entityKey(e.type, e.id))
+      .map((e) => entityKey(e.id))
       .filter((k) => positions[k])
 
     for (let i = 0; i < keys.length; i++) {

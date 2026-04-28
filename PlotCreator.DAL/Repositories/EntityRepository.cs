@@ -3,11 +3,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using PlotCreator.DAL.Interfaces;
-using PlotCreator.Domain.Entity.Base;
+using PlotCreator.Domain.Entity;
 
 namespace PlotCreator.DAL.Repositories
 {
-    public class EntityRepository<T> : IEntityRepository<T> where T : EntityBase
+    public class EntityRepository : IEntityRepository
     {
         private readonly ApplicationDBContext _db;
 
@@ -16,34 +16,40 @@ namespace PlotCreator.DAL.Repositories
             _db = db;
         }
 
-        public async Task Add(T entity)
+        public async Task Add(WorldEntity entity)
         {
-            _db.Set<T>().Add(entity);
+            _db.Entities.Add(entity);
             await _db.SaveChangesAsync();
         }
 
-        public async Task Delete(T entity)
+        public async Task Delete(WorldEntity entity)
         {
-            _db.Set<T>().Remove(entity);
+            _db.Entities.Remove(entity);
             await _db.SaveChangesAsync();
         }
 
-        public async Task<T> Update(T entity)
+        public async Task<WorldEntity> Update(WorldEntity entity)
         {
-            _db.Set<T>().Update(entity);
+            _db.Entities.Update(entity);
             await _db.SaveChangesAsync();
             return entity;
         }
 
-        public T GetOne(int id) =>
-            _db.Set<T>().First(e => e.Id == id);
+        public WorldEntity GetOne(int id) => _db.Entities.First(e => e.Id == id);
 
-        public IQueryable<T> GetAll() => _db.Set<T>();
+        public IQueryable<WorldEntity> GetAll() => _db.Entities;
 
-        public async Task<IReadOnlyList<T>> GetByWorldIdAsync(int worldId) =>
-            await _db.Set<T>()
+        public async Task<IReadOnlyList<WorldEntity>> GetByWorldIdAsync(int worldId) =>
+            await _db.Entities
+                .Include(e => e.Type)
                 .Where(e => e.WorldId == worldId)
                 .AsNoTracking()
                 .ToListAsync();
+
+        public async Task<WorldEntity?> GetWithTypeAsync(int id) =>
+            await _db.Entities
+                .Include(e => e.Type)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(e => e.Id == id);
     }
 }

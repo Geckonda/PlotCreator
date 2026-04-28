@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import type { Entity } from '@/types/entity'
-import { ENTITY_TYPES } from '@/config/entityTypes'
+import { useEntityTypesStore } from '@/stores/entityTypes'
 
 const props = defineProps<{
   entity: Entity
@@ -15,6 +15,8 @@ const emit = defineEmits<{
   (e: 'close'): void
 }>()
 
+const types = useEntityTypesStore()
+const cfg = computed(() => types.display(props.entity.typeKey))
 const rootRef = ref<HTMLElement | null>(null)
 
 function onWindowMouseDown(ev: MouseEvent) {
@@ -60,11 +62,8 @@ function pickDelete() {
     @contextmenu.prevent
   >
     <div class="ctx-menu__header">
-      <span
-        class="ctx-menu__icon"
-        :style="{ color: ENTITY_TYPES[entity.type].color }"
-      >
-        {{ ENTITY_TYPES[entity.type].icon }}
+      <span class="ctx-menu__icon" :style="{ color: cfg.color }">
+        {{ cfg.icon }}
       </span>
       <span class="ctx-menu__name">{{ entity.name }}</span>
     </div>

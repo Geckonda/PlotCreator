@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { EntityType } from '@/types/entity'
-import { ENTITY_TYPES } from '@/config/entityTypes'
+import { useEntityTypesStore } from '@/stores/entityTypes'
 
 const props = defineProps<{
-  type: EntityType
+  typeKey: string
   tiny?: boolean
 }>()
 
-const cfg = computed(() => ENTITY_TYPES[props.type])
+const types = useEntityTypesStore()
+const cfg = computed(() => types.display(props.typeKey))
 
 const style = computed(() => ({
   background: `${cfg.value.color}1a`,

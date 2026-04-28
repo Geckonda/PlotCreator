@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useWorldsStore } from '@/stores/worlds'
 import { useEntitiesStore } from '@/stores/entities'
+import { useEntityTypesStore } from '@/stores/entityTypes'
 import { useWorldUiStore } from '@/stores/worldUi'
 import WorldTopbar from '@/components/world/WorldTopbar.vue'
 import WorldSidebar from '@/components/world/WorldSidebar.vue'
@@ -20,6 +21,7 @@ const route = useRoute()
 const router = useRouter()
 const worldsStore = useWorldsStore()
 const entitiesStore = useEntitiesStore()
+const entityTypesStore = useEntityTypesStore()
 const ui = useWorldUiStore()
 
 const { view, activeType, search, showCreate } = storeToRefs(ui)
@@ -33,7 +35,10 @@ watch(
     worldsStore.setCurrent(id)
     ui.reset()
     entitiesStore.clear()
-    await entitiesStore.fetchForWorld(id)
+    await Promise.all([
+      entityTypesStore.ensureLoaded(),
+      entitiesStore.fetchForWorld(id),
+    ])
   },
   { immediate: true },
 )
@@ -55,7 +60,7 @@ const selectedEntity = computed(() =>
 )
 
 function selectEntity(entity: Entity) {
-  ui.selectedKey = entityKey(entity.type, entity.id)
+  ui.selectedKey = entityKey(entity.id)
 }
 
 function goToDetail(entity: Entity) {
@@ -63,7 +68,6 @@ function goToDetail(entity: Entity) {
     name: 'entity-detail',
     params: {
       id: worldId.value,
-      type: entity.type,
       entityId: entity.id,
     },
   })
@@ -80,7 +84,7 @@ function closeCreate() {
 async function handleCreate(payload: EntityCreatePayload) {
   try {
     const entity = await entitiesStore.create(worldId.value, payload)
-    ui.selectedKey = entityKey(entity.type, entity.id)
+    ui.selectedKey = entityKey(entity.id)
     ui.view = 'grid'
     ui.activeType = null
   } catch (err) {

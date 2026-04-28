@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
-import type { Entity, EntityKey, EntityType, Relation } from '@/types/entity'
+import type { Entity, EntityKey, Relation } from '@/types/entity'
 import { entityKey, relationFromKey, relationToKey } from '@/types/entity'
-import { ENTITY_TYPES, ENTITY_TYPE_LIST } from '@/config/entityTypes'
+import { useEntityTypesStore } from '@/stores/entityTypes'
 import { useElementSize } from '@/composables/useElementSize'
 import { useForceSimulation } from '@/composables/useForceSimulation'
 import NodeContextMenu from './NodeContextMenu.vue'
@@ -14,7 +14,7 @@ const props = defineProps<{
   entities: Entity[]
   relations: Relation[]
   selectedKey: EntityKey | null
-  filterType: EntityType | null
+  filterType: string | null
 }>()
 
 const emit = defineEmits<{
@@ -24,6 +24,7 @@ const emit = defineEmits<{
   (e: 'delete-entity', entity: Entity): void
 }>()
 
+const types = useEntityTypesStore()
 const containerRef = ref<HTMLElement | null>(null)
 const svgRef = ref<SVGSVGElement | null>(null)
 const hovered = ref<EntityKey | null>(null)
@@ -57,15 +58,15 @@ onMounted(() => start())
 
 const entityByKey = computed(() => {
   const m = new Map<EntityKey, Entity>()
-  for (const e of props.entities) m.set(entityKey(e.type, e.id), e)
+  for (const e of props.entities) m.set(entityKey(e.id), e)
   return m
 })
 
 const activeSet = computed(() => {
   const keys = new Set<EntityKey>()
   for (const e of props.entities) {
-    if (!props.filterType || e.type === props.filterType)
-      keys.add(entityKey(e.type, e.id))
+    if (!props.filterType || e.typeKey === props.filterType)
+      keys.add(entityKey(e.id))
   }
   return keys
 })
@@ -108,7 +109,7 @@ interface RenderEdge {
   lx: number
   ly: number
   fromColor: string
-  fromType: EntityType
+  fromTypeKey: string
   lit: boolean
   dimmed: boolean
 }
@@ -138,10 +139,9 @@ const renderEdges = computed<RenderEdge[]>(() => {
       !aOk ||
       !bOk ||
       (!!connectedToHover.value && !isHovLit && !isSelLit)
-    
-    // Calculate adjusted target position to stop at node boundary
+
     const toEntity = entityByKey.value.get(tk)
-    const targetRadius = toEntity ? ENTITY_TYPES[toEntity.type].radius : 12
+    const targetRadius = toEntity ? types.display(toEntity.typeKey).radius : 12
     const dx = tp.x - fp.x
     const dy = tp.y - fp.y
     const dist = Math.sqrt(dx * dx + dy * dy)
@@ -149,17 +149,17 @@ const renderEdges = computed<RenderEdge[]>(() => {
       x: tp.x - (dx / dist) * (targetRadius + 2),
       y: tp.y - (dy / dist) * (targetRadius + 2)
     } : tp
-    
+
     const mx = (fp.x + tp.x) / 2 + (tp.y - fp.y) * 0.18
     const my = (fp.y + tp.y) / 2 - (tp.x - fp.x) * 0.18
     const lx = 0.25 * fp.x + 0.5 * mx + 0.25 * tp.x
     const ly = 0.25 * fp.y + 0.5 * my + 0.25 * tp.y
     const fromEntity = entityByKey.value.get(fk)
     const fromColor = fromEntity
-      ? ENTITY_TYPES[fromEntity.type].color
+      ? types.display(fromEntity.typeKey).color
       : '#7a4824'
-    const fromType: EntityType = fromEntity?.type ?? 'character'
-    out.push({ rel, fp, tp: tp_adj, tp_adj, mx, my, lx, ly, fromColor, fromType, lit, dimmed })
+    const fromTypeKey = fromEntity?.typeKey ?? 'character'
+    out.push({ rel, fp, tp: tp_adj, tp_adj, mx, my, lx, ly, fromColor, fromTypeKey, lit, dimmed })
   }
   return out
 })
@@ -167,7 +167,7 @@ const renderEdges = computed<RenderEdge[]>(() => {
 interface RenderNode {
   key: EntityKey
   entity: Entity
-  cfg: (typeof ENTITY_TYPES)[EntityType]
+  cfg: ReturnType<typeof types.display>
   x: number
   y: number
   r: number
@@ -182,10 +182,10 @@ const renderNodes = computed<RenderNode[]>(() => {
   void tick.value
   const out: RenderNode[] = []
   for (const entity of props.entities) {
-    const k = entityKey(entity.type, entity.id)
+    const k = entityKey(entity.id)
     const p = positions[k]
     if (!p) continue
-    const cfg = ENTITY_TYPES[entity.type]
+    const cfg = types.display(entity.typeKey)
     const active = activeSet.value.has(k)
     const isSel = props.selectedKey === k
     const isHov = hovered.value === k || linkHover.value === k
@@ -213,9 +213,9 @@ const renderNodes = computed<RenderNode[]>(() => {
 })
 
 const legendCounts = computed(() => {
-  const out: Record<EntityType, number> = {} as Record<EntityType, number>
-  for (const [type] of ENTITY_TYPE_LIST) out[type] = 0
-  for (const e of props.entities) out[e.type]++
+  const out: Record<string, number> = {}
+  for (const t of types.types) out[t.key] = 0
+  for (const e of props.entities) out[e.typeKey] = (out[e.typeKey] ?? 0) + 1
   return out
 })
 
@@ -378,7 +378,7 @@ const linkSourcePos = computed(() => {
 const linkSourceColor = computed(() => {
   if (!linkSource.value) return '#7a4824'
   const e = entityByKey.value.get(linkSource.value)
-  return e ? ENTITY_TYPES[e.type].color : '#7a4824'
+  return e ? types.display(e.typeKey).color : '#7a4824'
 })
 
 function onSvgMouseDown(evt: MouseEvent) {
@@ -435,6 +435,11 @@ function onNodeClick(evt: MouseEvent, entity: Entity) {
 const viewTransform = computed(
   () => `translate(${view.value.x},${view.value.y}) scale(${view.value.k})`
 )
+
+// Strip non-ascii / spaces from typeKey for safe SVG IDs.
+function safeId(typeKey: string) {
+  return typeKey.replace(/[^a-zA-Z0-9_-]/g, '_')
+}
 </script>
 
 <template>
@@ -454,21 +459,21 @@ const viewTransform = computed(
     >
       <defs>
         <radialGradient
-          v-for="[type, cfg] in ENTITY_TYPE_LIST"
-          :key="type"
-          :id="`ng-${type}`"
+          v-for="t in types.types"
+          :key="t.id"
+          :id="`ng-${safeId(t.key)}`"
           cx="50%"
           cy="50%"
           r="50%"
         >
-          <stop offset="0%" :stop-color="cfg.color" stop-opacity="0.4" />
-          <stop offset="100%" :stop-color="cfg.color" stop-opacity="0.05" />
+          <stop offset="0%" :stop-color="t.color ?? '#7a4824'" stop-opacity="0.4" />
+          <stop offset="100%" :stop-color="t.color ?? '#7a4824'" stop-opacity="0.05" />
         </radialGradient>
 
         <marker
-          v-for="[type, cfg] in ENTITY_TYPE_LIST"
-          :key="`arrow-${type}`"
-          :id="`arrow-${type}`"
+          v-for="t in types.types"
+          :key="`arrow-${t.id}`"
+          :id="`arrow-${safeId(t.key)}`"
           markerWidth="10"
           markerHeight="10"
           refX="8"
@@ -476,7 +481,7 @@ const viewTransform = computed(
           orient="auto"
           markerUnits="strokeWidth"
         >
-          <path d="M0,0 L0,6 L9,3 z" :fill="cfg.color" />
+          <path d="M0,0 L0,6 L9,3 z" :fill="t.color ?? '#7a4824'" />
         </marker>
       </defs>
 
@@ -494,7 +499,7 @@ const viewTransform = computed(
           :stroke-width="edge.lit ? 2.2 : 1.2"
           :stroke-dasharray="edge.lit ? 'none' : '5 5'"
           stroke-linecap="round"
-          :marker-end="`url(#arrow-${edge.fromType})`"
+          :marker-end="`url(#arrow-${safeId(edge.fromTypeKey)})`"
         />
         <text
           v-if="!edge.dimmed"
@@ -525,7 +530,7 @@ const viewTransform = computed(
         <circle
           v-if="node.bright"
           :r="node.r + 16"
-          :fill="`url(#ng-${node.entity.type})`"
+          :fill="`url(#ng-${safeId(node.entity.typeKey)})`"
           opacity="0.8"
         />
 
@@ -627,19 +632,19 @@ const viewTransform = computed(
 
     <div class="graph__legend">
       <div
-        v-for="[type, cfg] in ENTITY_TYPE_LIST"
-        :key="type"
-        v-show="legendCounts[type] > 0"
+        v-for="t in types.types"
+        :key="t.id"
+        v-show="(legendCounts[t.key] ?? 0) > 0"
         class="legend-item"
-        :style="{ borderColor: `${cfg.color}38` }"
+        :style="{ borderColor: `${t.color ?? '#7a4824'}38` }"
       >
-        <span class="legend-item__icon" :style="{ color: cfg.color }">
-          {{ cfg.icon }}
+        <span class="legend-item__icon" :style="{ color: t.color ?? '#7a4824' }">
+          {{ t.icon }}
         </span>
-        <span class="legend-item__label" :style="{ color: cfg.color }">
-          {{ cfg.label }}
+        <span class="legend-item__label" :style="{ color: t.color ?? '#7a4824' }">
+          {{ t.label }}
         </span>
-        <span class="legend-item__count">{{ legendCounts[type] }}</span>
+        <span class="legend-item__count">{{ legendCounts[t.key] ?? 0 }}</span>
       </div>
     </div>
 

@@ -14,16 +14,6 @@ namespace PlotCreator.DAL.Configurations
                 .IsRequired()
                 .HasMaxLength(200);
 
-            builder.Property(r => r.FromType)
-                .HasConversion<string>()
-                .HasMaxLength(20)
-                .IsRequired();
-
-            builder.Property(r => r.ToType)
-                .HasConversion<string>()
-                .HasMaxLength(20)
-                .IsRequired();
-
             builder.Property(r => r.CreatedAt).IsRequired();
 
             builder.HasOne(r => r.World)
@@ -31,8 +21,18 @@ namespace PlotCreator.DAL.Configurations
                 .HasForeignKey(r => r.WorldId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasIndex(r => new { r.WorldId, r.FromId, r.FromType });
-            builder.HasIndex(r => new { r.WorldId, r.ToId, r.ToType });
+            builder.HasOne(r => r.From)
+                .WithMany()
+                .HasForeignKey(r => r.FromId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(r => r.To)
+                .WithMany()
+                .HasForeignKey(r => r.ToId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasIndex(r => new { r.WorldId, r.FromId });
+            builder.HasIndex(r => new { r.WorldId, r.ToId });
         }
     }
 }

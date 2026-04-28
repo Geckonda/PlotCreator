@@ -1,24 +1,25 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Entity, EntityType, Relation } from '@/types/entity'
-import { ENTITY_TYPES } from '@/config/entityTypes'
+import type { Entity, Relation } from '@/types/entity'
+import { useEntityTypesStore } from '@/stores/entityTypes'
 import EntityCard from '@/components/entity/EntityCard.vue'
 
 const props = defineProps<{
   entities: Entity[]
   relations: Relation[]
-  filterType: EntityType | null
+  filterType: string | null
 }>()
 
 const emit = defineEmits<{
   (e: 'select', entity: Entity): void
 }>()
 
-const cfg = computed(() => (props.filterType ? ENTITY_TYPES[props.filterType] : null))
+const types = useEntityTypesStore()
+const cfg = computed(() => (props.filterType ? types.display(props.filterType) : null))
 
 const items = computed(() =>
   props.filterType
-    ? props.entities.filter((e) => e.type === props.filterType)
+    ? props.entities.filter((e) => e.typeKey === props.filterType)
     : props.entities,
 )
 </script>

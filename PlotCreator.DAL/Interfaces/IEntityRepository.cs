@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using PlotCreator.Domain.Entity.Base;
+using PlotCreator.Domain.Entity;
 
 namespace PlotCreator.DAL.Interfaces
 {
-    public interface IEntityRepository<T> : IBaseRepository<T> where T : EntityBase
+    public interface IEntityRepository : IBaseRepository<WorldEntity>
     {
-        Task<IReadOnlyList<T>> GetByWorldIdAsync(int worldId);
+        Task<IReadOnlyList<WorldEntity>> GetByWorldIdAsync(int worldId);
+        Task<WorldEntity?> GetWithTypeAsync(int id);
     }
 }

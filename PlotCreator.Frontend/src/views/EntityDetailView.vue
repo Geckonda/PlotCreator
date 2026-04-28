@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import type { Entity, EntityStatus, EntityType, Relation } from '@/types/entity'
-import { entityKey, relationFromKey, relationToKey } from '@/types/entity'
-import type { FullEntityDto } from '@/types/api'
-import { ENTITY_TYPES } from '@/config/entityTypes'
+import type { Entity, EntityStatus, Relation } from '@/types/entity'
+import { relationFromKey, relationToKey } from '@/types/entity'
+import type { EntityDto, EntityUpdatePayload, PropertyDef } from '@/types/api'
+import { useEntityTypesStore } from '@/stores/entityTypes'
 import { STATUS_LIST, STATUSES } from '@/config/statuses'
-import { ENTITY_FIELD_SCHEMAS, type FieldDef } from '@/config/entityFields'
 import { useEntitiesStore } from '@/stores/entities'
 import { useWorldsStore } from '@/stores/worlds'
 import TypeBadge from '@/components/ui/TypeBadge.vue'
@@ -18,42 +17,27 @@ import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
 
 const props = defineProps<{
   worldId: number
-  type: string
   entityId: number
 }>()
 
 const router = useRouter()
 const entitiesStore = useEntitiesStore()
 const worldsStore = useWorldsStore()
-
-const KNOWN_TYPES: EntityType[] = [
-  'character',
-  'location',
-  'event',
-  'faction',
-  'episode',
-  'artifact',
-  'lore',
-]
-
-const typedType = computed<EntityType | null>(() =>
-  (KNOWN_TYPES as string[]).includes(props.type)
-    ? (props.type as EntityType)
-    : null,
-)
+const types = useEntityTypesStore()
 
 const loading = ref(false)
 const saving = ref(false)
 const error = ref<string | null>(null)
 const showCreator = ref(false)
 const notFound = ref(false)
+const typeKey = ref<string>('')
 
 interface FormState {
   name: string
   description: string
   status: EntityStatus
   tagsText: string[]
-  extras: Record<string, unknown>
+  properties: Record<string, unknown>
 }
 
 const form = reactive<FormState>({
@@ -61,82 +45,72 @@ const form = reactive<FormState>({
   description: '',
   status: 'draft',
   tagsText: [],
-  extras: {},
+  properties: {},
 })
 
 const original = ref('')
 
-const selfKey = computed(() =>
-  typedType.value ? entityKey(typedType.value, props.entityId) : '',
-)
-
-const entity = computed<Entity | null>(() =>
-  selfKey.value ? entitiesStore.byKey.get(selfKey.value) ?? null : null,
+const entity = computed<Entity | null>(
+  () => entitiesStore.byKey.get(props.entityId) ?? null,
 )
 
 const cfg = computed(() =>
-  typedType.value ? ENTITY_TYPES[typedType.value] : null,
+  typeKey.value ? types.display(typeKey.value) : null,
 )
 
 const statusCfg = computed(() => STATUSES[form.status] ?? STATUSES.draft)
 
-const schema = computed<FieldDef[]>(() =>
-  typedType.value ? ENTITY_FIELD_SCHEMAS[typedType.value] ?? [] : [],
+const schema = computed<PropertyDef[]>(() =>
+  typeKey.value ? types.schemaFor(typeKey.value) : [],
 )
 
 const supportsPicture = computed(
   () =>
-    typedType.value === 'character' ||
-    typedType.value === 'location' ||
-    typedType.value === 'artifact',
+    typeKey.value === 'character' ||
+    typeKey.value === 'location' ||
+    typeKey.value === 'artifact',
 )
 
 const pictureUrl = computed(() => {
-  const v = form.extras.pictureUrl
+  const v = form.properties.pictureUrl
   return typeof v === 'string' && v.trim() ? v : null
 })
 
 function snapshot() {
-  return JSON.stringify(form)
+  return JSON.stringify({ ...form, typeKey: typeKey.value })
 }
 
-function applyDto(dto: FullEntityDto) {
+function applyDto(dto: EntityDto) {
+  typeKey.value = dto.typeKey
   form.name = dto.name
   form.description = dto.desc ?? ''
   form.status = dto.status
   form.tagsText = dto.tags ?? []
-  const extras: Record<string, unknown> = {}
+  const props_: Record<string, unknown> = {}
   for (const def of schema.value) {
-    extras[def.key] =
-      (dto as unknown as Record<string, unknown>)[def.key] ?? null
+    props_[def.key] = dto.properties[def.key] ?? null
   }
-  form.extras = extras
+  form.properties = props_
   original.value = snapshot()
 }
 
 const dirty = computed(() => snapshot() !== original.value)
 
 async function load() {
-  if (!typedType.value) {
-    notFound.value = true
-    return
-  }
   loading.value = true
   error.value = null
   notFound.value = false
   try {
     worldsStore.setCurrent(props.worldId)
-    if (!entitiesStore.byKey.get(selfKey.value)) {
+    await types.ensureLoaded()
+    if (!entitiesStore.byKey.get(props.entityId)) {
       await entitiesStore.fetchForWorld(props.worldId)
     }
-    if (!entitiesStore.byKey.get(selfKey.value)) {
+    if (!entitiesStore.byKey.get(props.entityId)) {
       notFound.value = true
       return
     }
-    const dto = await entitiesStore.fetchDetail(
-      typedType.value,
-      props.entityId,
-    )
+    const dto = await entitiesStore.fetchDetail(props.entityId)
     applyDto(dto)
   } catch (e: unknown) {
     error.value = e instanceof Error ? e.message : 'Не удалось загрузить'
@@ -146,7 +120,7 @@ async function load() {
 }
 
 watch(
-  () => `${props.type}:${props.entityId}:${props.worldId}`,
+  () => `${props.entityId}:${props.worldId}`,
   () => {
     showCreator.value = false
     load()
@@ -154,22 +128,22 @@ watch(
   { immediate: true },
 )
 
-function buildPayload(): object {
+function buildPayload(): EntityUpdatePayload {
   return {
     name: form.name.trim(),
     desc: form.description.trim() || null,
     status: form.status,
     tags: form.tagsText,
-    ...form.extras,
+    properties: { ...form.properties },
   }
 }
 
 async function save() {
-  if (!dirty.value || saving.value || !typedType.value) return
+  if (!dirty.value || saving.value) return
   saving.value = true
   error.value = null
   try {
-    await entitiesStore.update(typedType.value, props.entityId, buildPayload())
+    await entitiesStore.update(props.entityId, buildPayload())
     original.value = snapshot()
   } catch (e: unknown) {
     error.value = e instanceof Error ? e.message : 'Не удалось сохранить'
@@ -179,21 +153,19 @@ async function save() {
 }
 
 const connRels = computed<Relation[]>(() =>
-  typedType.value
-    ? entitiesStore.relationsFor(typedType.value, props.entityId)
-    : [],
+  entitiesStore.relationsFor(props.entityId),
 )
 
 function getOther(rel: Relation): Entity | null {
   const otherKey =
-    relationFromKey(rel) === selfKey.value
+    relationFromKey(rel) === props.entityId
       ? relationToKey(rel)
       : relationFromKey(rel)
   return entitiesStore.byKey.get(otherKey) ?? null
 }
 
 function getDirection(rel: Relation) {
-  return relationFromKey(rel) === selfKey.value ? '→' : '←'
+  return relationFromKey(rel) === props.entityId ? '→' : '←'
 }
 
 function goBack() {
@@ -203,7 +175,7 @@ function goBack() {
 function goToEntity(other: Entity) {
   router.push({
     name: 'entity-detail',
-    params: { id: props.worldId, type: other.type, entityId: other.id },
+    params: { id: props.worldId, entityId: other.id },
   })
 }
 
@@ -364,7 +336,7 @@ const sectionTitleStyle = computed(() => {
 
 function onPictureUrlInput(ev: Event) {
   const value = (ev.target as HTMLInputElement).value
-  form.extras.pictureUrl = value === '' ? null : value
+  form.properties.pictureUrl = value === '' ? null : value
 }
 
 const visibleSchema = computed(() =>
@@ -433,7 +405,7 @@ const visibleSchema = computed(() =>
               <label>URL изображения</label>
               <input
                 type="text"
-                :value="(form.extras.pictureUrl as string | null) ?? ''"
+                :value="(form.properties.pictureUrl as string | null) ?? ''"
                 placeholder="https://…"
                 @input="onPictureUrlInput"
               />
@@ -449,7 +421,7 @@ const visibleSchema = computed(() =>
                 placeholder="Название"
               />
               <div class="profile__meta">
-                <TypeBadge v-if="typedType" :type="typedType" />
+                <TypeBadge v-if="typeKey" :type-key="typeKey" />
                 <span class="profile__status-pill" :style="statusPillStyle">
                   <span
                     class="profile__status-dot"
@@ -553,8 +525,8 @@ const visibleSchema = computed(() =>
               v-for="def in visibleSchema"
               :key="def.key"
               :def="def"
-              :model-value="form.extras[def.key]"
-              @update:model-value="form.extras[def.key] = $event"
+              :model-value="form.properties[def.key]"
+              @update:model-value="form.properties[def.key] = $event"
             />
           </div>
         </section>
@@ -587,7 +559,6 @@ const visibleSchema = computed(() =>
   overflow: hidden;
 }
 
-/* Top toolbar */
 .ed__bar {
   display: flex;
   align-items: center;
@@ -661,7 +632,6 @@ const visibleSchema = computed(() =>
   border-color: rgba(160, 41, 41, 0.4);
 }
 
-/* Page */
 .ed__page {
   flex: 1;
   overflow-y: auto;
@@ -704,7 +674,6 @@ const visibleSchema = computed(() =>
   color: var(--text);
 }
 
-/* Profile (highlighted card) */
 .profile {
   display: grid;
   grid-template-columns: 240px 1fr;
@@ -872,7 +841,6 @@ const visibleSchema = computed(() =>
   min-width: 0;
 }
 
-/* Section blocks (relations, additional fields) */
 .block {
   display: flex;
   flex-direction: column;
@@ -935,7 +903,6 @@ const visibleSchema = computed(() =>
   padding: 8px 0 4px;
 }
 
-/* Relations grid */
 .rel-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -985,7 +952,6 @@ const visibleSchema = computed(() =>
   color: #a02929;
 }
 
-/* Additional fields grid */
 .props-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));

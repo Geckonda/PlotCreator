@@ -45,16 +45,7 @@ namespace PlotCreator.DAL.Repositories
                 .AsNoTracking()
                 .ToListAsync();
 
-        public async Task<int> GetEntityCountAsync(int worldId)
-        {
-            var c = await _db.Characters.CountAsync(e => e.WorldId == worldId);
-            var l = await _db.Locations.CountAsync(e => e.WorldId == worldId);
-            var ev = await _db.Events.CountAsync(e => e.WorldId == worldId);
-            var f = await _db.Factions.CountAsync(e => e.WorldId == worldId);
-            var ep = await _db.Episodes.CountAsync(e => e.WorldId == worldId);
-            var a = await _db.Artifacts.CountAsync(e => e.WorldId == worldId);
-            var lo = await _db.Lores.CountAsync(e => e.WorldId == worldId);
-            return c + l + ev + f + ep + a + lo;
-        }
+        public async Task<int> GetEntityCountAsync(int worldId) =>
+            await _db.Entities.CountAsync(e => e.WorldId == worldId);
     }
 }

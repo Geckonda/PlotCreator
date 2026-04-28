@@ -15,12 +15,11 @@ const router = createRouter({
       component: () => import('@/views/WorldView.vue'),
     },
     {
-      path: '/world/:id/entity/:type/:entityId',
+      path: '/world/:id/entity/:entityId',
       name: 'entity-detail',
       component: () => import('@/views/EntityDetailView.vue'),
       props: (route) => ({
         worldId: Number(route.params.id),
-        type: route.params.type as string,
         entityId: Number(route.params.entityId),
       }),
     },
