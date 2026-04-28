@@ -132,13 +132,15 @@ function moveProperty(idx: number, dir: -1 | 1) {
 function updateProperty(idx: number, patch: Partial<PropertyDef>) {
   form.propertySchema[idx] = { ...form.propertySchema[idx], ...patch }
 }
-
+const selectInputs = reactive<Record<number, string>>({})
 function setOptions(idx: number, raw: string) {
+  console.log('setOptions called with:', raw) // Добавьте это
   const opts = raw
     .split(',')
     .map((s) => s.trim())
     .filter((s) => s.length > 0)
   updateProperty(idx, { options: opts.length ? opts : undefined })
+  selectInputs[idx] = raw
 }
 
 const KIND_LABELS: Record<FieldKind, string> = {
@@ -471,7 +473,7 @@ function goBack() {
                 <div v-if="p.kind === 'select'" class="tm__prop-options">
                   <label>Варианты (через запятую)</label>
                   <input
-                    :value="(p.options ?? []).join(', ')"
+                    :value="selectInputs[idx] ?? (p.options ?? []).join(', ')"
                     type="text"
                     class="tm__input"
                     placeholder="один, два, три"
