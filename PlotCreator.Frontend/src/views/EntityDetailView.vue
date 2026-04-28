@@ -3,7 +3,13 @@ import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import type { Entity, EntityStatus, Relation } from '@/types/entity'
 import { relationFromKey, relationToKey } from '@/types/entity'
-import type { EntityDto, EntityUpdatePayload, PropertyDef } from '@/types/api'
+import type {
+  EntityDto,
+  EntityUpdatePayload,
+  PropertyDef,
+  TipTapDoc,
+} from '@/types/api'
+import { emptyTipTapDoc } from '@/types/api'
 import { useEntityTypesStore } from '@/stores/entityTypes'
 import { STATUS_LIST, STATUSES } from '@/config/statuses'
 import { useEntitiesStore } from '@/stores/entities'
@@ -12,6 +18,7 @@ import TypeBadge from '@/components/ui/TypeBadge.vue'
 import DynamicField from '@/components/entity/DynamicField.vue'
 import RelationCreator from '@/components/entity/RelationCreator.vue'
 import EntityCard from '@/components/entity/EntityCard.vue'
+import BlockEditor from '@/components/blocks/BlockEditor.vue'
 import TagsInput from '@/components/forms/TagsInput.vue'
 import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
 
@@ -38,6 +45,7 @@ interface FormState {
   status: EntityStatus
   tagsText: string[]
   properties: Record<string, unknown>
+  content: TipTapDoc
 }
 
 const form = reactive<FormState>({
@@ -46,6 +54,7 @@ const form = reactive<FormState>({
   status: 'draft',
   tagsText: [],
   properties: {},
+  content: emptyTipTapDoc(),
 })
 
 const original = ref('')
@@ -91,6 +100,7 @@ function applyDto(dto: EntityDto) {
     props_[def.key] = dto.properties[def.key] ?? null
   }
   form.properties = props_
+  form.content = dto.content ?? emptyTipTapDoc()
   original.value = snapshot()
 }
 
@@ -135,6 +145,7 @@ function buildPayload(): EntityUpdatePayload {
     status: form.status,
     tags: form.tagsText,
     properties: { ...form.properties },
+    content: form.content,
   }
 }
 
@@ -460,6 +471,15 @@ const visibleSchema = computed(() =>
               </div>
             </div>
           </div>
+        </section>
+
+        <section class="block">
+          <div class="block__head">
+            <h2 class="block__title" :style="sectionTitleStyle">
+              Содержание
+            </h2>
+          </div>
+          <BlockEditor v-model="form.content" />
         </section>
 
         <section class="block">

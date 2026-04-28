@@ -3,7 +3,13 @@ import { computed, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import type { Entity, EntityStatus, Relation } from '@/types/entity'
 import { entityKey, relationFromKey, relationToKey } from '@/types/entity'
-import type { EntityDto, EntityUpdatePayload, PropertyDef } from '@/types/api'
+import type {
+  EntityDto,
+  EntityUpdatePayload,
+  PropertyDef,
+  TipTapDoc,
+} from '@/types/api'
+import { emptyTipTapDoc } from '@/types/api'
 import { useEntityTypesStore } from '@/stores/entityTypes'
 import { STATUS_LIST } from '@/config/statuses'
 import { useEntitiesStore } from '@/stores/entities'
@@ -11,6 +17,7 @@ import { useWorldsStore } from '@/stores/worlds'
 import TypeBadge from '@/components/ui/TypeBadge.vue'
 import DynamicField from '@/components/entity/DynamicField.vue'
 import RelationCreator from '@/components/entity/RelationCreator.vue'
+import BlockEditor from '@/components/blocks/BlockEditor.vue'
 import TagsInput from '@/components/forms/TagsInput.vue'
 import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
 
@@ -53,6 +60,7 @@ interface FormState {
   status: EntityStatus
   tagsText: string[]
   properties: Record<string, unknown>
+  content: TipTapDoc
 }
 
 const form = reactive<FormState>({
@@ -61,6 +69,7 @@ const form = reactive<FormState>({
   status: 'draft',
   tagsText: [],
   properties: {},
+  content: emptyTipTapDoc(),
 })
 
 const original = ref<string>('')
@@ -79,6 +88,7 @@ function applyDto(dto: EntityDto) {
     props_[def.key] = dto.properties[def.key] ?? null
   }
   form.properties = props_
+  form.content = dto.content ?? emptyTipTapDoc()
   original.value = snapshot()
 }
 
@@ -114,6 +124,7 @@ function buildPayload(): EntityUpdatePayload {
     status: form.status,
     tags: form.tagsText,
     properties: { ...form.properties },
+    content: form.content,
   }
 }
 
@@ -290,6 +301,11 @@ const saveStyle = computed(() => ({
           :model-value="form.properties[def.key]"
           @update:model-value="form.properties[def.key] = $event"
         />
+      </section>
+
+      <section class="panel__section">
+        <div class="panel__section-title">Содержание</div>
+        <BlockEditor v-model="form.content" />
       </section>
 
       <section class="panel__section">
