@@ -154,9 +154,9 @@ function getOther(rel: Relation) {
   return entitiesStore.byKey.get(otherKey) ?? null
 }
 
-function getDirection(rel: Relation) {
-  return relationFromKey(rel) === selfId.value ? '→' : '←'
-}
+// function getDirection(rel: Relation) {
+//   return relationFromKey(rel) === selfId.value ? '→' : '←'
+// }
 
 type ConfirmKind =
   | { kind: 'entity' }
@@ -343,7 +343,7 @@ const saveStyle = computed(() => ({
               <div class="panel__conn-text">
                 <div class="panel__conn-name">{{ getOther(rel)!.name }}</div>
                 <div class="panel__conn-rel">
-                  {{ getDirection(rel) }} {{ rel.label }}
+                  {{ "→" }} {{ rel.label }}
                 </div>
               </div>
               <button

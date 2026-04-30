@@ -155,9 +155,10 @@ const renderEdges = computed<RenderEdge[]>(() => {
     const lx = 0.25 * fp.x + 0.5 * mx + 0.25 * tp.x
     const ly = 0.25 * fp.y + 0.5 * my + 0.25 * tp.y
     const fromEntity = entityByKey.value.get(fk)
-    const fromColor = fromEntity
-      ? types.display(fromEntity.typeKey).color
-      : '#7a4824'
+    // const fromColor = fromEntity
+    //   ? types.display(fromEntity.typeKey).color
+    //   : '#7a4824'
+    const fromColor = '#7a4824'
     const fromTypeKey = fromEntity?.typeKey ?? 'character'
     out.push({ rel, fp, tp: tp_adj, tp_adj, mx, my, lx, ly, fromColor, fromTypeKey, lit, dimmed })
   }
@@ -469,20 +470,6 @@ function safeId(typeKey: string) {
           <stop offset="0%" :stop-color="t.color ?? '#7a4824'" stop-opacity="0.4" />
           <stop offset="100%" :stop-color="t.color ?? '#7a4824'" stop-opacity="0.05" />
         </radialGradient>
-
-        <marker
-          v-for="t in types.types"
-          :key="`arrow-${t.id}`"
-          :id="`arrow-${safeId(t.key)}`"
-          markerWidth="10"
-          markerHeight="10"
-          refX="8"
-          refY="3"
-          orient="auto"
-          markerUnits="strokeWidth"
-        >
-          <path d="M0,0 L0,6 L9,3 z" :fill="t.color ?? '#7a4824'" />
-        </marker>
       </defs>
 
       <g :transform="viewTransform">

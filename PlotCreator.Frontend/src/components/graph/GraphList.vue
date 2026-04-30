@@ -203,6 +203,9 @@ function isDefault(g: GraphSummary) {
   padding: 8px;
   overflow-y: auto;
   flex: 1;
+  gap: 5px;
+  display: flex;
+  flex-direction: column;
 }
 
 .glist__item {
@@ -213,7 +216,7 @@ function isDefault(g: GraphSummary) {
   border-radius: 7px;
   cursor: pointer;
   transition: background 0.12s;
-  border: 1px solid transparent;
+  border: 1px solid var(--border);
 }
 
 .glist__item:hover {

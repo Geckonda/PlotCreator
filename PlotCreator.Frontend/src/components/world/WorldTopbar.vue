@@ -47,7 +47,7 @@ function openGraphs() {
     </button>
 
     <button class="topbar__tab" @click="openGraphs">
-      ⌬ Графы
+      ⌬ Схемы
     </button>
 
     <div class="topbar__spacer" />
