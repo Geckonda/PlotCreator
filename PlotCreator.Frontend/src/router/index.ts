@@ -28,6 +28,11 @@ const router = createRouter({
       name: 'type-manager',
       component: () => import('@/views/TypeManagerView.vue'),
     },
+    {
+      path: '/world/:id/graphs/:graphId?',
+      name: 'graph-view',
+      component: () => import('@/views/GraphView.vue'),
+    },
   ],
 })
 

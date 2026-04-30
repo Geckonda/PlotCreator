@@ -16,6 +16,7 @@ import EntityCreateModal from '@/components/entity/EntityCreateModal.vue'
 import type { Entity } from '@/types/entity'
 import { entityKey } from '@/types/entity'
 import type { EntityCreatePayload } from '@/types/api'
+import { useEntitySearch } from '@/composables/useEntitySearch'
 
 const route = useRoute()
 const router = useRouter()
@@ -43,15 +44,8 @@ watch(
   { immediate: true },
 )
 
-const filteredEntities = computed(() => {
-  const q = search.value.trim().toLowerCase()
-  if (!q) return entitiesStore.entities
-  return entitiesStore.entities.filter(
-    (e) =>
-      e.name.toLowerCase().includes(q) ||
-      e.tags.some((t) => t.toLowerCase().includes(q)),
-  )
-})
+const allEntities = computed(() => entitiesStore.entities)
+const filteredEntities = useEntitySearch(allEntities, search)
 
 const selectedEntity = computed(() =>
   ui.selectedKey !== null

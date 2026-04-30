@@ -15,6 +15,9 @@ namespace PlotCreator_API
             services.AddScoped<IRelationRepository, RelationRepository>();
             services.AddScoped<IEntityRepository, EntityRepository>();
             services.AddScoped<IEntityTypeRepository, EntityTypeRepository>();
+            services.AddScoped<IGraphRepository, GraphRepository>();
+            services.AddScoped<IGraphNodeRepository, GraphNodeRepository>();
+            services.AddScoped<IGraphEdgeRepository, GraphEdgeRepository>();
         }
 
         public static void InitialiseServices(this IServiceCollection services)
@@ -25,6 +28,7 @@ namespace PlotCreator_API
             services.AddScoped<IEntityService, EntityService>();
             services.AddScoped<IEntityTypeService, EntityTypeService>();
             services.AddScoped<IRelationService, RelationService>();
+            services.AddScoped<IGraphService, GraphService>();
         }
     }
 }

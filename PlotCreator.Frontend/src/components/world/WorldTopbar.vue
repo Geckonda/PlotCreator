@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useWorldUiStore, type WorldViewMode } from '@/stores/worldUi'
 
 const router = useRouter()
+const route = useRoute()
 const ui = useWorldUiStore()
 const { view, search } = storeToRefs(ui)
 
@@ -21,6 +22,12 @@ function selectTab(id: WorldViewMode) {
 function goBack() {
   router.push({ name: 'home' })
 }
+
+function openGraphs() {
+  const id = route.params.id
+  if (!id) return
+  router.push({ name: 'graph-view', params: { id: String(id) } })
+}
 </script>
 
 <template>
@@ -37,6 +44,10 @@ function goBack() {
       @click="selectTab(id)"
     >
       {{ ico }} {{ lbl }}
+    </button>
+
+    <button class="topbar__tab" @click="openGraphs">
+      ⌬ Графы
     </button>
 
     <div class="topbar__spacer" />

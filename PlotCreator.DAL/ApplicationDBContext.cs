@@ -11,6 +11,9 @@ namespace PlotCreator.DAL
         public DbSet<EntityType> EntityTypes => Set<EntityType>();
         public DbSet<WorldEntity> Entities => Set<WorldEntity>();
         public DbSet<Relation> Relations => Set<Relation>();
+        public DbSet<Graph> Graphs => Set<Graph>();
+        public DbSet<GraphNode> GraphNodes => Set<GraphNode>();
+        public DbSet<GraphEdge> GraphEdges => Set<GraphEdge>();
 
         public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options) : base(options)
         {
