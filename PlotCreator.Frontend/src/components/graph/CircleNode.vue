@@ -47,7 +47,7 @@ function truncate(name: string): string {
     />
     <Handle
       type="source"
-      :position="Position.Bottom"
+      :position="Position.Top"
       class="cnode__handle cnode__handle--source"
     />
 
@@ -133,6 +133,10 @@ function truncate(name: string): string {
   background: transparent;
   border: none;
   opacity: 0;
+  /* Переместить Handle в центр узла */
+  /* top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important; */
 }
 
 .cnode :deep(.vue-flow__handle) {

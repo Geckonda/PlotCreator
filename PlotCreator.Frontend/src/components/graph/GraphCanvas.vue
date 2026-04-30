@@ -12,6 +12,7 @@ import {
   type NodeMouseEvent,
 } from '@vue-flow/core'
 import CircleNode from './CircleNode.vue'
+import CustomEdge from './CustomEdge.vue'
 import EdgePopover from './EdgePopover.vue'
 import { useEntityTypesStore } from '@/stores/entityTypes'
 import type { GraphDetail, GraphEdgeData, EdgeDirection } from '@/types/graph'
@@ -32,14 +33,8 @@ const emit = defineEmits<{
 
 const types = useEntityTypesStore()
 
-function markersFor(direction: EdgeDirection) {
-  return {
-    markerStart: direction === 'backward' || direction === 'both' ? { type: MarkerType.ArrowClosed } : undefined,
-    markerEnd: direction === 'forward' || direction === 'both' ? { type: MarkerType.ArrowClosed } : undefined,
-  }
-}
-
 const nodeTypes = { circle: CircleNode }
+const edgeTypes = { custom: CustomEdge }
 
 const nodes = computed<Node[]>(() =>
   props.graph.nodes.map((n) => ({
@@ -56,19 +51,34 @@ const nodes = computed<Node[]>(() =>
 
 const edges = computed<Edge[]>(() =>
   props.graph.edges.map((e) => {
-    const m = markersFor(e.direction)
+    // Получаем информацию о радиусах узлов
+    const fromNode = props.graph.nodes.find((n) => n.id === e.fromNodeId)
+    const toNode = props.graph.nodes.find((n) => n.id === e.toNodeId)
+    const fromRadius = fromNode && fromNode.entityTypeKey
+      ? types.display(fromNode.entityTypeKey).radius || 14
+      : 14
+    const toRadius = toNode && toNode.entityTypeKey
+      ? types.display(toNode.entityTypeKey).radius || 14
+      : 14
+    const fromWrapperSize = (fromRadius * 2) + 18
+    const toWrapperSize = (toRadius * 2) + 18
     return {
       id: String(e.id),
       source: String(e.fromNodeId),
       target: String(e.toNodeId),
       label: e.label ?? undefined,
-      data: { direction: e.direction, raw: e },
-      type: 'default',
-      ...m,
+      data: {
+        direction: e.direction,
+        raw: e,
+        fromRadius,
+        toRadius,
+        fromWrapperSize,
+        toWrapperSize,
+      },
+      type: 'custom',
       style: {
         stroke: e.direction === 'none' ? 'rgba(101, 67, 33, 0.55)' : '#7a4824',
         strokeWidth: 1.6,
-        strokeDasharray: e.direction === 'none' ? '6 5' : undefined,
       },
     }
   }),
@@ -176,12 +186,13 @@ const popoverStyle = computed(() => {
       :nodes="nodes"
       :edges="edges"
       :node-types="nodeTypes"
+      :edge-types="edgeTypes"
       :nodes-draggable="!readOnly"
       :nodes-connectable="!readOnly"
       :elements-selectable="true"
       :fit-view-on-init="true"
       :connection-mode="ConnectionMode.Loose"
-      :default-edge-options="{ type: 'default' }"
+      :default-edge-options="{ type: 'custom' }"
       @connect="onConnect"
       @edge-click="onEdgeClick"
       @node-click="onNodeClick"
