@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, watch } from 'vue'
+import { onBeforeUnmount, ref, watch } from 'vue'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import type { JSONContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
@@ -7,21 +7,36 @@ import Image from '@tiptap/extension-image'
 import Placeholder from '@tiptap/extension-placeholder'
 import type { TipTapDoc } from '@/types/api'
 import { emptyTipTapDoc } from '@/types/api'
+import {
+  EntityHighlight,
+  entityHighlightPluginKey,
+  type EntityRef,
+} from '@/composables/tiptapEntityHighlight'
 
 const props = withDefaults(
   defineProps<{
     modelValue: TipTapDoc | null | undefined
     placeholder?: string
     editable?: boolean
+    entities?: EntityRef[]
+    relatedIds?: ReadonlySet<number>
+    excludeId?: number | null
   }>(),
   {
     placeholder: 'Начните печатать или используйте кнопки выше…',
     editable: true,
+    entities: () => [],
+    relatedIds: () => new Set<number>(),
+    excludeId: null,
   },
 )
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: TipTapDoc): void
+  (
+    e: 'mention-click',
+    payload: { entityId: number; x: number; y: number },
+  ): void
 }>()
 
 function normalize(doc: TipTapDoc | null | undefined): TipTapDoc {
@@ -38,11 +53,44 @@ const editor = useEditor({
     }),
     Image.configure({ inline: false, allowBase64: false }),
     Placeholder.configure({ placeholder: props.placeholder }),
+    EntityHighlight.configure({
+      getEntities: () => props.entities,
+      getRelatedIds: () => props.relatedIds,
+      getExcludeId: () => props.excludeId,
+    }),
   ],
   onUpdate({ editor }) {
     emit('update:modelValue', editor.getJSON() as TipTapDoc)
   },
 })
+
+function refreshHighlights() {
+  const ed = editor.value
+  if (!ed) return
+  ed.view.dispatch(ed.state.tr.setMeta(entityHighlightPluginKey, true))
+}
+
+watch(
+  () => [props.entities, props.relatedIds, props.excludeId] as const,
+  refreshHighlights,
+  { deep: true },
+)
+
+const contentEl = ref<HTMLElement | null>(null)
+
+function onContentClick(ev: MouseEvent) {
+  const target = ev.target as HTMLElement | null
+  if (!target) return
+  const mention = target.closest('.entity-mention') as HTMLElement | null
+  if (!mention) return
+  const idStr = mention.dataset.entityId
+  if (!idStr) return
+  const id = Number(idStr)
+  if (!Number.isFinite(id)) return
+  ev.preventDefault()
+  ev.stopPropagation()
+  emit('mention-click', { entityId: id, x: ev.clientX, y: ev.clientY })
+}
 
 // Sync external value changes (e.g. when loading a different entity).
 watch(
@@ -228,7 +276,12 @@ function isActive(name: string, attrs?: Record<string, unknown>): boolean {
       </button>
     </div>
 
-    <EditorContent class="block-editor__content" :editor="editor" />
+    <EditorContent
+      ref="contentEl"
+      class="block-editor__content"
+      :editor="editor"
+      @click="onContentClick"
+    />
   </div>
 </template>
 
@@ -381,5 +434,30 @@ function isActive(name: string, attrs?: Record<string, unknown>): boolean {
   border-radius: 3px;
   font-size: 0.92em;
   font-family: monospace;
+}
+
+.block-editor__content :deep(.entity-mention) {
+  cursor: pointer;
+  border-radius: 2px;
+  padding: 0 1px;
+  transition: background 0.12s;
+}
+
+.block-editor__content :deep(.entity-mention--related) {
+  border-bottom: 1.5px solid rgba(122, 72, 36, 0.55);
+  background: rgba(122, 72, 36, 0.06);
+}
+
+.block-editor__content :deep(.entity-mention--related:hover) {
+  background: rgba(122, 72, 36, 0.14);
+}
+
+.block-editor__content :deep(.entity-mention--unrelated) {
+  border-bottom: 1.5px dashed rgba(184, 134, 11, 0.75);
+  background: rgba(184, 134, 11, 0.08);
+}
+
+.block-editor__content :deep(.entity-mention--unrelated:hover) {
+  background: rgba(184, 134, 11, 0.18);
 }
 </style>

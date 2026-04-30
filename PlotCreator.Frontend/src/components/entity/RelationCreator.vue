@@ -7,6 +7,7 @@ import { useEntitiesStore } from '@/stores/entities'
 const props = defineProps<{
   worldId: number
   from: Entity
+  initialTarget?: Entity | null
 }>()
 
 const emit = defineEmits<{
@@ -17,7 +18,7 @@ const emit = defineEmits<{
 const entitiesStore = useEntitiesStore()
 const types = useEntityTypesStore()
 const search = ref('')
-const target = ref<Entity | null>(null)
+const target = ref<Entity | null>(props.initialTarget ?? null)
 const label = ref('')
 const saving = ref(false)
 const error = ref<string | null>(null)
@@ -45,19 +46,20 @@ function clearTarget() {
   target.value = null
 }
 
-const canSave = computed(
-  () => target.value !== null && label.value.trim() !== '' && !saving.value,
-)
+
+
+const canSave = computed(() => target.value !== null && !saving.value)
 
 async function save() {
   if (!canSave.value || !target.value) return
   saving.value = true
   error.value = null
   try {
+    const trimmed = label.value.trim()
     await entitiesStore.createRelation(props.worldId, {
       fromId: props.from.id,
       toId: target.value.id,
-      label: label.value.trim(),
+      label: trimmed === '' ? null : trimmed,
     })
     emit('created')
   } catch (e: unknown) {
@@ -115,7 +117,7 @@ async function save() {
     </div>
 
     <div class="creator__row">
-      <label class="creator__lbl">Подпись</label>
+      <label class="creator__lbl">Подпись (необязательно)</label>
       <input
         v-model="label"
         type="text"

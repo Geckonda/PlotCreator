@@ -22,6 +22,8 @@ namespace PlotCreator.DAL.Configurations
 
             builder.Property(e => e.Tags).IsRequired();
 
+            builder.Property(e => e.Aliases).IsRequired();
+
             builder.Property(e => e.PropertiesJson)
                 .HasColumnName("Properties")
                 .HasColumnType("jsonb")

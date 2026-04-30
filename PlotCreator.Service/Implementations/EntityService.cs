@@ -46,6 +46,7 @@ namespace PlotCreator.Service.Implementations
                 TypeKey = e.Type?.Key ?? string.Empty,
                 Name = e.Name,
                 Tags = e.Tags,
+                Aliases = e.Aliases,
                 Status = e.Status,
                 Description = e.Description
             }).ToList();
@@ -75,6 +76,7 @@ namespace PlotCreator.Service.Implementations
                 Description = request.Description,
                 Status = request.Status,
                 Tags = request.Tags,
+                Aliases = request.Aliases,
                 PropertiesJson = request.Properties?.ToJsonString() ?? "{}",
                 ContentJson = request.Content?.ToJsonString() ?? EmptyContent
             };
@@ -93,6 +95,7 @@ namespace PlotCreator.Service.Implementations
             entity.Description = request.Description;
             entity.Status = request.Status;
             entity.Tags = request.Tags;
+            entity.Aliases = request.Aliases;
             if (request.Properties is not null)
                 entity.PropertiesJson = request.Properties.ToJsonString();
             if (request.Content is not null)
@@ -121,6 +124,7 @@ namespace PlotCreator.Service.Implementations
             TypeKey = e.Type?.Key ?? string.Empty,
             Name = e.Name,
             Tags = e.Tags,
+            Aliases = e.Aliases,
             Status = e.Status,
             Description = e.Description,
             Properties = JsonNode.Parse(e.PropertiesJson)?.AsObject() ?? new JsonObject(),

@@ -16,9 +16,8 @@ namespace PlotCreator.Domain.Entity
         public int ToId { get; set; }
         public WorldEntity? To { get; set; }
 
-        [Required]
         [MaxLength(200)]
-        public string Label { get; set; } = string.Empty;
+        public string? Label { get; set; }
 
         public DateTime CreatedAt { get; set; }
     }

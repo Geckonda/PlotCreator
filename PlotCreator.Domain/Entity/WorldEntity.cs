@@ -22,6 +22,8 @@ namespace PlotCreator.Domain.Entity
 
         public string[] Tags { get; set; } = System.Array.Empty<string>();
 
+        public string[] Aliases { get; set; } = System.Array.Empty<string>();
+
         public string PropertiesJson { get; set; } = "{}";
 
         public string ContentJson { get; set; } = "{\"type\":\"doc\",\"content\":[]}";

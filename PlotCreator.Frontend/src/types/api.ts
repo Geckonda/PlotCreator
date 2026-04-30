@@ -28,6 +28,7 @@ export interface EntitySummaryDto {
   typeKey: string
   name: string
   tags: string[]
+  aliases?: string[]
   status: EntityStatus
   desc?: string | null
 }
@@ -92,6 +93,7 @@ export interface EntityDto {
   typeKey: string
   name: string
   tags: string[]
+  aliases?: string[]
   status: EntityStatus
   desc?: string | null
   properties: Record<string, unknown>
@@ -102,6 +104,7 @@ export interface EntityCreatePayload {
   typeKey: string
   name: string
   tags: string[]
+  aliases?: string[]
   status: EntityStatus
   desc?: string
   properties?: Record<string, unknown>
@@ -111,6 +114,7 @@ export interface EntityCreatePayload {
 export interface EntityUpdatePayload {
   name: string
   tags: string[]
+  aliases?: string[]
   status: EntityStatus
   desc?: string | null
   properties?: Record<string, unknown>
@@ -122,18 +126,18 @@ export interface RelationDto {
   worldId: number
   fromId: number
   toId: number
-  label: string
+  label: string | null
   createdAt: string
 }
 
 export interface RelationCreateRequest {
   fromId: number
   toId: number
-  label: string
+  label: string | null
 }
 
 export interface RelationUpdateRequest {
-  label: string
+  label: string | null
 }
 
 // ───── Mappers ─────
@@ -153,6 +157,7 @@ export const toEntity = (dto: EntitySummaryDto | EntityDto): Entity => ({
   typeKey: dto.typeKey,
   name: dto.name,
   tags: dto.tags,
+  aliases: dto.aliases ?? [],
   status: dto.status,
   desc: dto.desc ?? undefined,
 })
@@ -161,5 +166,5 @@ export const toRelation = (dto: RelationDto): Relation => ({
   id: dto.id,
   from: dto.fromId,
   to: dto.toId,
-  label: dto.label,
+  label: dto.label ?? null,
 })

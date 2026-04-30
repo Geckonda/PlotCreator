@@ -16,6 +16,7 @@ export interface Entity {
   typeKey: string
   name: string
   tags: string[]
+  aliases: string[]
   status: EntityStatus
   desc?: string
 }
@@ -30,7 +31,7 @@ export interface Relation {
   id: number
   from: number
   to: number
-  label: string
+  label: string | null
 }
 
 export const relationFromKey = (r: Relation): EntityKey => r.from

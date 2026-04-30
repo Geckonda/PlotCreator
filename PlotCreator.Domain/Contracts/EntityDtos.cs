@@ -12,6 +12,7 @@ namespace PlotCreator.Domain.Contracts
         public string TypeKey { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public string[] Tags { get; set; } = Array.Empty<string>();
+        public string[] Aliases { get; set; } = Array.Empty<string>();
         public EntityStatus Status { get; set; }
         [JsonPropertyName("desc")]
         public string? Description { get; set; }
@@ -24,6 +25,7 @@ namespace PlotCreator.Domain.Contracts
         public string TypeKey { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public string[] Tags { get; set; } = Array.Empty<string>();
+        public string[] Aliases { get; set; } = Array.Empty<string>();
         public EntityStatus Status { get; set; } = EntityStatus.Draft;
         [JsonPropertyName("desc")]
         public string? Description { get; set; }
@@ -35,6 +37,7 @@ namespace PlotCreator.Domain.Contracts
     {
         public string Name { get; set; } = string.Empty;
         public string[] Tags { get; set; } = Array.Empty<string>();
+        public string[] Aliases { get; set; } = Array.Empty<string>();
         public EntityStatus Status { get; set; } = EntityStatus.Draft;
         [JsonPropertyName("desc")]
         public string? Description { get; set; }

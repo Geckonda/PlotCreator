@@ -42,7 +42,7 @@ namespace PlotCreator.Service.Implementations
                 WorldId = worldId,
                 FromId = request.FromId,
                 ToId = request.ToId,
-                Label = request.Label
+                Label = NormalizeLabel(request.Label)
             };
             await _relations.Add(rel);
             return Ok(ToDto(rel));
@@ -52,7 +52,7 @@ namespace PlotCreator.Service.Implementations
         {
             var rel = await _relations.GetAll().FirstOrDefaultAsync(r => r.Id == id);
             if (rel is null) return NotFound<RelationDto>("Relation not found");
-            rel.Label = request.Label;
+            rel.Label = NormalizeLabel(request.Label);
             await _relations.Update(rel);
             return Ok(ToDto(rel));
         }
@@ -67,6 +67,12 @@ namespace PlotCreator.Service.Implementations
 
         private async Task<bool> EntityExistsInWorldAsync(int worldId, int entityId) =>
             await _db.Entities.AnyAsync(e => e.Id == entityId && e.WorldId == worldId);
+
+        private static string? NormalizeLabel(string? label)
+        {
+            if (string.IsNullOrWhiteSpace(label)) return null;
+            return label.Trim();
+        }
 
         private static RelationDto ToDto(Relation r) => new()
         {

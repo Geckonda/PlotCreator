@@ -8,7 +8,7 @@ namespace PlotCreator.Domain.Contracts
         public int WorldId { get; set; }
         public int FromId { get; set; }
         public int ToId { get; set; }
-        public string Label { get; set; } = string.Empty;
+        public string? Label { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 
@@ -16,11 +16,11 @@ namespace PlotCreator.Domain.Contracts
     {
         public int FromId { get; set; }
         public int ToId { get; set; }
-        public string Label { get; set; } = string.Empty;
+        public string? Label { get; set; }
     }
 
     public sealed class RelationUpdateRequest
     {
-        public string Label { get; set; } = string.Empty;
+        public string? Label { get; set; }
     }
 }

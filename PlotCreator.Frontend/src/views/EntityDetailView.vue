@@ -21,6 +21,8 @@ import EntityCard from '@/components/entity/EntityCard.vue'
 import BlockEditor from '@/components/blocks/BlockEditor.vue'
 import TagsInput from '@/components/forms/TagsInput.vue'
 import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
+import EntityMentionPopover from '@/components/entity/EntityMentionPopover.vue'
+import type { EntityRef } from '@/composables/tiptapEntityHighlight'
 
 const props = defineProps<{
   worldId: number
@@ -44,6 +46,7 @@ interface FormState {
   description: string
   status: EntityStatus
   tagsText: string[]
+  aliases: string[]
   properties: Record<string, unknown>
   content: TipTapDoc
 }
@@ -53,6 +56,7 @@ const form = reactive<FormState>({
   description: '',
   status: 'draft',
   tagsText: [],
+  aliases: [],
   properties: {},
   content: emptyTipTapDoc(),
 })
@@ -95,6 +99,7 @@ function applyDto(dto: EntityDto) {
   form.description = dto.desc ?? ''
   form.status = dto.status
   form.tagsText = dto.tags ?? []
+  form.aliases = dto.aliases ?? []
   const props_: Record<string, unknown> = {}
   for (const def of schema.value) {
     props_[def.key] = dto.properties[def.key] ?? null
@@ -144,6 +149,7 @@ function buildPayload(): EntityUpdatePayload {
     desc: form.description.trim() || null,
     status: form.status,
     tags: form.tagsText,
+    aliases: form.aliases,
     properties: { ...form.properties },
     content: form.content,
   }
@@ -192,7 +198,7 @@ function goToEntity(other: Entity) {
 
 type ConfirmKind =
   | { kind: 'entity' }
-  | { kind: 'relation'; id: number; otherName: string; label: string }
+  | { kind: 'relation'; id: number; otherName: string; label: string | null }
 
 const confirmState = ref<ConfirmKind | null>(null)
 const confirmBusy = ref(false)
@@ -206,7 +212,10 @@ const confirmMessage = computed(() => {
   if (confirmState.value.kind === 'entity') {
     return `Удалить «${form.name}»?`
   }
-  return `Удалить связь «${confirmState.value.label}» с «${confirmState.value.otherName}»?`
+  const lbl = confirmState.value.label
+  return lbl
+    ? `Удалить связь «${lbl}» с «${confirmState.value.otherName}»?`
+    : `Удалить связь с «${confirmState.value.otherName}»?`
 })
 
 const confirmDetail = computed(() =>
@@ -353,6 +362,53 @@ function onPictureUrlInput(ev: Event) {
 const visibleSchema = computed(() =>
   schema.value.filter((d) => d.key !== 'pictureUrl'),
 )
+
+const mentionEntities = computed<EntityRef[]>(() =>
+  entitiesStore.entities.map((e) => ({
+    id: e.id,
+    name: e.name,
+    aliases: e.aliases ?? [],
+  })),
+)
+
+const relatedIds = computed<Set<number>>(() => {
+  const s = new Set<number>()
+  for (const r of connRels.value) {
+    s.add(relationFromKey(r) === props.entityId ? relationToKey(r) : relationFromKey(r))
+  }
+  return s
+})
+
+const mention = ref<{ entity: Entity; x: number; y: number } | null>(null)
+const mentionRelationTarget = ref<Entity | null>(null)
+
+function onMentionClick(payload: { entityId: number; x: number; y: number }) {
+  const e = entitiesStore.byKey.get(payload.entityId)
+  if (!e) return
+  mention.value = { entity: e, x: payload.x, y: payload.y }
+}
+
+function onMentionCreate() {
+  if (!mention.value) return
+  mentionRelationTarget.value = mention.value.entity
+  mention.value = null
+  showCreator.value = true
+}
+
+function onMentionOpen() {
+  if (!mention.value) return
+  goToEntity(mention.value.entity)
+  mention.value = null
+}
+
+function onMentionClose() {
+  mention.value = null
+}
+
+function onCreatorClose() {
+  showCreator.value = false
+  mentionRelationTarget.value = null
+}
 </script>
 
 <template>
@@ -470,6 +526,14 @@ const visibleSchema = computed(() =>
                 />
               </div>
             </div>
+
+            <div class="profile__field">
+              <label>Псевдонимы</label>
+              <TagsInput
+                v-model="form.aliases"
+                placeholder="Альтернативные имена…"
+              />
+            </div>
           </div>
         </section>
 
@@ -479,7 +543,13 @@ const visibleSchema = computed(() =>
               Содержание
             </h2>
           </div>
-          <BlockEditor v-model="form.content" />
+          <BlockEditor
+            v-model="form.content"
+            :entities="mentionEntities"
+            :related-ids="relatedIds"
+            :exclude-id="props.entityId"
+            @mention-click="onMentionClick"
+          />
         </section>
 
         <section class="block">
@@ -500,8 +570,9 @@ const visibleSchema = computed(() =>
             v-if="showCreator && entity"
             :world-id="props.worldId"
             :from="entity"
-            @created="showCreator = false"
-            @cancel="showCreator = false"
+            :initial-target="mentionRelationTarget"
+            @created="onCreatorClose"
+            @cancel="onCreatorClose"
           />
 
           <div v-if="connRels.length" class="rel-grid">
@@ -511,7 +582,9 @@ const visibleSchema = computed(() =>
                   <span class="rel__arrow" :style="{ color: cfg?.color }">
                     {{ getDirection(rel) }}
                   </span>
-                  <span class="rel__label">{{ rel.label }}</span>
+                  <span class="rel__label">
+                    {{ rel.label || 'без подписи' }}
+                  </span>
                   <button
                     class="rel__del"
                     title="Удалить связь"
@@ -554,6 +627,17 @@ const visibleSchema = computed(() =>
     </main>
 
     <div v-if="error" class="ed__err">{{ error }}</div>
+
+    <EntityMentionPopover
+      v-if="mention"
+      :entity="mention.entity"
+      :x="mention.x"
+      :y="mention.y"
+      :already-related="relatedIds.has(mention.entity.id)"
+      @create-relation="onMentionCreate"
+      @open-entity="onMentionOpen"
+      @close="onMentionClose"
+    />
 
     <ConfirmDialog
       v-if="confirmState"

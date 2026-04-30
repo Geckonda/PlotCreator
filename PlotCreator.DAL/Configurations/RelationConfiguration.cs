@@ -11,7 +11,6 @@ namespace PlotCreator.DAL.Configurations
             builder.HasKey(r => r.Id);
 
             builder.Property(r => r.Label)
-                .IsRequired()
                 .HasMaxLength(200);
 
             builder.Property(r => r.CreatedAt).IsRequired();

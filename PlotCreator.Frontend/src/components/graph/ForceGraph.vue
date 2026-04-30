@@ -489,7 +489,7 @@ function safeId(typeKey: string) {
           :marker-end="`url(#arrow-${safeId(edge.fromTypeKey)})`"
         />
         <text
-          v-if="!edge.dimmed"
+          v-if="!edge.dimmed && edge.rel.label"
           :x="edge.lx"
           :y="edge.ly"
           text-anchor="middle"
