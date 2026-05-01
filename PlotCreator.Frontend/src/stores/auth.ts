@@ -15,7 +15,20 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = true
     error.value = null
     try {
-      user.value = await authApi.me()
+      const dto = await authApi.me()
+      // Guard against the server (or a misrouted proxy) returning something
+      // that isn't actually an AuthUser. Without this, an HTML fallback
+      // response would silently mark the session as authenticated.
+      if (
+        dto &&
+        typeof dto === 'object' &&
+        typeof (dto as AuthUser).id === 'number' &&
+        typeof (dto as AuthUser).login === 'string'
+      ) {
+        user.value = dto
+      } else {
+        user.value = null
+      }
       return user.value
     } catch {
       user.value = null

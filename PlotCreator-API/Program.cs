@@ -89,6 +89,14 @@ namespace PlotCreator_API
 
             var app = builder.Build();
 
+            // Apply pending EF Core migrations on startup so a fresh
+            // postgres container becomes usable without a manual step.
+            using (var scope = app.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<ApplicationDBContext>();
+                db.Database.Migrate();
+            }
+
             app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             if (app.Environment.IsDevelopment())
