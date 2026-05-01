@@ -52,7 +52,7 @@ onBeforeUnmount(() => {
 
 async function save() {
   const trimmed = label.value.trim()
-  if (!trimmed || saving.value) return
+  if (saving.value) return
   saving.value = true
   error.value = null
   try {
@@ -112,7 +112,7 @@ async function save() {
       <button
         class="rl-pop__save"
         type="button"
-        :disabled="!label.trim() || saving"
+        :disabled="saving"
         @click="save"
       >
         Сохранить
