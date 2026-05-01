@@ -1,0 +1,60 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: plotcreator-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: PlotCreator
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d PlotCreator"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    # Expose the DB to the host as well, in case you want to connect with a client.
+    ports:
+      - "5432:5432"
+
+  api:
+    build:
+      context: .
+      dockerfile: PlotCreator-API/Dockerfile
+    container_name: plotcreator-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      # Connection string overrides appsettings.json via the standard
+      # double-underscore → colon mapping.
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=PlotCreator;Username=postgres;Password=postgres"
+      # JWT secrets — override these (and especially Jwt__Key) in any
+      # non-local deployment. The key must be at least 32 bytes.
+      Jwt__Issuer: PlotCreator
+      Jwt__Audience: PlotCreator.Frontend
+      Jwt__Key: "change-me-to-a-long-random-secret-of-at-least-32-bytes-please"
+      Jwt__ExpiresInDays: "7"
+      Jwt__CookieName: pc_auth
+    # Optional: expose the API directly to the host so Swagger / curl works.
+    # The browser SPA does NOT need this — it talks via the frontend's nginx.
+    ports:
+      - "5151:8080"
+
+  frontend:
+    build:
+      context: ./PlotCreator.Frontend
+      dockerfile: Dockerfile
+    container_name: plotcreator-frontend
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "8080:80"
+
+volumes:
+  pgdata:

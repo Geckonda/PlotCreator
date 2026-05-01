@@ -22,7 +22,7 @@ namespace PlotCreator.DAL.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Access_Modificator", b =>
+            modelBuilder.Entity("PlotCreator.Domain.Entity.EntityType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -30,354 +30,53 @@ namespace PlotCreator.DAL.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Modificators");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Публично"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Приватно"
-                        });
-                });
-
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Book", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Book_cover")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<int>("GenreId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ModificatorId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("RatingId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("StatusId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GenreId");
-
-                    b.HasIndex("ModificatorId");
-
-                    b.HasIndex("RatingId");
-
-                    b.HasIndex("StatusId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Books");
-                });
-
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Book_Status", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Statuses");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "В процессе"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Завершен"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Заморожен"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "Заброшен"
-                        });
-                });
-
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Character", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Appearance")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("Birthday")
-                        .HasColumnType("Date");
-
-                    b.Property<string>("Conflict")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("Deathday")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Gender")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Goals")
-                        .HasColumnType("text");
-
-                    b.Property<int>("Height")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("History")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Motivation")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Personality")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Picture")
-                        .HasColumnType("text");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Weight")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("WorldviewId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.HasIndex("WorldviewId");
-
-                    b.ToTable("Characters");
-                });
-
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Episode", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("BookId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Content")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Heading")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("Position")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BookId");
-
-                    b.ToTable("Episodes");
-                });
-
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Event", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("Beginning")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("BookId")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("ChekhovsGun")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Colour")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("Ending")
+                    b.Property<string>("Color")
+                        .HasMaxLength(9)
+                        .HasColumnType("character varying(9)");
+
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Icon")
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
-                    b.Property<bool>("IsHidden")
+                    b.Property<bool>("IsSystemDefault")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("Title")
+                    b.Property<string>("Key")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
-                    b.HasKey("Id");
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
-                    b.HasIndex("BookId");
-
-                    b.ToTable("Events");
-                });
-
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Genre", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("OwnerUserId")
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<string>("PropertySchemaJson")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("PropertySchema");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Genres");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Мистика"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Драма"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Приключения"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "Ужасы"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "Романтика"
-                        });
-                });
-
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Group", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("Radius")
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("BookId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Parent")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BookId");
-
-                    b.ToTable("Groups");
-                });
-
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Idea", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Content")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("Data_Creation")
+                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Topic")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("OwnerUserId", "Key")
+                        .IsUnique();
 
-                    b.ToTable("Ideas");
+                    b.ToTable("EntityTypes", (string)null);
                 });
 
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Multiple_Tables.Book_Character", b =>
+            modelBuilder.Entity("PlotCreator.Domain.Entity.Graph", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -385,203 +84,164 @@ namespace PlotCreator.DAL.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("BookId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("CharacterId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BookId");
-
-                    b.HasIndex("CharacterId");
-
-                    b.ToTable("Book-Character");
-                });
-
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Multiple_Tables.Book_Idea", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("BookId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("IdeaId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BookId");
-
-                    b.HasIndex("IdeaId");
-
-                    b.ToTable("Book-Idea");
-                });
-
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Multiple_Tables.Episode_Character", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CharacterId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("EpisodeId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CharacterId");
-
-                    b.HasIndex("EpisodeId");
-
-                    b.ToTable("Episode-Character");
-                });
-
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Multiple_Tables.Episode_Event", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("EpisodeId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("EventId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EpisodeId");
-
-                    b.HasIndex("EventId");
-
-                    b.ToTable("Episode-Event");
-                });
-
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Multiple_Tables.Event_Character", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CharacterId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("EventId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CharacterId");
-
-                    b.HasIndex("EventId");
-
-                    b.ToTable("Event-Character");
-                });
-
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Multiple_Tables.Group_Character", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CharacterId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("GroupId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CharacterId");
-
-                    b.HasIndex("GroupId");
-
-                    b.ToTable("Group-Character");
-                });
-
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Multiple_Tables.Group_Event", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("EventId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("GroupId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EventId");
-
-                    b.HasIndex("GroupId");
-
-                    b.ToTable("Group-Event");
-                });
-
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Rating", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsSystemDefault")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
+
                     b.Property<string>("Name")
-                        .HasColumnType("text");
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("OwnerUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("WorldId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Ratings");
+                    b.HasIndex("OwnerUserId", "WorldId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Graphs_DefaultPerUserWorld")
+                        .HasFilter("\"IsSystemDefault\" = TRUE");
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "0+"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "6+"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "12+"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "16+"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "18+"
-                        });
+                    b.HasIndex("WorldId", "OwnerUserId");
+
+                    b.ToTable("Graphs");
+                });
+
+            modelBuilder.Entity("PlotCreator.Domain.Entity.GraphEdge", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Direction")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<int>("FromNodeId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("GraphId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Label")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("ToNodeId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FromNodeId");
+
+                    b.HasIndex("GraphId");
+
+                    b.HasIndex("ToNodeId");
+
+                    b.HasIndex("GraphId", "FromNodeId", "ToNodeId");
+
+                    b.ToTable("GraphEdges");
+                });
+
+            modelBuilder.Entity("PlotCreator.Domain.Entity.GraphNode", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("EntityId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("GraphId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<double>("X")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("Y")
+                        .HasColumnType("double precision");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EntityId");
+
+                    b.HasIndex("GraphId", "EntityId")
+                        .IsUnique();
+
+                    b.ToTable("GraphNodes");
+                });
+
+            modelBuilder.Entity("PlotCreator.Domain.Entity.Relation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("FromId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Label")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("ToId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("WorldId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FromId");
+
+                    b.HasIndex("ToId");
+
+                    b.HasIndex("WorldId", "FromId");
+
+                    b.HasIndex("WorldId", "ToId");
+
+                    b.ToTable("Relations");
                 });
 
             modelBuilder.Entity("PlotCreator.Domain.Entity.Role", b =>
@@ -645,7 +305,7 @@ namespace PlotCreator.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("roleId")
+                    b.Property<int>("RoleId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -656,12 +316,23 @@ namespace PlotCreator.DAL.Migrations
                     b.HasIndex("Login")
                         .IsUnique();
 
-                    b.HasIndex("roleId");
+                    b.HasIndex("RoleId");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Email = "default@local",
+                            Login = "default",
+                            Nickname = "Default",
+                            Password = "37a8eec1ce19687d132fe29051dca629d164e2c4958ba141d5f4133a33f0688f",
+                            RoleId = 3
+                        });
                 });
 
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Worldview", b =>
+            modelBuilder.Entity("PlotCreator.Domain.Entity.World", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -669,393 +340,259 @@ namespace PlotCreator.DAL.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Color")
+                        .HasMaxLength(9)
+                        .HasColumnType("character varying(9)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
+                    b.Property<string>("Genre")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
                     b.Property<string>("Name")
-                        .HasColumnType("text");
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("OwnerUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Worldview");
+                    b.HasIndex("OwnerUserId");
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "персонажи с таким мировоззрением считаются с правилами и совершают поступки, которых от них ожидает общество",
-                            Name = "Законопослушно-доброе"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "персонажи с таким мировоззрением совершают хорошие поступки в соответствии со своими потребностями",
-                            Name = "Нейтрально-доброе"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Description = "персонажи с таким мировоззрением действуют по совести, с небольшой оглядкой на мнение и ожидания других",
-                            Name = "Хаотично-доброе"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Description = "персонажи с таким мировоззрением действуют в соответствии с законом, традицией, или своим кодексом",
-                            Name = "Законопослушно-нейтральное"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Description = "персонажи с таким мировоззрением предпочитают чистоту от моральных вопросов в своих действиях, и не принимают какой бы то ни было стороны, даже если одна из них более выгодна в данное время",
-                            Name = "Хаотично-нейтральное"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Description = "персонажи с таким мировоззрением следуют своим целям или капризам, вознося свою цель/свободу выше всего остального",
-                            Name = "Нейтральное"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Description = "персонажи с таким мировоззрением постоянно берут то, что хотят, в рамках традиции, лояльности или порядка",
-                            Name = "Законопослушно-злое"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Description = "персонажи с таким мировоззрением делают что угодно и когда угодно, без оглядки на сострадание и сомнение",
-                            Name = "Нейтрально-злое"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Description = "персонажи с таким мировоззрением совершают неконтролируемое насилие, стимулируемое их жадностью, ненавистью или жаждой крови",
-                            Name = "Хаотично-злое"
-                        });
+                    b.ToTable("Worlds");
                 });
 
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Book", b =>
+            modelBuilder.Entity("PlotCreator.Domain.Entity.WorldEntity", b =>
                 {
-                    b.HasOne("PlotCreator.Domain.Entity.Genre", "Genre")
-                        .WithMany("Books")
-                        .HasForeignKey("GenreId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.PrimitiveCollection<string[]>("Aliases")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
+                    b.Property<string>("ContentJson")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("Content");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ExtraContentsJson")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("jsonb")
+                        .HasDefaultValue("[]")
+                        .HasColumnName("ExtraContents");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("PropertiesJson")
+                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("Properties");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.PrimitiveCollection<string[]>("Tags")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
+                    b.Property<int>("TypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("WorldId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TypeId");
+
+                    b.HasIndex("WorldId");
+
+                    b.ToTable("Entities", (string)null);
+                });
+
+            modelBuilder.Entity("PlotCreator.Domain.Entity.EntityType", b =>
+                {
+                    b.HasOne("PlotCreator.Domain.Entity.User", "Owner")
+                        .WithMany("EntityTypes")
+                        .HasForeignKey("OwnerUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PlotCreator.Domain.Entity.Access_Modificator", "Modificator")
-                        .WithMany("Books")
-                        .HasForeignKey("ModificatorId")
+                    b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("PlotCreator.Domain.Entity.Graph", b =>
+                {
+                    b.HasOne("PlotCreator.Domain.Entity.User", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PlotCreator.Domain.Entity.Rating", "Rating")
-                        .WithMany("Books")
-                        .HasForeignKey("RatingId")
+                    b.HasOne("PlotCreator.Domain.Entity.World", "World")
+                        .WithMany()
+                        .HasForeignKey("WorldId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PlotCreator.Domain.Entity.Book_Status", "Status")
-                        .WithMany("Books")
-                        .HasForeignKey("StatusId")
+                    b.Navigation("Owner");
+
+                    b.Navigation("World");
+                });
+
+            modelBuilder.Entity("PlotCreator.Domain.Entity.GraphEdge", b =>
+                {
+                    b.HasOne("PlotCreator.Domain.Entity.GraphNode", "FromNode")
+                        .WithMany()
+                        .HasForeignKey("FromNodeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PlotCreator.Domain.Entity.User", "User")
-                        .WithMany("Books")
-                        .HasForeignKey("UserId")
+                    b.HasOne("PlotCreator.Domain.Entity.Graph", "Graph")
+                        .WithMany("Edges")
+                        .HasForeignKey("GraphId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Genre");
+                    b.HasOne("PlotCreator.Domain.Entity.GraphNode", "ToNode")
+                        .WithMany()
+                        .HasForeignKey("ToNodeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.Navigation("Modificator");
+                    b.Navigation("FromNode");
 
-                    b.Navigation("Rating");
+                    b.Navigation("Graph");
 
-                    b.Navigation("Status");
-
-                    b.Navigation("User");
+                    b.Navigation("ToNode");
                 });
 
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Character", b =>
+            modelBuilder.Entity("PlotCreator.Domain.Entity.GraphNode", b =>
                 {
-                    b.HasOne("PlotCreator.Domain.Entity.User", "User")
-                        .WithMany("Characters")
-                        .HasForeignKey("UserId")
+                    b.HasOne("PlotCreator.Domain.Entity.WorldEntity", "Entity")
+                        .WithMany()
+                        .HasForeignKey("EntityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PlotCreator.Domain.Entity.Worldview", "Worldview")
-                        .WithMany("Characters")
-                        .HasForeignKey("WorldviewId")
+                    b.HasOne("PlotCreator.Domain.Entity.Graph", "Graph")
+                        .WithMany("Nodes")
+                        .HasForeignKey("GraphId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("Entity");
 
-                    b.Navigation("Worldview");
+                    b.Navigation("Graph");
                 });
 
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Episode", b =>
+            modelBuilder.Entity("PlotCreator.Domain.Entity.Relation", b =>
                 {
-                    b.HasOne("PlotCreator.Domain.Entity.Book", "Book")
-                        .WithMany("Episodes")
-                        .HasForeignKey("BookId")
+                    b.HasOne("PlotCreator.Domain.Entity.WorldEntity", "From")
+                        .WithMany()
+                        .HasForeignKey("FromId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Book");
-                });
-
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Event", b =>
-                {
-                    b.HasOne("PlotCreator.Domain.Entity.Book", "Book")
-                        .WithMany("Events")
-                        .HasForeignKey("BookId")
+                    b.HasOne("PlotCreator.Domain.Entity.WorldEntity", "To")
+                        .WithMany()
+                        .HasForeignKey("ToId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Book");
-                });
-
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Group", b =>
-                {
-                    b.HasOne("PlotCreator.Domain.Entity.Book", "Book")
-                        .WithMany("Groups")
-                        .HasForeignKey("BookId")
+                    b.HasOne("PlotCreator.Domain.Entity.World", "World")
+                        .WithMany("Relations")
+                        .HasForeignKey("WorldId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Book");
-                });
+                    b.Navigation("From");
 
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Idea", b =>
-                {
-                    b.HasOne("PlotCreator.Domain.Entity.User", "User")
-                        .WithMany("Ideas")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("To");
 
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Multiple_Tables.Book_Character", b =>
-                {
-                    b.HasOne("PlotCreator.Domain.Entity.Book", "Book")
-                        .WithMany("Books_Characters")
-                        .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PlotCreator.Domain.Entity.Character", "Character")
-                        .WithMany("Books_Characters")
-                        .HasForeignKey("CharacterId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Book");
-
-                    b.Navigation("Character");
-                });
-
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Multiple_Tables.Book_Idea", b =>
-                {
-                    b.HasOne("PlotCreator.Domain.Entity.Book", "Book")
-                        .WithMany("Books_Ideas")
-                        .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PlotCreator.Domain.Entity.Idea", "Idea")
-                        .WithMany("Books_Ideas")
-                        .HasForeignKey("IdeaId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Book");
-
-                    b.Navigation("Idea");
-                });
-
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Multiple_Tables.Episode_Character", b =>
-                {
-                    b.HasOne("PlotCreator.Domain.Entity.Character", "Character")
-                        .WithMany("Episodes_Characters")
-                        .HasForeignKey("CharacterId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PlotCreator.Domain.Entity.Episode", "Episode")
-                        .WithMany("Episodes_Characters")
-                        .HasForeignKey("EpisodeId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Character");
-
-                    b.Navigation("Episode");
-                });
-
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Multiple_Tables.Episode_Event", b =>
-                {
-                    b.HasOne("PlotCreator.Domain.Entity.Episode", "Episode")
-                        .WithMany("Episodes_Events")
-                        .HasForeignKey("EpisodeId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PlotCreator.Domain.Entity.Event", "Event")
-                        .WithMany("Episodes_Events")
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Episode");
-
-                    b.Navigation("Event");
-                });
-
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Multiple_Tables.Event_Character", b =>
-                {
-                    b.HasOne("PlotCreator.Domain.Entity.Character", "Character")
-                        .WithMany("Events_Characters")
-                        .HasForeignKey("CharacterId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PlotCreator.Domain.Entity.Event", "Event")
-                        .WithMany("Events_Characters")
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Character");
-
-                    b.Navigation("Event");
-                });
-
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Multiple_Tables.Group_Character", b =>
-                {
-                    b.HasOne("PlotCreator.Domain.Entity.Character", "Character")
-                        .WithMany("Groups_Characters")
-                        .HasForeignKey("CharacterId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PlotCreator.Domain.Entity.Group", "Group")
-                        .WithMany("Groups_Characters")
-                        .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Character");
-
-                    b.Navigation("Group");
-                });
-
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Multiple_Tables.Group_Event", b =>
-                {
-                    b.HasOne("PlotCreator.Domain.Entity.Event", "Event")
-                        .WithMany("Groups_Events")
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PlotCreator.Domain.Entity.Group", "Group")
-                        .WithMany("Groups_Events")
-                        .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Event");
-
-                    b.Navigation("Group");
+                    b.Navigation("World");
                 });
 
             modelBuilder.Entity("PlotCreator.Domain.Entity.User", b =>
                 {
                     b.HasOne("PlotCreator.Domain.Entity.Role", "Role")
                         .WithMany("Users")
-                        .HasForeignKey("roleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Access_Modificator", b =>
+            modelBuilder.Entity("PlotCreator.Domain.Entity.World", b =>
                 {
-                    b.Navigation("Books");
+                    b.HasOne("PlotCreator.Domain.Entity.User", "Owner")
+                        .WithMany("Worlds")
+                        .HasForeignKey("OwnerUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Book", b =>
+            modelBuilder.Entity("PlotCreator.Domain.Entity.WorldEntity", b =>
                 {
-                    b.Navigation("Books_Characters");
+                    b.HasOne("PlotCreator.Domain.Entity.EntityType", "Type")
+                        .WithMany("Entities")
+                        .HasForeignKey("TypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.Navigation("Books_Ideas");
+                    b.HasOne("PlotCreator.Domain.Entity.World", "World")
+                        .WithMany("Entities")
+                        .HasForeignKey("WorldId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("Episodes");
+                    b.Navigation("Type");
 
-                    b.Navigation("Events");
-
-                    b.Navigation("Groups");
+                    b.Navigation("World");
                 });
 
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Book_Status", b =>
+            modelBuilder.Entity("PlotCreator.Domain.Entity.EntityType", b =>
                 {
-                    b.Navigation("Books");
+                    b.Navigation("Entities");
                 });
 
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Character", b =>
+            modelBuilder.Entity("PlotCreator.Domain.Entity.Graph", b =>
                 {
-                    b.Navigation("Books_Characters");
+                    b.Navigation("Edges");
 
-                    b.Navigation("Episodes_Characters");
-
-                    b.Navigation("Events_Characters");
-
-                    b.Navigation("Groups_Characters");
-                });
-
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Episode", b =>
-                {
-                    b.Navigation("Episodes_Characters");
-
-                    b.Navigation("Episodes_Events");
-                });
-
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Event", b =>
-                {
-                    b.Navigation("Episodes_Events");
-
-                    b.Navigation("Events_Characters");
-
-                    b.Navigation("Groups_Events");
-                });
-
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Genre", b =>
-                {
-                    b.Navigation("Books");
-                });
-
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Group", b =>
-                {
-                    b.Navigation("Groups_Characters");
-
-                    b.Navigation("Groups_Events");
-                });
-
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Idea", b =>
-                {
-                    b.Navigation("Books_Ideas");
-                });
-
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Rating", b =>
-                {
-                    b.Navigation("Books");
+                    b.Navigation("Nodes");
                 });
 
             modelBuilder.Entity("PlotCreator.Domain.Entity.Role", b =>
@@ -1065,16 +602,16 @@ namespace PlotCreator.DAL.Migrations
 
             modelBuilder.Entity("PlotCreator.Domain.Entity.User", b =>
                 {
-                    b.Navigation("Books");
+                    b.Navigation("EntityTypes");
 
-                    b.Navigation("Characters");
-
-                    b.Navigation("Ideas");
+                    b.Navigation("Worlds");
                 });
 
-            modelBuilder.Entity("PlotCreator.Domain.Entity.Worldview", b =>
+            modelBuilder.Entity("PlotCreator.Domain.Entity.World", b =>
                 {
-                    b.Navigation("Characters");
+                    b.Navigation("Entities");
+
+                    b.Navigation("Relations");
                 });
 #pragma warning restore 612, 618
         }
