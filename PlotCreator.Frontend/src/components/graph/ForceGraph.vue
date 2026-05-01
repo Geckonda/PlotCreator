@@ -102,6 +102,7 @@ const connectedToSelected = computed(() => {
 interface RenderEdge {
   rel: Relation
   fp: { x: number; y: number }
+  fp_adj: { x: number; y: number }
   tp: { x: number; y: number }
   tp_adj: { x: number; y: number }
   mx: number
@@ -141,7 +142,9 @@ const renderEdges = computed<RenderEdge[]>(() => {
       (!!connectedToHover.value && !isHovLit && !isSelLit)
 
     const toEntity = entityByKey.value.get(tk)
+    const fromEntity = entityByKey.value.get(fk)
     const targetRadius = toEntity ? types.display(toEntity.typeKey).radius : 12
+    const sourceRadius = fromEntity ? types.display(fromEntity.typeKey).radius : 12
     const dx = tp.x - fp.x
     const dy = tp.y - fp.y
     const dist = Math.sqrt(dx * dx + dy * dy)
@@ -149,18 +152,21 @@ const renderEdges = computed<RenderEdge[]>(() => {
       x: tp.x - (dx / dist) * (targetRadius + 2),
       y: tp.y - (dy / dist) * (targetRadius + 2)
     } : tp
+    const fp_adj = dist > 0 ? {
+      x: fp.x + (dx / dist) * (sourceRadius + 2),
+      y: fp.y + (dy / dist) * (sourceRadius + 2)
+    } : fp
 
     const mx = (fp.x + tp.x) / 2 + (tp.y - fp.y) * 0.18
     const my = (fp.y + tp.y) / 2 - (tp.x - fp.x) * 0.18
     const lx = 0.25 * fp.x + 0.5 * mx + 0.25 * tp.x
     const ly = 0.25 * fp.y + 0.5 * my + 0.25 * tp.y
-    const fromEntity = entityByKey.value.get(fk)
     // const fromColor = fromEntity
     //   ? types.display(fromEntity.typeKey).color
     //   : '#7a4824'
     const fromColor = '#7a4824'
     const fromTypeKey = fromEntity?.typeKey ?? 'character'
-    out.push({ rel, fp, tp: tp_adj, tp_adj, mx, my, lx, ly, fromColor, fromTypeKey, lit, dimmed })
+    out.push({ rel, fp, fp_adj, tp: tp_adj, tp_adj, mx, my, lx, ly, fromColor, fromTypeKey, lit, dimmed })
   }
   return out
 })
@@ -480,7 +486,7 @@ function safeId(typeKey: string) {
         class="graph__edge-group"
       >
         <path
-          :d="`M${edge.fp.x},${edge.fp.y} Q${edge.mx},${edge.my} ${edge.tp_adj.x},${edge.tp_adj.y}`"
+          :d="`M${edge.fp_adj.x},${edge.fp_adj.y} Q${edge.mx},${edge.my} ${edge.tp_adj.x},${edge.tp_adj.y}`"
           fill="none"
           :stroke="edge.lit ? edge.fromColor : 'rgba(101, 67, 33, 0.65)'"
           :stroke-width="edge.lit ? 2.2 : 1.2"
