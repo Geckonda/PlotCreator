@@ -27,5 +27,7 @@ namespace PlotCreator.Domain.Entity
         public string PropertiesJson { get; set; } = "{}";
 
         public string ContentJson { get; set; } = "{\"type\":\"doc\",\"content\":[]}";
+
+        public string ExtraContentsJson { get; set; } = "[]";
     }
 }

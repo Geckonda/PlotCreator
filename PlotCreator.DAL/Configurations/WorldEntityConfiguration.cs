@@ -34,6 +34,12 @@ namespace PlotCreator.DAL.Configurations
                 .HasColumnType("jsonb")
                 .IsRequired();
 
+            builder.Property(e => e.ExtraContentsJson)
+                .HasColumnName("ExtraContents")
+                .HasColumnType("jsonb")
+                .HasDefaultValue("[]")
+                .IsRequired();
+
             builder.Property(e => e.CreatedAt).IsRequired();
             builder.Property(e => e.UpdatedAt).IsRequired();
 

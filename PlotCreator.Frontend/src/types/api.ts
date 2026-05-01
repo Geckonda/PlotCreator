@@ -87,6 +87,12 @@ export type TipTapDoc = {
 
 export const emptyTipTapDoc = (): TipTapDoc => ({ type: 'doc', content: [] })
 
+export interface ContentSection {
+  id: string
+  title: string
+  content: TipTapDoc
+}
+
 export interface EntityDto {
   id: number
   worldId: number
@@ -98,6 +104,7 @@ export interface EntityDto {
   desc?: string | null
   properties: Record<string, unknown>
   content: TipTapDoc
+  extraContents?: ContentSection[]
 }
 
 export interface EntityCreatePayload {
@@ -109,6 +116,7 @@ export interface EntityCreatePayload {
   desc?: string
   properties?: Record<string, unknown>
   content?: TipTapDoc
+  extraContents?: ContentSection[]
 }
 
 export interface EntityUpdatePayload {
@@ -119,6 +127,7 @@ export interface EntityUpdatePayload {
   desc?: string | null
   properties?: Record<string, unknown>
   content?: TipTapDoc
+  extraContents?: ContentSection[]
 }
 
 export interface RelationDto {

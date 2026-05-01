@@ -18,6 +18,7 @@ namespace PlotCreator.Domain.Contracts
         public string? Description { get; set; }
         public JsonObject Properties { get; set; } = new();
         public JsonNode Content { get; set; } = JsonNode.Parse("{\"type\":\"doc\",\"content\":[]}")!;
+        public JsonArray ExtraContents { get; set; } = new();
     }
 
     public class EntityCreateRequest
@@ -31,6 +32,7 @@ namespace PlotCreator.Domain.Contracts
         public string? Description { get; set; }
         public JsonObject? Properties { get; set; }
         public JsonNode? Content { get; set; }
+        public JsonArray? ExtraContents { get; set; }
     }
 
     public sealed class EntityUpdateRequest
@@ -43,5 +45,6 @@ namespace PlotCreator.Domain.Contracts
         public string? Description { get; set; }
         public JsonObject? Properties { get; set; }
         public JsonNode? Content { get; set; }
+        public JsonArray? ExtraContents { get; set; }
     }
 }

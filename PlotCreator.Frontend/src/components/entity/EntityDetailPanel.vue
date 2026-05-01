@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import type { Entity, EntityStatus, Relation } from '@/types/entity'
 import { entityKey, relationFromKey, relationToKey } from '@/types/entity'
 import type {
+  ContentSection,
   EntityDto,
   EntityUpdatePayload,
   PropertyDef,
@@ -18,6 +19,7 @@ import TypeBadge from '@/components/ui/TypeBadge.vue'
 import DynamicField from '@/components/entity/DynamicField.vue'
 import RelationCreator from '@/components/entity/RelationCreator.vue'
 import BlockEditor from '@/components/blocks/BlockEditor.vue'
+import ExtraContentBlocks from '@/components/blocks/ExtraContentBlocks.vue'
 import TagsInput from '@/components/forms/TagsInput.vue'
 import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
 import EntityMentionPopover from '@/components/entity/EntityMentionPopover.vue'
@@ -64,6 +66,7 @@ interface FormState {
   aliases: string[]
   properties: Record<string, unknown>
   content: TipTapDoc
+  extraContents: ContentSection[]
 }
 
 const form = reactive<FormState>({
@@ -74,6 +77,7 @@ const form = reactive<FormState>({
   aliases: [],
   properties: {},
   content: emptyTipTapDoc(),
+  extraContents: [],
 })
 
 const original = ref<string>('')
@@ -94,6 +98,7 @@ function applyDto(dto: EntityDto) {
   }
   form.properties = props_
   form.content = dto.content ?? emptyTipTapDoc()
+  form.extraContents = dto.extraContents ?? []
   original.value = snapshot()
 }
 
@@ -131,6 +136,7 @@ function buildPayload(): EntityUpdatePayload {
     aliases: form.aliases,
     properties: { ...form.properties },
     content: form.content,
+    extraContents: form.extraContents,
   }
 }
 
@@ -375,6 +381,14 @@ function onCreatorClose() {
         <div class="panel__section-title">Содержание</div>
         <BlockEditor
           v-model="form.content"
+          :entities="mentionEntities"
+          :related-ids="relatedIds"
+          :exclude-id="entity.id"
+          @mention-click="onMentionClick"
+        />
+
+        <ExtraContentBlocks
+          v-model="form.extraContents"
           :entities="mentionEntities"
           :related-ids="relatedIds"
           :exclude-id="entity.id"

@@ -78,7 +78,8 @@ namespace PlotCreator.Service.Implementations
                 Tags = request.Tags,
                 Aliases = request.Aliases,
                 PropertiesJson = request.Properties?.ToJsonString() ?? "{}",
-                ContentJson = request.Content?.ToJsonString() ?? EmptyContent
+                ContentJson = request.Content?.ToJsonString() ?? EmptyContent,
+                ExtraContentsJson = request.ExtraContents?.ToJsonString() ?? "[]"
             };
             await _entities.Add(entity);
 
@@ -100,6 +101,8 @@ namespace PlotCreator.Service.Implementations
                 entity.PropertiesJson = request.Properties.ToJsonString();
             if (request.Content is not null)
                 entity.ContentJson = request.Content.ToJsonString();
+            if (request.ExtraContents is not null)
+                entity.ExtraContentsJson = request.ExtraContents.ToJsonString();
 
             await _entities.Update(entity);
 
@@ -128,7 +131,8 @@ namespace PlotCreator.Service.Implementations
             Status = e.Status,
             Description = e.Description,
             Properties = JsonNode.Parse(e.PropertiesJson)?.AsObject() ?? new JsonObject(),
-            Content = JsonNode.Parse(e.ContentJson) ?? JsonNode.Parse(EmptyContent)!
+            Content = JsonNode.Parse(e.ContentJson) ?? JsonNode.Parse(EmptyContent)!,
+            ExtraContents = JsonNode.Parse(e.ExtraContentsJson)?.AsArray() ?? new JsonArray()
         };
 
         private static IBaseResponse<T> Ok<T>(T data) =>
