@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PlotCreator.DAL.Interfaces;
-using PlotCreator.DAL.Repositories;
+using PlotCreator.Domain.Contracts;
 using PlotCreator.Domain.Entity;
 using PlotCreator.Domain.Enum;
 using PlotCreator.Domain.Helpers;
@@ -9,12 +9,7 @@ using PlotCreator.Domain.Response.Implementations;
 using PlotCreator.Domain.ViewModels.Account;
 using PlotCreator.Service.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Net;
-using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace PlotCreator.Service.Implementations
@@ -22,110 +17,56 @@ namespace PlotCreator.Service.Implementations
     public class AccountService : IAccountService
     {
         private readonly IBaseRepository<User> _userRepository;
+        private readonly IJwtTokenService _jwt;
         private readonly ILogger<AccountService> _logger;
 
-        public AccountService(IBaseRepository<User> userRepository,
+        public AccountService(
+            IBaseRepository<User> userRepository,
+            IJwtTokenService jwt,
             ILogger<AccountService> logger)
         {
             _userRepository = userRepository;
+            _jwt = jwt;
             _logger = logger;
         }
 
-        public async Task<User> GetUser(int id)
+        public async Task<User?> GetUser(int id)
         {
             try
             {
-                return _userRepository.GetOne(id);
+                return await Task.FromResult(_userRepository.GetOne(id));
             }
             catch (Exception)
             {
-                return null!;
+                return null;
             }
         }
 
-        public async Task<BaseResponse<ClaimsIdentity>> Login(LoginViewModel model)
+        public async Task<AuthUserDto?> GetCurrentAsync(int userId)
+        {
+            var user = await _userRepository.GetAll().FirstOrDefaultAsync(u => u.Id == userId);
+            if (user is null) return null;
+            return ToDto(user);
+        }
+
+        public async Task<BaseResponse<AuthResultDto>> Login(LoginViewModel model)
         {
             try
             {
-                var user = await _userRepository.GetAll().FirstOrDefaultAsync(x => x.Login == model.Login);
-                if(user == null)
-                {
-                    return new BaseResponse<ClaimsIdentity>()
-                    {
-                        Description = "Логин или пароль указаны неверно",
-                    };
-                }
+                var user = await _userRepository.GetAll()
+                    .FirstOrDefaultAsync(x => x.Login == model.Login);
+                if (user == null)
+                    return Fail("Логин или пароль указаны неверно");
 
-                if(user.Password != HashPasswordHelper.HashPassword(model.Password))
-                {
-                    return new BaseResponse<ClaimsIdentity>()
-                    {
-                        Description = "Логин или пароль указаны неверно",
-                    };
-                }
-                var result = Authenticate(user);
+                if (user.Password != HashPasswordHelper.HashPassword(model.Password))
+                    return Fail("Логин или пароль указаны неверно");
 
-                return new BaseResponse<ClaimsIdentity>()
-                {
-                    Data = result,
-                    StatusCode = StatusCode.Ok,
-                };
+                return Ok(user);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"[Login]: {ex.Message}]");
-                return new BaseResponse<ClaimsIdentity>()
-                {
-                    Description = ex.Message,
-                    StatusCode = StatusCode.InternalServerError,
-                };
-            }
-        }
-
-        public async Task<BaseResponse<ClaimsIdentity>> Register(RegisterViewModel model)
-        {
-            try
-            {
-                var user = await _userRepository.GetAll().FirstOrDefaultAsync(x => x.Login == model.Login || x.Email == model.Email);
-                if(user != null)
-                {
-                    if (user.Login == model.Login)
-                    {
-                        return new BaseResponse<ClaimsIdentity>()
-                        {
-                            Description = "Пользователь с таким логином уже зарегистрирован",
-                        };
-                    }
-                    if (user.Email == model.Email)
-                    {
-                        return new BaseResponse<ClaimsIdentity>()
-                        {
-                            Description = "Пользователь с такой электронной почтой уже зарегистрирован",
-                        };
-                    }
-                }
-                user = new User()
-                {
-                    RoleId = Convert.ToInt32(UserRole.User),
-                    Nickname = model.Nickname,
-                    Login = model.Login,
-                    Email = model.Email,
-                    Password = HashPasswordHelper.HashPassword(model.Password),
-                };
-                await _userRepository.Add(user);
-                var result = Authenticate(user);
-
-                return new BaseResponse<ClaimsIdentity>()
-                {
-                    Data = result,
-                    Description = "Пользователь зарегистрирован",
-                    StatusCode = StatusCode.Ok
-                };
-            }
-            catch(Exception ex)
-            {
-                _logger.LogError(ex, $"[Register]: {ex.Message}");
-                return new BaseResponse<ClaimsIdentity>()
+                _logger.LogError(ex, "[Login]: {Msg}", ex.Message);
+                return new BaseResponse<AuthResultDto>
                 {
                     Description = ex.Message,
                     StatusCode = StatusCode.InternalServerError
@@ -133,32 +74,73 @@ namespace PlotCreator.Service.Implementations
             }
         }
 
+        public async Task<BaseResponse<AuthResultDto>> Register(RegisterViewModel model)
+        {
+            try
+            {
+                var existing = await _userRepository.GetAll()
+                    .FirstOrDefaultAsync(x => x.Login == model.Login || x.Email == model.Email);
+                if (existing != null)
+                {
+                    if (existing.Login == model.Login)
+                        return Fail("Пользователь с таким логином уже зарегистрирован");
+                    if (existing.Email == model.Email)
+                        return Fail("Пользователь с такой электронной почтой уже зарегистрирован");
+                }
 
-        private ClaimsIdentity Authenticate(User user)
-        {
-            var role = CheckUserRole(user.RoleId);
-            var claims = new List<Claim>
+                var user = new User
+                {
+                    RoleId = (int)UserRole.User,
+                    Nickname = model.Nickname,
+                    Login = model.Login,
+                    Email = model.Email,
+                    Password = HashPasswordHelper.HashPassword(model.Password),
+                };
+                await _userRepository.Add(user);
+
+                return Ok(user);
+            }
+            catch (Exception ex)
             {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, user.Login!),
-                new Claim(ClaimsIdentity.DefaultRoleClaimType, role),
-                new Claim("userId", user.Id.ToString() ),
-                new Claim("login", user.Login!.ToString() ),
-            };
-            return new ClaimsIdentity(claims, "ApplicationCookie",
-                ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
-        }
-        
-        private string CheckUserRole(int roleId)
-        {
-            switch(roleId)
-            {
-                case 1:
-                    return "Admin";
-                case 2:
-                    return "Moderator";
-                default:
-                    return "User";
+                _logger.LogError(ex, "[Register]: {Msg}", ex.Message);
+                return new BaseResponse<AuthResultDto>
+                {
+                    Description = ex.Message,
+                    StatusCode = StatusCode.InternalServerError
+                };
             }
         }
+
+        private BaseResponse<AuthResultDto> Ok(User user) => new()
+        {
+            Data = new AuthResultDto
+            {
+                Token = _jwt.IssueToken(user),
+                ExpiresInDays = _jwt.ExpiresInDays,
+                User = ToDto(user)
+            },
+            StatusCode = StatusCode.Ok
+        };
+
+        private static BaseResponse<AuthResultDto> Fail(string desc) => new()
+        {
+            Description = desc,
+            ErrorForUser = desc,
+            StatusCode = StatusCode.NotFound
+        };
+
+        private static AuthUserDto ToDto(User user) => new()
+        {
+            Id = user.Id,
+            Login = user.Login ?? string.Empty,
+            Nickname = user.Nickname ?? string.Empty,
+            Email = user.Email ?? string.Empty,
+            Role = user.RoleId switch
+            {
+                (int)UserRole.Admin => "Admin",
+                (int)UserRole.Moderator => "Moderator",
+                _ => "User"
+            }
+        };
     }
 }

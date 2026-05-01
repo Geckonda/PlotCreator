@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PlotCreator.Domain.Contracts;
 using PlotCreator.Domain.Response.Interfaces;
@@ -8,6 +9,7 @@ using StatusCodeEnum = PlotCreator.Domain.Enum.StatusCode;
 namespace PlotCreator_API.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/worlds")]
     public class WorldsController : ControllerBase
     {

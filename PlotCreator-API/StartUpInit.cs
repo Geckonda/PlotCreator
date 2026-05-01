@@ -3,6 +3,7 @@ using PlotCreator.DAL.Repositories;
 using PlotCreator.Domain.Entity;
 using PlotCreator.Service.Implementations;
 using PlotCreator.Service.Interfaces;
+using PlotCreator_API.Auth;
 
 namespace PlotCreator_API
 {
@@ -22,7 +23,8 @@ namespace PlotCreator_API
 
         public static void InitialiseServices(this IServiceCollection services)
         {
-            services.AddScoped<ICurrentUserService, DefaultUserService>();
+            services.AddScoped<ICurrentUserService, HttpContextCurrentUserService>();
+            services.AddSingleton<IJwtTokenService, JwtTokenService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IWorldService, WorldService>();
             services.AddScoped<IEntityService, EntityService>();

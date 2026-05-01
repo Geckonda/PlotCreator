@@ -3,15 +3,22 @@ import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useWorldsStore } from '@/stores/worlds'
+import { useAuthStore } from '@/stores/auth'
 import type { World } from '@/types/world'
 import WorldCard from '@/components/home/WorldCard.vue'
 import NewWorldCard from '@/components/home/NewWorldCard.vue'
 
 const router = useRouter()
 const worldsStore = useWorldsStore()
+const auth = useAuthStore()
 const { worlds, loading, error } = storeToRefs(worldsStore)
 
 onMounted(() => worldsStore.fetchAll())
+
+async function onLogout() {
+  await auth.logout()
+  router.replace({ name: 'login' })
+}
 
 function enterWorld(world: World) {
   router.push({ name: 'world', params: { id: String(world.id) } })
@@ -36,13 +43,25 @@ async function newWorld() {
         <div class="home__brand">WORLDFORGE</div>
         <div class="home__sub">Конструктор миров</div>
       </div>
-      <button
-        class="home__settings"
-        title="Управление типами сущностей"
-        @click="router.push({ name: 'type-manager' })"
-      >
-        ⚙ Типы
-      </button>
+      <div class="home__head-actions">
+        <span v-if="auth.user" class="home__user" :title="auth.user.email">
+          {{ auth.user.nickname || auth.user.login }}
+        </span>
+        <button
+          class="home__settings"
+          title="Управление типами сущностей"
+          @click="router.push({ name: 'type-manager' })"
+        >
+          ⚙ Типы
+        </button>
+        <button
+          class="home__logout"
+          title="Выйти"
+          @click="onLogout"
+        >
+          ⎋ Выход
+        </button>
+      </div>
     </header>
 
     <main class="home__main">
@@ -101,7 +120,26 @@ async function newWorld() {
   gap: 18px;
 }
 
-.home__settings {
+.home__head-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.home__user {
+  font-family: var(--font-display);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  padding: 0 4px;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home__settings,
+.home__logout {
   font-family: var(--font-display);
   font-size: 13px;
   letter-spacing: 0.06em;
@@ -114,7 +152,8 @@ async function newWorld() {
   transition: color 0.15s, border-color 0.15s;
 }
 
-.home__settings:hover {
+.home__settings:hover,
+.home__logout:hover {
   color: var(--accent);
   border-color: var(--border2);
 }
