@@ -25,7 +25,7 @@ const entitiesStore = useEntitiesStore()
 const entityTypesStore = useEntityTypesStore()
 const ui = useWorldUiStore()
 
-const { view, activeType, search, showCreate } = storeToRefs(ui)
+const { view, activeType, search, searchIncludeRelated, showCreate } = storeToRefs(ui)
 
 const worldId = computed(() => Number(route.params.id))
 
@@ -56,6 +56,20 @@ watch(
 
 const allEntities = computed(() => entitiesStore.entities)
 const filteredEntities = useEntitySearch(allEntities, search)
+
+const graphEntities = computed(() => {
+  if (!searchIncludeRelated.value || !search.value.trim()) {
+    return filteredEntities.value
+  }
+  const matchedIds = new Set(filteredEntities.value.map((e) => e.id))
+  const expanded = new Set(matchedIds)
+  for (const r of entitiesStore.relations) {
+    if (matchedIds.has(r.from)) expanded.add(r.to)
+    if (matchedIds.has(r.to)) expanded.add(r.from)
+  }
+  if (expanded.size === matchedIds.size) return filteredEntities.value
+  return entitiesStore.entities.filter((e) => expanded.has(e.id))
+})
 
 const selectedEntity = computed(() =>
   ui.selectedKey !== null
@@ -118,7 +132,7 @@ async function handleDelete(entity: Entity) {
       <ForceGraph
         v-if="view === 'graph'"
         :world-id="worldId"
-        :entities="filteredEntities"
+        :entities="graphEntities"
         :relations="entitiesStore.relations"
         :selected-key="ui.selectedKey"
         :filter-type="activeType"

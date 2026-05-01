@@ -704,6 +704,12 @@ function safeId(typeKey: string) {
 .graph__node-name {
   font-family: var(--font-display);
   letter-spacing: 0.02em;
+  font-weight: 600;
+  paint-order: stroke;
+  stroke: var(--bg);
+  stroke-width: 5px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .graph__sel-ring {

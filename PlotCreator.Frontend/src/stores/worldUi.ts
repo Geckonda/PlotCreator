@@ -9,6 +9,7 @@ export const useWorldUiStore = defineStore('worldUi', () => {
   const activeType = ref<string | null>(null)
   const selectedKey = ref<EntityKey | null>(null)
   const search = ref('')
+  const searchIncludeRelated = ref(false)
   const showCreate = ref(false)
 
   function reset() {
@@ -16,8 +17,9 @@ export const useWorldUiStore = defineStore('worldUi', () => {
     activeType.value = null
     selectedKey.value = null
     search.value = ''
+    searchIncludeRelated.value = false
     showCreate.value = false
   }
 
-  return { view, activeType, selectedKey, search, showCreate, reset }
+  return { view, activeType, selectedKey, search, searchIncludeRelated, showCreate, reset }
 })

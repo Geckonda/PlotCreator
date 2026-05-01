@@ -6,7 +6,7 @@ import { useWorldUiStore, type WorldViewMode } from '@/stores/worldUi'
 const router = useRouter()
 const route = useRoute()
 const ui = useWorldUiStore()
-const { view, search } = storeToRefs(ui)
+const { view, search, searchIncludeRelated } = storeToRefs(ui)
 
 const tabs: Array<[WorldViewMode, string, string]> = [
   ['graph', '◈', 'Граф'],
@@ -55,6 +55,23 @@ function openGraphs() {
     <div class="topbar__search">
       <span class="topbar__search-icon">⌕</span>
       <input v-model="search" placeholder="Поиск…" />
+      <button
+        v-if="view === 'graph'"
+        type="button"
+        class="topbar__search-toggle"
+        :class="{ 'topbar__search-toggle--active': searchIncludeRelated }"
+        :title="searchIncludeRelated ? 'Связанные сущности: вкл' : 'Связанные сущности: выкл'"
+        @click="searchIncludeRelated = !searchIncludeRelated"
+      >
+        ⇆
+      </button>
+      <button
+        type="button"
+        class="topbar__search-remove"
+        @click="search = ''"
+      >
+        ×
+      </button>
     </div>
 
     <button class="topbar__create" @click="ui.showCreate = true">
@@ -134,6 +151,7 @@ function openGraphs() {
 .topbar__search input {
   width: 230px;
   padding-left: 32px;
+  padding-right: 36px;
   height: 36px;
   font-size: 14px;
 }
@@ -148,6 +166,58 @@ function openGraphs() {
   pointer-events: none;
 }
 
+.topbar__search-toggle {
+  position: absolute;
+  right: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--dim);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.topbar__search-toggle:hover {
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.topbar__search-toggle--active {
+  background: rgba(122, 72, 36, 0.12);
+  border-color: rgba(122, 72, 36, 0.28);
+  color: #5d3a1a;
+}
+.topbar__search-remove{
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--dim);
+  font-size: 24px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.topbar__search-remove:hover {
+  color: var(--dim);
+  border-color: var(--border);
+  background-color: var(--accent);
+}
 .topbar__create {
   padding: 8px 20px;
   border-radius: 8px;
