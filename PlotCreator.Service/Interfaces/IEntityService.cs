@@ -9,8 +9,11 @@ namespace PlotCreator.Service.Interfaces
     {
         Task<IBaseResponse<IReadOnlyList<EntitySummaryDto>>> GetAllForWorldAsync(int worldId);
         Task<IBaseResponse<EntityDto>> GetByIdAsync(int id);
+        Task<IBaseResponse<EntityDto>> GetByIdAsync(int worldId, int id);
         Task<IBaseResponse<EntityDto>> CreateAsync(int worldId, EntityCreateRequest request);
         Task<IBaseResponse<EntityDto>> UpdateAsync(int id, EntityUpdateRequest request);
+        Task<IBaseResponse<EntityDto>> UpdateAsync(int worldId, int id, EntityUpdateRequest request);
         Task<IBaseResponse<bool>> DeleteAsync(int id);
+        Task<IBaseResponse<bool>> DeleteAsync(int worldId, int id);
     }
 }

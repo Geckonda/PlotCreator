@@ -28,7 +28,12 @@ export const useGraphsStore = defineStore('graphs', () => {
     try {
       summaries.value = await api.listGraphs(worldId)
     } catch (e: unknown) {
-      error.value = e instanceof Error ? e.message : 'Failed to load graphs'
+      const err = e as any
+      error.value = err?.response?.data?.errorForUser || (e instanceof Error ? e.message : 'Failed to load graphs')
+      // Re-throw authorization errors so the view can handle them
+      if (err?.response?.status === 403) {
+        throw e
+      }
     } finally {
       loadingList.value = false
     }
@@ -40,8 +45,13 @@ export const useGraphsStore = defineStore('graphs', () => {
     try {
       current.value = await api.getGraph(graphId)
     } catch (e: unknown) {
-      error.value = e instanceof Error ? e.message : 'Failed to load graph'
+      const err = e as any
+      error.value = err?.response?.data?.errorForUser || (e instanceof Error ? e.message : 'Failed to load graph')
       current.value = null
+      // Re-throw authorization errors so the view can handle them
+      if (err?.response?.status === 403) {
+        throw e
+      }
     } finally {
       loadingCurrent.value = false
     }

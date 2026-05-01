@@ -36,10 +36,20 @@ watch(
     worldsStore.setCurrent(id)
     ui.reset()
     entitiesStore.clear()
-    await Promise.all([
-      entityTypesStore.ensureLoaded(),
-      entitiesStore.fetchForWorld(id),
-    ])
+    try {
+      await Promise.all([
+        entityTypesStore.ensureLoaded(),
+        entitiesStore.fetchForWorld(id),
+      ])
+    } catch (e: unknown) {
+      const err = e as any
+      // If unauthorized (403), redirect to home
+      if (err?.response?.status === 403) {
+        router.replace({ name: 'home' })
+        return
+      }
+      console.error('Failed to load world:', e)
+    }
   },
   { immediate: true },
 )
@@ -90,7 +100,7 @@ async function handleCreate(payload: EntityCreatePayload) {
 
 async function handleDelete(entity: Entity) {
   try {
-    await entitiesStore.remove(entity)
+    await entitiesStore.remove(worldId.value, entity)
     ui.selectedKey = null
   } catch (err) {
     console.error('Delete failed', err)
@@ -134,6 +144,7 @@ async function handleDelete(entity: Entity) {
       <EntityDetailPanel
         v-if="selectedEntity && view !== 'timeline'"
         :entity="selectedEntity"
+        :world-id="worldId"
         @close="closeDetail"
         @delete="handleDelete"
       />

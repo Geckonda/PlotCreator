@@ -11,16 +11,16 @@ export const getEntities = (worldId: number) =>
     .get<EntitySummaryDto[]>(`/worlds/${worldId}/entities`)
     .then((r) => r.data)
 
-export const getEntity = (id: number) =>
-  api.get<EntityDto>(`/entities/${id}`).then((r) => r.data)
+export const getEntity = (worldId: number, id: number) =>
+  api.get<EntityDto>(`/worlds/${worldId}/entities/${id}`).then((r) => r.data)
 
 export const createEntity = (worldId: number, payload: EntityCreatePayload) =>
   api
     .post<EntityDto>(`/worlds/${worldId}/entities`, payload)
     .then((r) => r.data)
 
-export const updateEntity = (id: number, body: EntityUpdatePayload) =>
-  api.put<EntityDto>(`/entities/${id}`, body).then((r) => r.data)
+export const updateEntity = (worldId: number, id: number, body: EntityUpdatePayload) =>
+  api.put<EntityDto>(`/worlds/${worldId}/entities/${id}`, body).then((r) => r.data)
 
-export const deleteEntity = (id: number) =>
-  api.delete<void>(`/entities/${id}`).then(() => undefined)
+export const deleteEntity = (worldId: number, id: number) =>
+  api.delete<void>(`/worlds/${worldId}/entities/${id}`).then(() => undefined)

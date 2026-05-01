@@ -37,7 +37,12 @@ export const useEntitiesStore = defineStore('entities', () => {
       relations.value = rDtos.map(toRelation)
       details.value.clear()
     } catch (e: unknown) {
-      error.value = e instanceof Error ? e.message : 'Failed to load world data'
+      const err = e as any
+      error.value = err?.response?.data?.errorForUser || (e instanceof Error ? e.message : 'Failed to load world data')
+      // Re-throw authorization errors so the view can handle them
+      if (err?.response?.status === 403) {
+        throw e
+      }
     } finally {
       loading.value = false
     }
@@ -57,24 +62,24 @@ export const useEntitiesStore = defineStore('entities', () => {
     return entity
   }
 
-  async function fetchDetail(id: number) {
+  async function fetchDetail(worldId: number, id: number) {
     const cached = details.value.get(id)
     if (cached) return cached
-    const dto = await entitiesApi.getEntity(id)
+    const dto = await entitiesApi.getEntity(worldId, id)
     details.value.set(id, dto)
     return dto
   }
 
-  async function update(id: number, body: EntityUpdatePayload) {
-    const dto = await entitiesApi.updateEntity(id, body)
+  async function update(worldId: number, id: number, body: EntityUpdatePayload) {
+    const dto = await entitiesApi.updateEntity(worldId, id, body)
     details.value.set(id, dto)
     const i = entities.value.findIndex((e) => e.id === id)
     if (i >= 0) entities.value[i] = toEntity(dto)
     return dto
   }
 
-  async function remove(entity: Entity) {
-    await entitiesApi.deleteEntity(entity.id)
+  async function remove(worldId: number, entity: Entity) {
+    await entitiesApi.deleteEntity(worldId, entity.id)
     entities.value = entities.value.filter((e) => e.id !== entity.id)
     relations.value = relations.value.filter(
       (r) => r.from !== entity.id && r.to !== entity.id,

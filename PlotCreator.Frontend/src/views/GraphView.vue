@@ -44,12 +44,23 @@ watch(
     showPicker.value = false
     selectedEntity.value = null
     graphsStore.clear()
-    await Promise.all([
-      entityTypesStore.ensureLoaded(),
-      entitiesStore.fetchForWorld(id),
-      graphsStore.fetchByWorld(id),
-    ])
-    await selectInitialGraph()
+    try {
+      await Promise.all([
+        entityTypesStore.ensureLoaded(),
+        entitiesStore.fetchForWorld(id),
+        graphsStore.fetchByWorld(id),
+      ])
+      await selectInitialGraph()
+    } catch (e: unknown) {
+      const err = e as any
+      // If unauthorized (403), redirect to home
+      if (err?.response?.status === 403) {
+        router.replace({ name: 'home' })
+        return
+      }
+      error.value = err?.response?.data?.errorForUser || 'Failed to load world'
+      console.error('Failed to load world:', e)
+    }
   },
   { immediate: true },
 )
@@ -228,6 +239,7 @@ function backToWorld() {
       <EntityDetailPanel
         v-if="selectedEntity"
         :entity="selectedEntity"
+        :world-id="worldId"
         @close="closeDetail"
         @delete="closeDetail"
       />

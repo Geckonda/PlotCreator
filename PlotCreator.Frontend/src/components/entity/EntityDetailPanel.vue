@@ -27,6 +27,7 @@ import type { EntityRef } from '@/composables/tiptapEntityHighlight'
 
 const props = defineProps<{
   entity: Entity
+  worldId: number
 }>()
 
 const emit = defineEmits<{
@@ -109,7 +110,7 @@ async function load() {
   error.value = null
   try {
     await types.ensureLoaded()
-    const dto = await entitiesStore.fetchDetail(props.entity.id)
+    const dto = await entitiesStore.fetchDetail(props.worldId, props.entity.id)
     applyDto(dto)
   } catch (e: unknown) {
     error.value = e instanceof Error ? e.message : 'Не удалось загрузить'
@@ -145,7 +146,7 @@ async function save() {
   saving.value = true
   error.value = null
   try {
-    await entitiesStore.update(props.entity.id, buildPayload())
+    await entitiesStore.update(props.worldId, props.entity.id, buildPayload())
     original.value = snapshot()
   } catch (e: unknown) {
     error.value = e instanceof Error ? e.message : 'Не удалось сохранить'

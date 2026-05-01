@@ -52,6 +52,7 @@ namespace PlotCreator_API.Controllers
         {
             StatusCodeEnum.Ok => Ok(r.Data),
             StatusCodeEnum.NotFound => NotFound(new { description = r.Description, errorForUser = r.ErrorForUser }),
+            StatusCodeEnum.Forbidden => Forbid(),
             _ => StatusCode(500, new { description = r.Description, errorForUser = r.ErrorForUser })
         };
     }

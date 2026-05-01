@@ -130,10 +130,16 @@ async function load() {
       notFound.value = true
       return
     }
-    const dto = await entitiesStore.fetchDetail(props.entityId)
+    const dto = await entitiesStore.fetchDetail(props.worldId, props.entityId)
     applyDto(dto)
   } catch (e: unknown) {
-    error.value = e instanceof Error ? e.message : 'Не удалось загрузить'
+    const err = e as any
+    // If unauthorized (403), redirect to home
+    if (err?.response?.status === 403) {
+      router.replace({ name: 'home' })
+      return
+    }
+    error.value = err?.response?.data?.errorForUser || (e instanceof Error ? e.message : 'Не удалось загрузить')
   } finally {
     loading.value = false
   }
@@ -166,7 +172,7 @@ async function save() {
   saving.value = true
   error.value = null
   try {
-    await entitiesStore.update(props.entityId, buildPayload())
+    await entitiesStore.update(props.worldId, props.entityId, buildPayload())
     original.value = snapshot()
   } catch (e: unknown) {
     error.value = e instanceof Error ? e.message : 'Не удалось сохранить'
@@ -254,7 +260,7 @@ async function onConfirm() {
     }
     confirmBusy.value = true
     try {
-      await entitiesStore.remove(entity.value)
+      await entitiesStore.remove(props.worldId, entity.value)
       confirmState.value = null
       goBack()
     } catch (e) {

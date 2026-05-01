@@ -39,7 +39,8 @@ namespace PlotCreator.Service.Implementations
 
         public async Task<IBaseResponse<WorldDto>> GetByIdAsync(int id)
         {
-            var world = await _worlds.GetAll().FirstOrDefaultAsync(w => w.Id == id);
+            var userId = _currentUser.GetUserId();
+            var world = await _worlds.GetAll().FirstOrDefaultAsync(w => w.Id == id && w.OwnerUserId == userId);
             if (world is null) return NotFound<WorldDto>("World not found");
             var count = await _worlds.GetEntityCountAsync(id);
             return Ok(ToDto(world, count));
@@ -61,7 +62,8 @@ namespace PlotCreator.Service.Implementations
 
         public async Task<IBaseResponse<WorldDto>> UpdateAsync(int id, WorldUpdateRequest request)
         {
-            var world = await _worlds.GetAll().FirstOrDefaultAsync(w => w.Id == id);
+            var userId = _currentUser.GetUserId();
+            var world = await _worlds.GetAll().FirstOrDefaultAsync(w => w.Id == id && w.OwnerUserId == userId);
             if (world is null) return NotFound<WorldDto>("World not found");
             world.Name = request.Name;
             world.Genre = request.Genre;
@@ -74,7 +76,8 @@ namespace PlotCreator.Service.Implementations
 
         public async Task<IBaseResponse<bool>> DeleteAsync(int id)
         {
-            var world = await _worlds.GetAll().FirstOrDefaultAsync(w => w.Id == id);
+            var userId = _currentUser.GetUserId();
+            var world = await _worlds.GetAll().FirstOrDefaultAsync(w => w.Id == id && w.OwnerUserId == userId);
             if (world is null) return NotFound<bool>("World not found");
             await _worlds.Delete(world);
             return Ok(true);

@@ -10,6 +10,8 @@ namespace PlotCreator.Service.Interfaces
         Task<IBaseResponse<IReadOnlyList<RelationDto>>> GetByWorldAsync(int worldId);
         Task<IBaseResponse<RelationDto>> CreateAsync(int worldId, RelationCreateRequest request);
         Task<IBaseResponse<RelationDto>> UpdateAsync(int id, RelationUpdateRequest request);
+        Task<IBaseResponse<RelationDto>> UpdateAsync(int worldId, int id, RelationUpdateRequest request);
         Task<IBaseResponse<bool>> DeleteAsync(int id);
+        Task<IBaseResponse<bool>> DeleteAsync(int worldId, int id);
     }
 }

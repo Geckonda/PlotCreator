@@ -31,13 +31,21 @@ namespace PlotCreator_API.Controllers
         public async Task<IActionResult> Update(int id, [FromBody] RelationUpdateRequest request) =>
             Map(await _relations.UpdateAsync(id, request));
 
+        [HttpPut("api/worlds/{worldId:int}/relations/{id:int}")]
+        public async Task<IActionResult> UpdateInWorld(int worldId, int id, [FromBody] RelationUpdateRequest request) =>
+            Map(await _relations.UpdateAsync(worldId, id, request));
+
         [HttpDelete("api/relations/{id:int}")]
         public async Task<IActionResult> Delete(int id) => Map(await _relations.DeleteAsync(id));
+
+        [HttpDelete("api/worlds/{worldId:int}/relations/{id:int}")]
+        public async Task<IActionResult> DeleteFromWorld(int worldId, int id) => Map(await _relations.DeleteAsync(worldId, id));
 
         private IActionResult Map<T>(IBaseResponse<T> r) => r.StatusCode switch
         {
             StatusCodeEnum.Ok => Ok(r.Data),
             StatusCodeEnum.NotFound => NotFound(new { description = r.Description, errorForUser = r.ErrorForUser }),
+            StatusCodeEnum.Forbidden => Forbid(),
             _ => StatusCode(500, new { description = r.Description, errorForUser = r.ErrorForUser })
         };
     }
