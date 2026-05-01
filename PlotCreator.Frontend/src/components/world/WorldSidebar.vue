@@ -40,8 +40,7 @@ function colorFor(typeKey: string, isActive: boolean): string {
 <template>
   <aside class="sidebar">
     <div class="sidebar__brand">
-      <div class="sidebar__name">WORLDFORGE</div>
-      <div class="sidebar__sub">{{ worldsStore.current?.name ?? '—' }}</div>
+      <div class="sidebar__name">МАСТЕРСКАЯ</div>
     </div>
 
     <div class="sidebar__nav">
@@ -63,14 +62,14 @@ function colorFor(typeKey: string, isActive: boolean): string {
         <span class="nav-item__label">Все карточки</span>
       </button>
 
-      <button
+      <!-- <button
         class="nav-item"
         :class="{ 'nav-item--active': view === 'timeline' }"
         @click="pickView('timeline')"
       >
         <span class="nav-item__icon">◆</span>
         <span class="nav-item__label">Хронология</span>
-      </button>
+      </button> -->
 
       <div class="sidebar__section">Сущности</div>
 

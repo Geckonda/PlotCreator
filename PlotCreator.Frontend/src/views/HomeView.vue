@@ -40,7 +40,7 @@ async function newWorld() {
   <div class="home">
     <header class="home__head">
       <div class="home__head-text">
-        <div class="home__brand">WORLDFORGE</div>
+        <div class="home__brand">PlotCreator</div>
         <div class="home__sub">Конструктор миров</div>
       </div>
       <div class="home__head-actions">

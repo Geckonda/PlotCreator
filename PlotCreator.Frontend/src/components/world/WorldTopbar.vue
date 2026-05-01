@@ -11,7 +11,7 @@ const { view, search } = storeToRefs(ui)
 const tabs: Array<[WorldViewMode, string, string]> = [
   ['graph', '◈', 'Граф'],
   ['grid', '▦', 'Карточки'],
-  ['timeline', '◆', 'Хронология'],
+  // ['timeline', '◆', 'Хронология'],
 ]
 
 function selectTab(id: WorldViewMode) {
